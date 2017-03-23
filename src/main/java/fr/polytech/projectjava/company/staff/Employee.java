@@ -1,5 +1,6 @@
-package fr.polytech.projectjava;
+package fr.polytech.projectjava.company.staff;
 
+import fr.polytech.projectjava.company.StandardDepartment;
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *

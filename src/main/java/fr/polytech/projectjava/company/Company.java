@@ -1,7 +1,10 @@
-package fr.polytech.projectjava;
+package fr.polytech.projectjava.company;
 
+import fr.polytech.projectjava.company.staff.Boss;
+import fr.polytech.projectjava.company.staff.Employee;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
@@ -25,5 +28,23 @@ public class Company
 		this.boss = boss;
 		if(employees != null)
 			this.employees.addAll(employees);
+	}
+
+	public Boss getBoss()
+	{
+		return boss;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public Optional<Employee> getEmployee(int ID)
+	{
+		for(Employee employee : employees)
+			if(employee.getID() == ID)
+				return Optional.of(employee);
+		return Optional.empty();
 	}
 }

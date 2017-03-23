@@ -1,4 +1,4 @@
-package fr.polytech.projectjava;
+package fr.polytech.projectjava.company.staff;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
