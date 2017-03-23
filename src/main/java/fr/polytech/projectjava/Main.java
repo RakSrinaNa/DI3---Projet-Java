@@ -1,4 +1,4 @@
-package fr.polytech.projetjava;
+package fr.polytech.projectjava;
 
 public class Main
 {
