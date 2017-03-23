@@ -1,10 +1,19 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 cache:
   directories:
   - $HOME/.m2
+before_install:
+  - curl -sL https://github.com/jpm4j/jpm4j.installers/raw/master/dist/biz.aQute.jpm.run.jar > jpm4j.jar
+  - java -jar jpm4j.jar -u init
+  - ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
+after_success:
+  - ~/jpm/bin/codacy-coverage-reporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 notifications:
   email: true
   on_failure: always
   on_success: always
+env:
+  global:
+    secure: zAFAk1mMV5aR8EJLpMddYC5b4l1wWQY6ahxfV1FR5ji0nwz/W2sEUbS68IXRnE0LRlEnqEMdMF9KcJFvHvx3Oprd6D7VU0/yNhCf4SG5SqeMtwJU/GaNcNTspW9VgIY4QdMnC3EG9F9ZuiINF+UEIE6azIgS4NS4juR3tadZ1JdITGGwazqI2jZUFcNPnUNsLh51KVdEW2s0Xnv6VrvOJTpIqGjVxrrDy9WbVwqdRXHmullYzsx5Dc4proosxpnyH7XLQeXBlTj3GZ54cSWDKuh3GvotgH8L0Xx7LmP1T7KZCGXuUw7rSBb30HVNg6TEaGneVA+dOVK9RUvomk/BFKjLcK0sKmuiCYQ1VKiW24s46+TKA14BBYhJ+0/m7zO+1bE0+ZVLWuafKN4B4YEkAZcTMYWn0gxIclKXVE/YqdA8WqccrSeHTmLRlhB2beO5jEgw59CDOxhQwoGQzp+4sw1zb2gT6mXdJzj+16sN7BMJx7RHGnBSaGEpRstNDA0MzHTiXjnOaxcyVcYJ7s4q9KAhfla5V277lDLtzO2lvJlpGqiYhdSnlVV2A0aggBhXNjEpOJbMq1RywIcMFql0Be9gjm0JfT4z/zc52txLUJ8wtnxCXPgAtsy+kKtHyOmD+fbtcCqJWWWubW5xeV7IbtTaNWO1gX22+ctPGAxT+aU=
