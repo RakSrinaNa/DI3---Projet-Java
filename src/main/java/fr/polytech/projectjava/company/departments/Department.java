@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.company;
+package fr.polytech.projectjava.company.departments;
 
 import fr.polytech.projectjava.company.staff.Employee;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public abstract class Department
+abstract class Department
 {
 	private final String name;
 	private final ArrayList<Employee> employees = new ArrayList<>();

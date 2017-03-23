@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.company;
+package fr.polytech.projectjava.company.departments;
 
 import fr.polytech.projectjava.company.staff.Manager;
 /**

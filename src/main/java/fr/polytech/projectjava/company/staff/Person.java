@@ -6,7 +6,7 @@ package fr.polytech.projectjava.company.staff;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public abstract class Person
+abstract class Person
 {
 	private final String lastName;
 	private final String firstName;

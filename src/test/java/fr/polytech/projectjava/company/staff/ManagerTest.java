@@ -1,6 +1,6 @@
 package fr.polytech.projectjava.company.staff;
 
-import fr.polytech.projectjava.company.StandardDepartment;
+import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.TestCase.assertTrue;
