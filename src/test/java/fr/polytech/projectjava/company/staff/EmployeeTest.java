@@ -22,7 +22,7 @@ public class EmployeeTest
 	public void setUp()
 	{
 		workingDepartment = new StandardDepartment("RND");
-		Manager manager = new Manager(0, "A", "B", workingDepartment, true);
+		Manager manager = new Manager(0, "A", "B", workingDepartment);
 		workingDepartment.setManager(manager);
 
 		employee = new Employee(EMPLOYEE_ID, PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);

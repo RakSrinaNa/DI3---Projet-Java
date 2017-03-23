@@ -11,10 +11,10 @@ public class Manager extends Employee
 {
 	private boolean managing;
 
-	public Manager(int ID, String lastName, String firstName, StandardDepartment workingDepartment, boolean isManaging)
+	public Manager(int ID, String lastName, String firstName, StandardDepartment workingDepartment)
 	{
 		super(ID, lastName, firstName, workingDepartment);
-		managing = isManaging;
+		managing = workingDepartment.setManager(this);
 	}
 
 	public boolean isManaging()

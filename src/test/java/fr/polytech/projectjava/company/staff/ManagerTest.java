@@ -20,8 +20,8 @@ public class ManagerTest
 	public void setUp()
 	{
 		StandardDepartment workingDepartment = new StandardDepartment("RND");
-		manager1 = new Manager(0, "A", "B", workingDepartment, true);
-		manager2 = new Manager(0, "A", "B", workingDepartment, false);
+		manager1 = new Manager(0, "A", "B", workingDepartment);
+		manager2 = new Manager(0, "A", "B", workingDepartment);
 	}
 
 	@Test

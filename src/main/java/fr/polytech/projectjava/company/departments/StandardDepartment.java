@@ -13,13 +13,7 @@ public class StandardDepartment extends Department
 
 	public StandardDepartment(String name)
 	{
-		this(name, null);
-	}
-
-	public StandardDepartment(String name, Manager manager)
-	{
 		super(name);
-		this.manager = manager;
 	}
 
 	public Manager getManager()
@@ -27,9 +21,12 @@ public class StandardDepartment extends Department
 		return manager;
 	}
 
-	public void setManager(Manager manager)
+	public boolean setManager(Manager manager)
 	{
+		if(getManager() != null)
+			return false;
 		this.manager = manager;
+		return true;
 	}
 
 	@Override
