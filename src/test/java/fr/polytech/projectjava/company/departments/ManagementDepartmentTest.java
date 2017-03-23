@@ -20,7 +20,7 @@ public class ManagementDepartmentTest
 	{
 		boss = new Boss("A", "B");
 
-		department = new ManagementDepartment("ManagementDepartment", boss);
+		department = new ManagementDepartment(boss);
 	}
 
 	@Test
