@@ -12,7 +12,7 @@ before_install:
 after_success:
 - ~/jpm/bin/codacy-coverage-reporter -l Java -r target/site/jacoco-ut/jacoco.xml
 notifications:
-  email: true
+  email: false
   on_failure: always
   on_success: always
   slack:
