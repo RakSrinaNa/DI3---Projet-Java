@@ -11,6 +11,11 @@ import fr.polytech.projectjava.company.staff.Boss;
  */
 public class Main
 {
+	/**
+	 * Temporary main method.
+	 *
+	 * @param args Program's arguments.
+	 */
 	public static void main(String[] args)
 	{
 		System.out.println(new Company("Company 1", new Boss("T'Kindt", "Vincent")));

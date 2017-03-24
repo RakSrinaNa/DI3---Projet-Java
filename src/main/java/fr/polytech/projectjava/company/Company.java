@@ -80,6 +80,12 @@ public class Company
 		return Optional.empty();
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "Company: \t" + getName() + "\nManagement department: \t[" + getManagementDepartment() + "]\nDepartments: \t" + departments + "\nEmployees: \t" + employees;
+	}
+	
 	/**
 	 * Get the boss of the company.
 	 *
