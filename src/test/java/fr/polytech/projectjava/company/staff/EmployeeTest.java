@@ -3,7 +3,6 @@ package fr.polytech.projectjava.company.staff;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Random;
 import static org.junit.Assert.assertEquals;
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
@@ -13,8 +12,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class EmployeeTest
 {
-	private static final int EMPLOYEE_ID = new Random().nextInt(Integer.MAX_VALUE);
-
 	private Employee employee;
 	private StandardDepartment workingDepartment;
 
@@ -22,16 +19,22 @@ public class EmployeeTest
 	public void setUp()
 	{
 		workingDepartment = new StandardDepartment("RND");
-		Manager manager = new Manager(0, "A", "B", workingDepartment);
+		Manager manager = new Manager("A", "B", workingDepartment);
 		workingDepartment.setManager(manager);
-
-		employee = new Employee(EMPLOYEE_ID, PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
+		
+		employee = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
 	}
 
 	@Test
 	public void getID() throws Exception
 	{
-		assertEquals(EMPLOYEE_ID, employee.getID());
+		int ID = Employee.NEXT_ID;
+		
+		Employee employee1 = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
+		Employee employee2 = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
+		assertEquals(ID - 1, employee.getID());
+		assertEquals(ID, employee1.getID());
+		assertEquals(ID + 1, employee2.getID());
 	}
 
 	@Test

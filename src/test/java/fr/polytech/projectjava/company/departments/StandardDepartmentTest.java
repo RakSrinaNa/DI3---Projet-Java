@@ -23,12 +23,12 @@ public class StandardDepartmentTest
 	public void setUp() throws Exception
 	{
 		department1 = new StandardDepartment("StandardDepartment1");
-		manager1 = new Manager(0, "A", "B", department1);
+		manager1 = new Manager("A", "B", department1);
 
 		department2 = new StandardDepartment("StandardDepartment2");
-		manager2 = new Manager(1, "A", "B", department2);
-
-		manager3 = new Manager(2, "A", "B", department2);
+		manager2 = new Manager("A", "B", department2);
+		
+		manager3 = new Manager("A", "B", department2);
 	}
 
 	@Test

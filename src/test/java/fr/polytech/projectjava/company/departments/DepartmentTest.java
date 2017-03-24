@@ -28,10 +28,10 @@ public class DepartmentTest
 	public void addGetEmployee() throws Exception
 	{
 		department.getEmployees().clear();
-
-		Employee employee1 = new Employee(0, "A", "B", new StandardDepartment("Dpt"));
-		Employee employee2 = new Employee(1, "A", "B", new StandardDepartment("Dpt"));
-		Employee employee3 = new Employee(2, "A", "B", new StandardDepartment("Dpt"));
+		
+		Employee employee1 = new Employee("A", "B", new StandardDepartment("Dpt"));
+		Employee employee2 = new Employee("A", "B", new StandardDepartment("Dpt"));
+		Employee employee3 = new Employee("A", "B", new StandardDepartment("Dpt"));
 
 		ArrayList<Employee> employees = new ArrayList<>();
 		employees.add(employee1);
