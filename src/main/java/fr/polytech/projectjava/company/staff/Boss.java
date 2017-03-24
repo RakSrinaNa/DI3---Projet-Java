@@ -12,7 +12,7 @@ package fr.polytech.projectjava.company.staff;
 public class Boss extends Person
 {
 	/**
-	 * Construct the boss with its name.
+	 * Construct the boss with his/her name.
 	 *
 	 * @param lastName His/her last name.
 	 * @param firstName His/her first name.
