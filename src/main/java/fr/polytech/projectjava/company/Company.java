@@ -57,8 +57,12 @@ public class Company
 	 */
 	public void addEmployee(Employee employee)
 	{
-		employees.add(employee);
-		departments.add(employee.getWorkingDepartment());
+		if(!employees.contains(employee))
+		{
+			employees.add(employee);
+			if(!departments.contains(employee.getWorkingDepartment()))
+				departments.add(employee.getWorkingDepartment());
+		}
 	}
 	
 	/**
@@ -84,6 +88,26 @@ public class Company
 	public Boss getBoss()
 	{
 		return boss;
+	}
+	
+	/**
+	 * Get the number of departments in the company.
+	 *
+	 * @return The department count.
+	 */
+	public int getDepartmentCount()
+	{
+		return departments.size();
+	}
+	
+	/**
+	 * Get the number of employees in the company.
+	 *
+	 * @return The employee count.
+	 */
+	public int getEmployeeCount()
+	{
+		return employees.size();
 	}
 	
 	/**
