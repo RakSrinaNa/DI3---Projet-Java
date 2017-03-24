@@ -3,7 +3,7 @@ package fr.polytech.projectjava.company.staff;
 /**
  * Represent the boss of a company.
  * He's not an employee and does not need to check in/out.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
@@ -14,7 +14,7 @@ public class Boss extends Person
 	/**
 	 * Construct the boss with his/her name.
 	 *
-	 * @param lastName His/her last name.
+	 * @param lastName  His/her last name.
 	 * @param firstName His/her first name.
 	 */
 	public Boss(String lastName, String firstName)
