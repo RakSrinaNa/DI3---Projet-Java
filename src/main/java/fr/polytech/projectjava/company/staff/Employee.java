@@ -37,6 +37,12 @@ public class Employee extends Person
 		return super.toString() + "\nID: \t" + getID() + "\nDpt: \t" + getWorkingDepartment();
 	}
 	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return obj instanceof Employee && ID == ((Employee) obj).getID();
+	}
+	
 	/**
 	 * Get the ID of the employee.
 	 *
