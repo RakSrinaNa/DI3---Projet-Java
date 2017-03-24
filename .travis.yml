@@ -1,0 +1,22 @@
+language: java
+jdk:
+- oraclejdk8
+cache:
+  directories:
+  - $HOME/.m2
+before_install:
+- curl -sL https://github.com/jpm4j/jpm4j.installers/raw/master/dist/biz.aQute.jpm.run.jar
+  > jpm4j.jar
+- java -jar jpm4j.jar -u init
+- ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
+after_success:
+- ~/jpm/bin/codacy-coverage-reporter -l Java -r target/site/jacoco-ut/jacoco.xml
+notifications:
+  email: false
+  on_failure: always
+  on_success: always
+  slack:
+    secure: az4j9OWzXgDcdSgxNoWbejCygGyz7Rtay/HoLywgvp5hD4WrXO+0SDz4pOi1CBw1rydzcXBMihyJrOK71JlptsITvgcU2gFUDaWRx3K3agvBA5jUXfwWDxJAST9v6S/aBPlb0TFR8SvjpAMDl/LMGq8KGZv0JBWw8FSd3NlpZav9dCOLPnBPT4beyA6sgYFh15QnrWgMNx7HxUMDNfgv0kuS3Y6y2cCbiTNKPTiEweeewaNzCyeIFvo0eKJOp8gGGKQEoQ3yOfEEWqrDc8JphHLOc5P8E2mnJdcYQZzGRVSanjuCuhYYh+l2z6/LFDxYKoOL8wtKrtL0AXVktXeBCVawkJlxGwtvRbJIiRsOkzrNkFUDkN7FXswmCEcM9v7y9ZfpF/MoRZKq7pXhnDP//ws6SgeovsCTMo0xvbZ1utNnDSWya1u46oZGwOfQEa2SuTt5w5SbVuHN7NAUD9miLSCcaQL6olcKr9uW8q11hyzXENtpQ9E4tcufmtRrCmh6PzDa+LaQfvjj5p90vgwIFuu4hbqa5OwBY0m2PhTogTfYi53AgybxUWaH2LoYfEp3X8WB6f0B0jhUw94dAsFntxnZ1GjkwDLpLdao+3zs1dmdJ7deE3uk8j7GbUWkI/ko2LSaibhvK9kLzbB/hXvannHwx0Y9Wj5gh8dyC4bsbKk=
+env:
+  global:
+    secure: zAFAk1mMV5aR8EJLpMddYC5b4l1wWQY6ahxfV1FR5ji0nwz/W2sEUbS68IXRnE0LRlEnqEMdMF9KcJFvHvx3Oprd6D7VU0/yNhCf4SG5SqeMtwJU/GaNcNTspW9VgIY4QdMnC3EG9F9ZuiINF+UEIE6azIgS4NS4juR3tadZ1JdITGGwazqI2jZUFcNPnUNsLh51KVdEW2s0Xnv6VrvOJTpIqGjVxrrDy9WbVwqdRXHmullYzsx5Dc4proosxpnyH7XLQeXBlTj3GZ54cSWDKuh3GvotgH8L0Xx7LmP1T7KZCGXuUw7rSBb30HVNg6TEaGneVA+dOVK9RUvomk/BFKjLcK0sKmuiCYQ1VKiW24s46+TKA14BBYhJ+0/m7zO+1bE0+ZVLWuafKN4B4YEkAZcTMYWn0gxIclKXVE/YqdA8WqccrSeHTmLRlhB2beO5jEgw59CDOxhQwoGQzp+4sw1zb2gT6mXdJzj+16sN7BMJx7RHGnBSaGEpRstNDA0MzHTiXjnOaxcyVcYJ7s4q9KAhfla5V277lDLtzO2lvJlpGqiYhdSnlVV2A0aggBhXNjEpOJbMq1RywIcMFql0Be9gjm0JfT4z/zc52txLUJ8wtnxCXPgAtsy+kKtHyOmD+fbtcCqJWWWubW5xeV7IbtTaNWO1gX22+ctPGAxT+aU=
