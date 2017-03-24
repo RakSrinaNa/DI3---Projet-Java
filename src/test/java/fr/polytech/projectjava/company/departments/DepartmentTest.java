@@ -54,12 +54,12 @@ public class DepartmentTest
 	@Test
 	public void getID() throws Exception
 	{
+		int ID = Department.NEXT_ID;
 		Department department1 = new Department(DEPARTMENT_NAME){};
 		Department department2 = new Department(DEPARTMENT_NAME){};
 		Department department3 = new Department(DEPARTMENT_NAME){};
-		assertEquals(0, department.getID());
-		assertEquals(1, department1.getID());
-		assertEquals(2, department2.getID());
-		assertEquals(3, department3.getID());
+		assertEquals(ID, department1.getID());
+		assertEquals(ID + 1, department2.getID());
+		assertEquals(ID + 2, department3.getID());
 	}
 }

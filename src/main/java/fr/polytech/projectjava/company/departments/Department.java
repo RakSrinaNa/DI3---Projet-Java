@@ -16,7 +16,7 @@ public abstract class Department
 	private final int ID;
 	private final String name;
 	private final ArrayList<Employee> employees = new ArrayList<>();
-	private static int NEXT_ID = 0;
+	protected static int NEXT_ID = 0;
 	
 	/**
 	 * Construct a department with its name.
