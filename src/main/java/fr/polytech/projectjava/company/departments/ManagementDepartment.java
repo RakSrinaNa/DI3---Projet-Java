@@ -7,14 +7,14 @@ import fr.polytech.projectjava.company.staff.Boss;
  *
  * @author Thomas Couchoud
  * @since 2017-03-23
- *
+ * <p>
  * Represent the management department.
  * This one contains every manager of the company and the manager is the boss.
  */
 public class ManagementDepartment extends Department
 {
 	private final Boss manager;
-
+	
 	/**
 	 * Construct the department with the boss.
 	 *
@@ -25,7 +25,13 @@ public class ManagementDepartment extends Department
 		super("Management department");
 		this.manager = boss;
 	}
-
+	
+	@Override
+	public String toString()
+	{
+		return super.toString() + "\nManager: \t" + getManager();
+	}
+	
 	/**
 	 * Get the manager of this department.
 	 *
@@ -34,11 +40,5 @@ public class ManagementDepartment extends Department
 	public Boss getManager()
 	{
 		return manager;
-	}
-
-	@Override
-	public String toString()
-	{
-		return super.toString() + "\nManager: \t" + getManager();
 	}
 }

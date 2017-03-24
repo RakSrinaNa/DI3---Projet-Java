@@ -1,7 +1,8 @@
 package fr.polytech.projectjava;
 
-import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.Company;
+import fr.polytech.projectjava.company.staff.Boss;
+
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *

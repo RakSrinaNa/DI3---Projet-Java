@@ -12,7 +12,7 @@ public class Boss extends Person
 	{
 		super(lastName, firstName);
 	}
-
+	
 	@Override
 	public String toString()
 	{
