@@ -4,7 +4,7 @@ import fr.polytech.projectjava.company.staff.Manager;
 
 /**
  * Represent a standard department.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
