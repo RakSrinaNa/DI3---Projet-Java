@@ -4,12 +4,12 @@ import fr.polytech.projectjava.company.staff.Employee;
 import java.util.ArrayList;
 
 /**
+ * Represent a department
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
  * @since 2017-03-23
- * <p>
- * Represent a department
  */
 public abstract class Department
 {
@@ -61,6 +61,11 @@ public abstract class Department
 		return employees;
 	}
 	
+	/**
+	 * Get the unique ID of the department.
+	 *
+	 * @return Its ID.
+	 */
 	public int getID()
 	{
 		return ID;

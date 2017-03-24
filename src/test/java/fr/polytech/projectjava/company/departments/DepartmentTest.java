@@ -50,4 +50,16 @@ public class DepartmentTest
 	{
 		assertEquals(DEPARTMENT_NAME, department.getName());
 	}
+	
+	@Test
+	public void getID() throws Exception
+	{
+		Department department1 = new Department(DEPARTMENT_NAME){};
+		Department department2 = new Department(DEPARTMENT_NAME){};
+		Department department3 = new Department(DEPARTMENT_NAME){};
+		assertEquals(0, department.getID());
+		assertEquals(1, department1.getID());
+		assertEquals(2, department2.getID());
+		assertEquals(3, department3.getID());
+	}
 }

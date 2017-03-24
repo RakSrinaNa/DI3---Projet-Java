@@ -3,13 +3,13 @@ package fr.polytech.projectjava.company.departments;
 import fr.polytech.projectjava.company.staff.Boss;
 
 /**
+ * Represent the management department.
+ * This one contains every manager of the company and the manager is the boss.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
  * @since 2017-03-23
- * <p>
- * Represent the management department.
- * This one contains every manager of the company and the manager is the boss.
  */
 public class ManagementDepartment extends Department
 {

@@ -3,12 +3,12 @@ package fr.polytech.projectjava.company.departments;
 import fr.polytech.projectjava.company.staff.Manager;
 
 /**
+ * Represent a standard department.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
  * @since 2017-03-23
- * <p>
- * Represent a standard department.
  */
 public class StandardDepartment extends Department
 {
