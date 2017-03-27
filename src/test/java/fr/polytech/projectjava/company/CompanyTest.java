@@ -101,6 +101,8 @@ public class CompanyTest
 		assertEquals(department1, company.getDepartment(ID1).get());
 		assertTrue(company.getDepartment(ID2).isPresent());
 		assertEquals(department2, company.getDepartment(ID2).get());
+		
+		assertFalse(company.getDepartment(Integer.MAX_VALUE).isPresent());
 	}
 	
 	@Test
