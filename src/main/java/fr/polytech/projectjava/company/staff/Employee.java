@@ -18,17 +18,15 @@ public class Employee extends Person
 	private StandardDepartment workingDepartment;
 	
 	/**
-	 * Create an employee with his/her name and working department.
+	 * Create an employee with his/her name.
 	 *
 	 * @param lastName          His/her last name.
 	 * @param firstName         His/her first name.
-	 * @param workingDepartment The department where the employee works.
 	 */
-	public Employee(String lastName, String firstName, StandardDepartment workingDepartment)
+	public Employee(String lastName, String firstName)
 	{
 		super(lastName, firstName);
 		this.ID = NEXT_ID++;
-		this.workingDepartment = workingDepartment;
 	}
 	
 	@Override
@@ -61,5 +59,15 @@ public class Employee extends Person
 	public StandardDepartment getWorkingDepartment()
 	{
 		return workingDepartment;
+	}
+	
+	/**
+	 * Set the working department for this employee.
+	 *
+	 * @param workingDepartment The department to affect him to.
+	 */
+	public void setWorkingDepartment(StandardDepartment workingDepartment)
+	{
+		this.workingDepartment = workingDepartment;
 	}
 }

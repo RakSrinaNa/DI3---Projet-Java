@@ -1,11 +1,15 @@
 package fr.polytech.projectjava.company;
 
+import fr.polytech.projectjava.company.departments.Department;
 import fr.polytech.projectjava.company.departments.ManagementDepartment;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Employee;
+import fr.polytech.projectjava.company.staff.Manager;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Represent a company.
@@ -20,7 +24,6 @@ public class Company
 	private final String name;
 	private final Boss boss;
 	private final ManagementDepartment managementDepartment;
-	private final ArrayList<Employee> employees = new ArrayList<>();
 	private final ArrayList<StandardDepartment> departments = new ArrayList<>();
 	
 	/**
@@ -33,7 +36,7 @@ public class Company
 	{
 		this.name = name;
 		this.boss = boss;
-		this.managementDepartment = new ManagementDepartment(boss);
+		this.managementDepartment = new ManagementDepartment(this, boss);
 	}
 	
 	/**
@@ -44,25 +47,10 @@ public class Company
 	 */
 	public Optional<Employee> getEmployee(int ID)
 	{
-		for(Employee employee : employees)
+		for(Employee employee : getEmployees())
 			if(employee.getID() == ID)
 				return Optional.of(employee);
 		return Optional.empty();
-	}
-	
-	/**
-	 * Add an employee to the company.
-	 *
-	 * @param employee The employee to add.
-	 */
-	public void addEmployee(Employee employee)
-	{
-		if(!employees.contains(employee))
-		{
-			employees.add(employee);
-			if(!departments.contains(employee.getWorkingDepartment()))
-				departments.add(employee.getWorkingDepartment());
-		}
 	}
 	
 	/**
@@ -83,7 +71,40 @@ public class Company
 	@Override
 	public String toString()
 	{
-		return "Company: \t" + getName() + "\nManagement department: \t[" + getManagementDepartment() + "]\nDepartments: \t" + departments + "\nEmployees: \t" + employees;
+		return "Company: \t" + getName() + "\nManagement department: \t[" + getManagementDepartment() + "]\nDepartments: \t" + departments + "\nEmployees: \t" + getEmployees();
+	}
+	
+	/**
+	 * Remove a manager from the management department.
+	 *
+	 * @param manager The manager to remove.
+	 */
+	public void removeFromManagementTeam(Manager manager)
+	{
+		managementDepartment.removeManager(manager);
+		manager.setManaging(false);
+	}
+	
+	/**
+	 * Add a manager to the management department.
+	 *
+	 * @param manager The manager to add.
+	 */
+	public void addToManagementTeam(Manager manager)
+	{
+		managementDepartment.addManager(manager);
+		manager.setManaging(true);
+	}
+	
+	/**
+	 * Add a department to the company.
+	 *
+	 * @param department The department to add.
+	 */
+	public void addDepartment(StandardDepartment department)
+	{
+		if(!departments.contains(department))
+			departments.add(department);
 	}
 	
 	/**
@@ -113,7 +134,17 @@ public class Company
 	 */
 	public int getEmployeeCount()
 	{
-		return employees.size();
+		return getEmployees().size();
+	}
+	
+	/**
+	 * Get all the employees of the company.
+	 *
+	 * @return A list of the employees.
+	 */
+	private List<Employee> getEmployees()
+	{
+		return departments.parallelStream().map(Department::getEmployees).flatMap(List::stream).collect(Collectors.toList());
 	}
 	
 	/**

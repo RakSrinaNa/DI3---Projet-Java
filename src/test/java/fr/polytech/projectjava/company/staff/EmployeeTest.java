@@ -1,5 +1,7 @@
 package fr.polytech.projectjava.company.staff;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,13 +18,14 @@ public class EmployeeTest
 	private StandardDepartment workingDepartment;
 
 	@Before
-	public void setUp()
+	public void setUp() throws InvalidArgumentException
 	{
-		workingDepartment = new StandardDepartment("RND");
-		Manager manager = new Manager("A", "B", workingDepartment);
-		workingDepartment.setManager(manager);
+		Company company = new Company("A", new Boss("A", "B"));
+		Manager manager = new Manager("A", "B");
+		workingDepartment = new StandardDepartment(company, "RND", manager);
 		
-		employee = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
+		employee = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME);
+		workingDepartment.addEmployee(employee);
 	}
 
 	@Test
@@ -30,8 +33,8 @@ public class EmployeeTest
 	{
 		int ID = Employee.NEXT_ID;
 		
-		Employee employee1 = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
-		Employee employee2 = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME, workingDepartment);
+		Employee employee1 = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME);
+		Employee employee2 = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME);
 		assertEquals(ID - 1, employee.getID());
 		assertEquals(ID, employee1.getID());
 		assertEquals(ID + 1, employee2.getID());

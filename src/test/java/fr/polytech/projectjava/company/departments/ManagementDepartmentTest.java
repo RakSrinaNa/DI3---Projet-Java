@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.company.departments;
 
+import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Boss;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +20,8 @@ public class ManagementDepartmentTest
 	public void setUp()
 	{
 		boss = new Boss("A", "B");
-
-		department = new ManagementDepartment(boss);
+		
+		department = new ManagementDepartment(new Company("A", boss), boss);
 	}
 
 	@Test

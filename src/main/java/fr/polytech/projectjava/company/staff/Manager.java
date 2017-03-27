@@ -1,7 +1,5 @@
 package fr.polytech.projectjava.company.staff;
 
-import fr.polytech.projectjava.company.departments.StandardDepartment;
-
 /**
  * Represent a manager in the company.
  * A manager can only manage less or equal than one department.
@@ -20,13 +18,11 @@ public class Manager extends Employee
 	 *
 	 * @param lastName          His/her last name.
 	 * @param firstName         His/her first name.
-	 * @param workingDepartment The working department of the manager.
-	 *                          If the department already have a manager, the manager won't be the affected manager and will be considered as an employee.
 	 */
-	public Manager(String lastName, String firstName, StandardDepartment workingDepartment)
+	public Manager(String lastName, String firstName)
 	{
-		super(lastName, firstName, workingDepartment);
-		managing = workingDepartment.setManager(this);
+		super(lastName, firstName);
+		managing = false;
 	}
 	
 	@Override
@@ -43,5 +39,15 @@ public class Manager extends Employee
 	public boolean isManaging()
 	{
 		return managing;
+	}
+	
+	/**
+	 * Set the managing status of the manager.
+	 *
+	 * @param managing The status to set.
+	 */
+	public void setManaging(boolean managing)
+	{
+		this.managing = managing;
 	}
 }
