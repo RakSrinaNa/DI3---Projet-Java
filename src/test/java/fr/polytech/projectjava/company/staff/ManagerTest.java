@@ -1,6 +1,6 @@
 package fr.polytech.projectjava.company.staff;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
+import fr.polytech.projectjava.InvalidArgumentException;
 import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
