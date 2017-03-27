@@ -19,6 +19,8 @@ public class CheckInOutTest
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR, 10);
 		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		
 		CheckInOut check1 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
 		assertEquals(calendar.getTime().getTime(), check1.getCheckDate().getTime(), 0);
