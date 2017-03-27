@@ -33,20 +33,12 @@ public class DepartmentTest
 	{
 		department.getEmployees().clear();
 		
-		Employee employee1 = new Employee("A", "B");
-		Employee employee2 = new Employee("A", "B");
-		Employee employee3 = new Employee("A", "B");
-
 		ArrayList<Employee> employees = new ArrayList<>();
-		employees.add(employee1);
-		employees.add(employee2);
-		employees.add(employee3);
+		for(int i = 0; i < 100; i++)
+			employees.add(new Employee("A", "B"));
 
 		employees.forEach(department::addEmployee);
-
-		assertTrue(department.getEmployees().contains(employee1));
-		assertTrue(department.getEmployees().contains(employee2));
-		assertTrue(department.getEmployees().contains(employee3));
+		employees.forEach(employee -> assertTrue(department.hasEmployee(employee)));
 	}
 
 	@Test

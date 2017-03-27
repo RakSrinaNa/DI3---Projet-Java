@@ -45,5 +45,6 @@ public class StandardDepartmentTest
 		assertEquals(manager2, department2.getManager());
 		assertFalse(department1.setManager(manager3));
 		assertTrue(department2.setManager(manager3));
+		assertEquals(manager3, department2.getManager());
 	}
 }

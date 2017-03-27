@@ -67,6 +67,16 @@ public abstract class Department
 	}
 	
 	/**
+	 * Used to know if the department have this employee.
+	 *
+	 * @param employee The employee to check.
+	 */
+	public boolean hasEmployee(Employee employee)
+	{
+		return getEmployees().contains(employee);
+	}
+	
+	/**
 	 * Get the employees of the department.
 	 *
 	 * @return A list of the employees.
