@@ -25,6 +25,6 @@ public class Boss extends Person
 	@Override
 	public String toString()
 	{
-		return super.toString() + "\nBoss";
+		return super.toString() + " -- BOSS";
 	}
 }

@@ -53,7 +53,7 @@ public abstract class Department
 	@Override
 	public String toString()
 	{
-		return "Department " + getName() + "\nWorkers: \t" + getEmployees();
+		return "[Department " + getName() + "\nWorkers: \t" + getEmployees() + "]";
 	}
 	
 	/**
