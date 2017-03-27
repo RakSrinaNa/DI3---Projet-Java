@@ -70,6 +70,7 @@ public abstract class Department
 	 * Used to know if the department have this employee.
 	 *
 	 * @param employee The employee to check.
+	 *                 @return true if in the department, false else.
 	 */
 	public boolean hasEmployee(Employee employee)
 	{
