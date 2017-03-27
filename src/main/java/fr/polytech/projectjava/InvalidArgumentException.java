@@ -10,6 +10,11 @@ package fr.polytech.projectjava;
  */
 public class InvalidArgumentException extends Exception
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param reason The reason of the exception.
+	 */
 	public InvalidArgumentException(String reason)
 	{
 		super(reason);
