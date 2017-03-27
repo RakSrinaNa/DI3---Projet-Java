@@ -23,7 +23,6 @@ public class CheckInOut
 	{
 		IN, OUT
 	}
-	
 	/**
 	 * Construct a checking at the current date.
 	 *
@@ -56,5 +55,25 @@ public class CheckInOut
 	public String toString()
 	{
 		return "Check " + checkType + " at " + checkDate;
+	}
+	
+	/**
+	 * Get the date of the checking.
+	 *
+	 * @return The date.
+	 */
+	public Date getCheckDate()
+	{
+		return checkDate;
+	}
+	
+	/**
+	 * Get the type of the checking.
+	 *
+	 * @return Its type.
+	 */
+	public CheckType getCheckType()
+	{
+		return checkType;
 	}
 }
