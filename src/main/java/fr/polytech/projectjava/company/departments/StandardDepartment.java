@@ -1,5 +1,8 @@
 package fr.polytech.projectjava.company.departments;
 
+import fr.polytech.projectjava.InvalidArgumentException;
+import fr.polytech.projectjava.company.Company;
+import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
 
 /**
@@ -15,13 +18,22 @@ public class StandardDepartment extends Department
 	private Manager manager;
 	
 	/**
-	 * Construct a department with its name.
+	 * Construct a department with its name and the manager.
 	 *
+	 * @param company The company the department is in.
 	 * @param name The department's name.
+	 * @param manager The manager of the department.
+	 *
+	 * @throws InvalidArgumentException If the manager is already working elsewhere.
 	 */
-	public StandardDepartment(String name)
+	public StandardDepartment(Company company, String name, Manager manager) throws InvalidArgumentException
 	{
-		super(name);
+		super(company, name);
+		if(manager.getWorkingDepartment() != null)
+			throw new InvalidArgumentException("The manager is already managing elsewhere.");
+		manager.setWorkingDepartment(this);
+		setManager(manager);
+		company.addDepartment(this);
 	}
 	
 	/**
@@ -29,14 +41,36 @@ public class StandardDepartment extends Department
 	 *
 	 * @param manager The manager to set, null allows to reset the manager.
 	 *
-	 * @return true if the manager was set, false if another manager was already present.
+	 * @return true if the manager was set, false if not.
 	 */
 	public boolean setManager(Manager manager)
 	{
-		if(manager == null || getManager() != null)
-			return false;
-		this.manager = manager;
-		return true;
+		if(manager.getWorkingDepartment() == this)
+		{
+			if(this.manager != null)
+			{
+				this.manager.setWorkingDepartment(null);
+				company.removeFromManagementTeam(this.manager);
+			}
+			
+			this.manager = manager;
+			manager.setWorkingDepartment(this);
+			company.addToManagementTeam(manager);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public void addEmployee(Employee employee)
+	{
+		super.addEmployee(employee);
+		if(employee.getWorkingDepartment() != this)
+		{
+			if(employee.getWorkingDepartment() != null)
+				employee.getWorkingDepartment().removeEmployee(employee);
+			employee.setWorkingDepartment(this);
+		}
 	}
 	
 	@Override

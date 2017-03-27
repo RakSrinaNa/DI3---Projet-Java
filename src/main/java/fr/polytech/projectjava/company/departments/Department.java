@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.company.departments;
 
+import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Employee;
 import java.util.ArrayList;
 
@@ -13,19 +14,22 @@ import java.util.ArrayList;
  */
 public abstract class Department
 {
+	protected final Company company;
 	private final int ID;
 	private final String name;
 	private final ArrayList<Employee> employees = new ArrayList<>();
 	protected static int NEXT_ID = 0;
 	
 	/**
-	 * Construct a department with its name.
+	 * Construct a department of a company with its name.
 	 *
+	 * @param company The company the department is in.
 	 * @param name The name of the department.
 	 */
-	public Department(String name)
+	public Department(Company company, String name)
 	{
 		this.ID = NEXT_ID++;
+		this.company = company;
 		this.name = name;
 	}
 	
@@ -36,7 +40,8 @@ public abstract class Department
 	 */
 	public void addEmployee(Employee employee)
 	{
-		employees.add(employee);
+		if(!employees.contains(employee))
+			employees.add(employee);
 	}
 	
 	@Override
@@ -48,7 +53,28 @@ public abstract class Department
 	@Override
 	public String toString()
 	{
-		return "Department " + getName() + "\nWorkers: \t" + getEmployees();
+		return "[Department " + getName() + "\nWorkers: \t" + getEmployees() + "]";
+	}
+	
+	/**
+	 * Remove an employee from the department.
+	 *
+	 * @param employee The employee to remove.
+	 */
+	public void removeEmployee(Employee employee)
+	{
+		this.employees.remove(employee);
+	}
+	
+	/**
+	 * Used to know if the department have this employee.
+	 *
+	 * @param employee The employee to check.
+	 *                 @return true if in the department, false else.
+	 */
+	public boolean hasEmployee(Employee employee)
+	{
+		return getEmployees().contains(employee);
 	}
 	
 	/**

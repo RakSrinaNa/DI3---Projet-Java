@@ -1,10 +1,13 @@
 package fr.polytech.projectjava.company.staff;
 
+import fr.polytech.projectjava.InvalidArgumentException;
+import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
+
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
@@ -17,11 +20,11 @@ public class ManagerTest
 	private Manager manager2;
 
 	@Before
-	public void setUp()
+	public void setUp() throws InvalidArgumentException
 	{
-		StandardDepartment workingDepartment = new StandardDepartment("RND");
-		manager1 = new Manager("A", "B", workingDepartment);
-		manager2 = new Manager("A", "B", workingDepartment);
+		manager1 = new Manager("A", "B");
+		manager2 = new Manager("A", "B");
+		new StandardDepartment(new Company("A", new Boss("A", "B")), "RND", manager1);
 	}
 
 	@Test

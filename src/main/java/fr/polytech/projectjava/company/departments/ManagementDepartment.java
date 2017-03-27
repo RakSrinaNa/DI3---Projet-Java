@@ -1,6 +1,8 @@
 package fr.polytech.projectjava.company.departments;
 
+import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Boss;
+import fr.polytech.projectjava.company.staff.Manager;
 
 /**
  * Represent the management department.
@@ -18,11 +20,12 @@ public class ManagementDepartment extends Department
 	/**
 	 * Construct the department with the boss.
 	 *
+	 * @param company The company the department is in.
 	 * @param boss The boss of the company.
 	 */
-	public ManagementDepartment(Boss boss)
+	public ManagementDepartment(Company company, Boss boss)
 	{
-		super("Management department");
+		super(company, "Management department");
 		this.manager = boss;
 	}
 	
@@ -30,6 +33,27 @@ public class ManagementDepartment extends Department
 	public String toString()
 	{
 		return super.toString() + "\nManager: \t" + getManager();
+	}
+	
+	/**
+	 * Remove a manager from the management department.
+	 *
+	 * @param manager The manager to remove.
+	 */
+	public void removeManager(Manager manager)
+	{
+		getEmployees().remove(manager);
+	}
+	
+	/**
+	 * Add a manager to the management department.
+	 *
+	 * @param manager The manager to add.
+	 */
+	public void addManager(Manager manager)
+	{
+		if(!getEmployees().contains(manager))
+			getEmployees().add(manager);
 	}
 	
 	/**

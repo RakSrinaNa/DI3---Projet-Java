@@ -3,6 +3,7 @@ package fr.polytech.projectjava.company;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Employee;
+import fr.polytech.projectjava.company.staff.Manager;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -29,44 +30,49 @@ public class CompanyTest
 	@Test
 	public void getSetEmployee() throws Exception
 	{
-		Employee employee1 = new Employee("A", "B", null);
-		Employee employee2 = new Employee("A", "B", null);
-		Employee employee3 = new Employee("A", "B", null);
+		StandardDepartment department1 = new StandardDepartment(company, "A", new Manager("A", "B"));
+		StandardDepartment department2 = new StandardDepartment(company, "A", new Manager("A", "B"));
+		
+		Employee employee1 = new Employee("A", "B");
+		Employee employee2 = new Employee("A", "B");
+		Employee employee3 = new Employee("A", "B");
 		
 		int ID1 = employee1.getID();
 		int ID2 = employee2.getID();
 		int ID3 = employee3.getID();
 		
-		assertEquals(0, company.getEmployeeCount());
+		int employeeCount = company.getEmployeeCount();
+		
+		assertEquals(employeeCount, company.getEmployeeCount());
 		assertFalse(company.getEmployee(ID1).isPresent());
 		assertFalse(company.getEmployee(ID2).isPresent());
 		assertFalse(company.getEmployee(ID3).isPresent());
 		
-		company.addEmployee(employee1);
-		assertEquals(1, company.getEmployeeCount());
+		department1.addEmployee(employee1);
+		assertEquals(employeeCount + 1, company.getEmployeeCount());
 		assertTrue(company.getEmployee(ID1).isPresent());
 		assertEquals(employee1, company.getEmployee(ID1).get());
 		assertFalse(company.getEmployee(ID2).isPresent());
 		assertFalse(company.getEmployee(ID3).isPresent());
 		
-		company.addEmployee(employee2);
-		assertEquals(2, company.getEmployeeCount());
+		department2.addEmployee(employee2);
+		assertEquals(employeeCount + 2, company.getEmployeeCount());
 		assertTrue(company.getEmployee(ID1).isPresent());
 		assertEquals(employee1, company.getEmployee(ID1).get());
 		assertTrue(company.getEmployee(ID2).isPresent());
 		assertEquals(employee2, company.getEmployee(ID2).get());
 		assertFalse(company.getEmployee(ID3).isPresent());
 		
-		company.addEmployee(employee2);
-		assertEquals(2, company.getEmployeeCount());
+		department1.addEmployee(employee2);
+		assertEquals(employeeCount + 2, company.getEmployeeCount());
 		assertTrue(company.getEmployee(ID1).isPresent());
 		assertEquals(employee1, company.getEmployee(ID1).get());
 		assertTrue(company.getEmployee(ID2).isPresent());
 		assertEquals(employee2, company.getEmployee(ID2).get());
 		assertFalse(company.getEmployee(ID3).isPresent());
 		
-		company.addEmployee(employee3);
-		assertEquals(3, company.getEmployeeCount());
+		department2.addEmployee(employee3);
+		assertEquals(employeeCount + 3, company.getEmployeeCount());
 		assertTrue(company.getEmployee(ID1).isPresent());
 		assertEquals(employee1, company.getEmployee(ID1).get());
 		assertTrue(company.getEmployee(ID2).isPresent());
@@ -78,38 +84,25 @@ public class CompanyTest
 	@Test
 	public void getDepartment() throws Exception
 	{
-		StandardDepartment department1 = new StandardDepartment("A");
-		StandardDepartment department2 = new StandardDepartment("A");
+		StandardDepartment department1 = new StandardDepartment(company, "A", new Manager("A", "B"));
 		int ID1 = department1.getID();
+		
+		int departmentCount = company.getDepartmentCount();
+		
+		assertEquals(departmentCount, company.getDepartmentCount());
+		assertTrue(company.getDepartment(ID1).isPresent());
+		assertEquals(department1, company.getDepartment(ID1).get());
+		
+		StandardDepartment department2 = new StandardDepartment(company, "A", new Manager("A", "B"));
 		int ID2 = department2.getID();
 		
-		Employee employee1 = new Employee("A", "B", department1);
-		Employee employee2 = new Employee("A", "B", department2);
-		Employee employee3 = new Employee("A", "B", department2);
-		
-		assertEquals(0, company.getDepartmentCount());
-		assertFalse(company.getDepartment(ID1).isPresent());
-		assertFalse(company.getDepartment(ID2).isPresent());
-		
-		company.addEmployee(employee1);
-		assertEquals(1, company.getDepartmentCount());
-		assertTrue(company.getDepartment(ID1).isPresent());
-		assertEquals(department1, company.getDepartment(ID1).get());
-		assertFalse(company.getDepartment(ID2).isPresent());
-		
-		company.addEmployee(employee2);
-		assertEquals(2, company.getDepartmentCount());
+		assertEquals(departmentCount + 1, company.getDepartmentCount());
 		assertTrue(company.getDepartment(ID1).isPresent());
 		assertEquals(department1, company.getDepartment(ID1).get());
 		assertTrue(company.getDepartment(ID2).isPresent());
 		assertEquals(department2, company.getDepartment(ID2).get());
 		
-		company.addEmployee(employee3);
-		assertEquals(2, company.getDepartmentCount());
-		assertTrue(company.getDepartment(ID1).isPresent());
-		assertEquals(department1, company.getDepartment(ID1).get());
-		assertTrue(company.getDepartment(ID2).isPresent());
-		assertEquals(department2, company.getDepartment(ID2).get());
+		assertFalse(company.getDepartment(Integer.MAX_VALUE).isPresent());
 	}
 	
 	@Test
