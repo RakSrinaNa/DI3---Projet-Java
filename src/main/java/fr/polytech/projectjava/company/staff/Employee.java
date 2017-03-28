@@ -1,6 +1,8 @@
 package fr.polytech.projectjava.company.staff;
 
+import fr.polytech.projectjava.company.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
+import java.util.ArrayList;
 
 /**
  * Represent an employee in the company.
@@ -14,6 +16,7 @@ import fr.polytech.projectjava.company.departments.StandardDepartment;
 public class Employee extends Person
 {
 	private final int ID;
+	private final ArrayList<CheckInOut> checks = new ArrayList<>();
 	protected static int NEXT_ID = 0;
 	private StandardDepartment workingDepartment;
 	
@@ -39,6 +42,26 @@ public class Employee extends Person
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Employee && ID == ((Employee) obj).getID();
+	}
+	
+	/**
+	 * Add a checking to this employee.
+	 *
+	 * @param checkInOut The checking to add.
+	 */
+	public void addCheckInOut(CheckInOut checkInOut)
+	{
+		checks.add(checkInOut);
+	}
+	
+	/**
+	 * Get the list of checking the employee did.
+	 *
+	 * @return A list of the checking.
+	 */
+	public ArrayList<CheckInOut> getChecks()
+	{
+		return checks;
 	}
 	
 	/**
