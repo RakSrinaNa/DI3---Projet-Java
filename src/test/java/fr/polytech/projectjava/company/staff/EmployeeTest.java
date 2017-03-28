@@ -1,7 +1,7 @@
 package fr.polytech.projectjava.company.staff;
 
-import fr.polytech.projectjava.company.CheckInOut;
 import fr.polytech.projectjava.company.Company;
+import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;

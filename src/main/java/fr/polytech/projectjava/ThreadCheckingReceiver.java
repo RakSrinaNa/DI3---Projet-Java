@@ -1,6 +1,6 @@
 package fr.polytech.projectjava;
 
-import fr.polytech.projectjava.company.CheckInOut;
+import fr.polytech.projectjava.company.checking.CheckInOut;
 import javafx.util.Pair;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,6 +64,7 @@ public class ThreadCheckingReceiver extends Thread
 	 * @param inputStream The stream of data.
 	 *
 	 * @return The read string.
+	 * @throws IOException If an error occurred reading the stream.
 	 */
 	private Pair<Integer, CheckInOut> readClient(InputStream inputStream) throws IOException
 	{
@@ -72,10 +73,17 @@ public class ThreadCheckingReceiver extends Thread
 		while((read = inputStream.read()) != -1)
 			stringRead.append((char) read);
 		
-		return readMessage();
+		return readMessage(stringRead.toString());
 	}
 	
-	private Pair<Integer, CheckInOut> readMessage()
+	/**
+	 * Convert a message received into checking object.
+	 *
+	 * @param string The message received.
+	 *
+	 * @return A pair having as key the employee ID and the checking object as value.
+	 */
+	private Pair<Integer, CheckInOut> readMessage(String string)
 	{
 		int employeeID = 0;
 		CheckInOut check = new CheckInOut(CheckInOut.CheckType.IN);

@@ -53,7 +53,7 @@ public class ManagementDepartment extends Department
 	public void addManager(Manager manager)
 	{
 		if(!getEmployees().contains(manager))
-			getEmployees().add(manager);
+			addEmployee(manager);
 	}
 	
 	/**

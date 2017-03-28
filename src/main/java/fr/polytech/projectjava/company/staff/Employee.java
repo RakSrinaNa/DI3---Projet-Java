@@ -1,10 +1,9 @@
 package fr.polytech.projectjava.company.staff;
 
-import fr.polytech.projectjava.company.CheckInOut;
+import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Represent an employee in the company.
@@ -19,6 +18,7 @@ public class Employee extends Person
 {
 	protected final static Time DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00");
 	protected final static Time DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00");
+	private final static int MILLISECONDS_IN_MINUTE = 60000;
 	private final int ID;
 	private final ArrayList<CheckInOut> checks = new ArrayList<>();
 	protected static int NEXT_ID = 0;
@@ -159,31 +159,8 @@ public class Employee extends Person
 		return checks.parallelStream().mapToLong(check ->
 		{
 			if(check.getCheckType() == CheckInOut.CheckType.IN)
-			{
-				Calendar defaultArrival = Calendar.getInstance();
-				defaultArrival.setTime(getArrivalTime());
-				
-				Calendar calendarArrival = Calendar.getInstance();
-				calendarArrival.setTime(check.getCheckDate());
-				calendarArrival.set(Calendar.HOUR, defaultArrival.get(Calendar.HOUR));
-				calendarArrival.set(Calendar.MINUTE, defaultArrival.get(Calendar.MINUTE));
-				calendarArrival.set(Calendar.SECOND, 0);
-				calendarArrival.set(Calendar.MILLISECOND, 0);
-				
-				return (calendarArrival.getTime().getTime() - check.getCheckDate().getTime()) / 60000;
-			}
-			
-			Calendar defaultDeparture = Calendar.getInstance();
-			defaultDeparture.setTime(getDepartureTime());
-			
-			Calendar calendarDeparture = Calendar.getInstance();
-			calendarDeparture.setTime(check.getCheckDate());
-			calendarDeparture.set(Calendar.HOUR, defaultDeparture.get(Calendar.HOUR));
-			calendarDeparture.set(Calendar.MINUTE, defaultDeparture.get(Calendar.MINUTE));
-			calendarDeparture.set(Calendar.SECOND, 0);
-			calendarDeparture.set(Calendar.MILLISECOND, 0);
-			
-			return (check.getCheckDate().getTime() - calendarDeparture.getTime().getTime()) / 60000;
+				return -check.getCheckDate().getTimeDifferenceAsMilliseconds(getArrivalTime()) / MILLISECONDS_IN_MINUTE;
+			return check.getCheckDate().getTimeDifferenceAsMilliseconds(getDepartureTime()) / MILLISECONDS_IN_MINUTE;
 		}).sum();
 	}
 	

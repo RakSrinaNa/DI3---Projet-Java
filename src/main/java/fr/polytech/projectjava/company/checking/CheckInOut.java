@@ -1,5 +1,6 @@
-package fr.polytech.projectjava.company;
+package fr.polytech.projectjava.company.checking;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,11 +11,11 @@ import java.util.Date;
  * @author Thomas Couchoud
  * @since 2017-03-27
  */
-public class CheckInOut
+public class CheckInOut implements Serializable
 {
 	private final static int MILLISECONDS_QUARTER = 900000;
-	private Date checkDate;
-	private CheckType checkType;
+	private final CheckingDate checkDate;
+	private final CheckType checkType;
 	
 	/**
 	 * Enumeration of the different types of checks possible.
@@ -23,6 +24,7 @@ public class CheckInOut
 	{
 		IN, OUT
 	}
+	
 	/**
 	 * Construct a checking at the current date.
 	 *
@@ -48,7 +50,7 @@ public class CheckInOut
 		if(quarterMillis >= MILLISECONDS_QUARTER / 2)
 			date.setTime(date.getTime() + MILLISECONDS_QUARTER);
 		
-		checkDate = date;
+		checkDate = new CheckingDate(date);
 	}
 	
 	@Override
@@ -62,7 +64,7 @@ public class CheckInOut
 	 *
 	 * @return The date.
 	 */
-	public Date getCheckDate()
+	public CheckingDate getCheckDate()
 	{
 		return checkDate;
 	}

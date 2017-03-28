@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.company;
 
+import fr.polytech.projectjava.company.checking.CheckInOut;
 import org.junit.Test;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,7 +18,7 @@ public class CheckInOutTest
 	public void getCheckDate() throws Exception
 	{
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR, 10);
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
@@ -25,22 +26,22 @@ public class CheckInOutTest
 		CheckInOut check1 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
 		assertEquals(calendar.getTime().getTime(), check1.getCheckDate().getTime(), 0);
 		
-		calendar.set(Calendar.HOUR, 10);
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 5);
 		CheckInOut check2 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
 		calendar.set(Calendar.MINUTE, 0);
 		assertEquals(calendar.getTime().getTime(), check2.getCheckDate().getTime(), 0);
 		
-		calendar.set(Calendar.HOUR, 10);
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 10);
 		CheckInOut check3 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
 		calendar.set(Calendar.MINUTE, 15);
 		assertEquals(calendar.getTime().getTime(), check3.getCheckDate().getTime(), 0);
 		
-		calendar.set(Calendar.HOUR, 10);
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 55);
 		CheckInOut check4 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
-		calendar.set(Calendar.HOUR, 11);
+		calendar.set(Calendar.HOUR_OF_DAY, 11);
 		calendar.set(Calendar.MINUTE, 0);
 		assertEquals(calendar.getTime().getTime(), check4.getCheckDate().getTime(), 0);
 	}
