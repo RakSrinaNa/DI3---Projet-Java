@@ -1,7 +1,6 @@
 package fr.polytech.projectjava.utils;
 
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -40,25 +39,7 @@ public abstract class ApplicationBase extends Application
 		}
 	}
 	
-	private void setIcon(Image icon)
-	{
-		this.stage.getIcons().clear();
-		this.stage.getIcons().add(icon);
-		if(isMac())
-			com.apple.eawt.Application.getApplication().setDockIconImage(SwingFXUtils.fromFXImage(icon, null));
-	}
-	
-	private boolean isMac()
-	{
-		return System.getProperty("os.name").toLowerCase().contains("mac");
-	}
-	
 	public void preInit() throws Exception{}
-	
-	public Image getIcon()
-	{
-		return null;
-	}
 	
 	public boolean shouldDisplayAtStart()
 	{
@@ -70,16 +51,32 @@ public abstract class ApplicationBase extends Application
 		return new Scene(createContent(stage));
 	}
 	
+	public abstract Parent createContent(Stage stage);
+	
 	public abstract String getFrameTitle();
 	
-	public abstract Consumer<Stage> getStageHandler();
+	public Image getIcon()
+	{
+		return null;
+	}
+	
+	private void setIcon(Image icon)
+	{
+		this.stage.getIcons().clear();
+		this.stage.getIcons().add(icon);
+	}
 	
 	public abstract Consumer<Stage> getOnStageDisplayed() throws Exception;
-	
-	public abstract Parent createContent(Stage stage);
 	
 	public Stage getStage()
 	{
 		return stage;
+	}
+	
+	public abstract Consumer<Stage> getStageHandler();
+	
+	private boolean isMac()
+	{
+		return System.getProperty("os.name").toLowerCase().contains("mac");
 	}
 }
