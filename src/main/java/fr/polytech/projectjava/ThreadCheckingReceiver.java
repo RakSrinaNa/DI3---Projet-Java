@@ -1,11 +1,14 @@
 package fr.polytech.projectjava;
 
 import fr.polytech.projectjava.company.checking.CheckInOut;
+import fr.polytech.projectjava.utils.Log;
 import javafx.util.Pair;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.function.Consumer;
 
 /**
@@ -18,6 +21,7 @@ import java.util.function.Consumer;
  */
 public class ThreadCheckingReceiver extends Thread
 {
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private final Consumer<Pair<Integer, CheckInOut>> onNewChecking;
 	private final int PORT_NUMBER = 9842;
 	
@@ -46,14 +50,14 @@ public class ThreadCheckingReceiver extends Thread
 				{
 					onNewChecking.accept(readClient(clientSocket.getInputStream()));
 				}
-				catch(IOException exception)
+				catch(IOException | ParseException exception)
 				{
-					exception.printStackTrace();
+					Log.error("Error reading checking system message", exception);
 				}
 			}
 			catch(IOException exception)
 			{
-				exception.printStackTrace();
+				Log.warning("Error with checking socket", exception);
 			}
 		}
 	}
@@ -65,8 +69,9 @@ public class ThreadCheckingReceiver extends Thread
 	 *
 	 * @return The read string.
 	 * @throws IOException If an error occurred reading the stream.
+	 * @throws ParseException If the date could not be parsed.
 	 */
-	private Pair<Integer, CheckInOut> readClient(InputStream inputStream) throws IOException
+	private Pair<Integer, CheckInOut> readClient(InputStream inputStream) throws IOException, ParseException
 	{
 		StringBuilder stringRead = new StringBuilder();
 		int read;
@@ -82,11 +87,14 @@ public class ThreadCheckingReceiver extends Thread
 	 * @param string The message received.
 	 *
 	 * @return A pair having as key the employee ID and the checking object as value.
+	 * @throws ParseException If the date could not be parsed.
 	 */
-	private Pair<Integer, CheckInOut> readMessage(String string)
+	private Pair<Integer, CheckInOut> readMessage(String string) throws ParseException
 	{
-		int employeeID = 0;
-		CheckInOut check = new CheckInOut(CheckInOut.CheckType.IN);
+		String[] messageParts = string.split(";");
+		
+		int employeeID = Integer.valueOf(messageParts[0]);
+		CheckInOut check = new CheckInOut(CheckInOut.CheckType.valueOf(messageParts[1].toUpperCase()), dateFormat.parse(messageParts[2]));
 		
 		return new Pair<>(employeeID, check);
 	}
