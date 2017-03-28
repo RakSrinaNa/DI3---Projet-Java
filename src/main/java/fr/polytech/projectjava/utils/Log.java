@@ -23,8 +23,21 @@ public class Log
 	 */
 	public interface LogListener
 	{
+		/**
+		 * Used when a new message is logged.
+		 *
+		 * @param level   The level of the logging.
+		 * @param message The message sent.
+		 */
 		void onLogMessage(Level level, String message);
 		
+		/**
+		 * Used when a new message with a throwable is logged.
+		 *
+		 * @param level     The level of the logging.
+		 * @param message   The message sent.
+		 * @param throwable The throwable sent.
+		 */
 		void onLogMessage(Level level, String message, Throwable throwable);
 	}
 	
@@ -111,7 +124,7 @@ public class Log
 	 */
 	public static void log(Level level, String message)
 	{
-		getLogger().log(level, message);
+		getInstance().log(level, message);
 		listeners.forEach(logListener -> logListener.onLogMessage(level, message));
 	}
 	
@@ -124,7 +137,7 @@ public class Log
 	 */
 	public static void log(Level level, String message, Throwable throwable)
 	{
-		getLogger().log(level, message, throwable);
+		getInstance().log(level, message, throwable);
 		listeners.forEach(logListener -> logListener.onLogMessage(level, message, throwable));
 	}
 	
@@ -135,7 +148,7 @@ public class Log
 	 *
 	 * @see Logger
 	 */
-	public static Logger getLogger()
+	public static Logger getInstance()
 	{
 		return logger != null ? logger : setAppName("JavaProject");
 	}
