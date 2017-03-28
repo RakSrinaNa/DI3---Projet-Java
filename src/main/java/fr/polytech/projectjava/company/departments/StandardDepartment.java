@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.company.departments;
 
-import fr.polytech.projectjava.InvalidArgumentException;
 import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
@@ -24,13 +23,13 @@ public class StandardDepartment extends Department
 	 * @param name The department's name.
 	 * @param manager The manager of the department.
 	 *
-	 * @throws InvalidArgumentException If the manager is already working elsewhere.
+	 * @throws IllegalArgumentException If the manager is already working elsewhere.
 	 */
-	public StandardDepartment(Company company, String name, Manager manager) throws InvalidArgumentException
+	public StandardDepartment(Company company, String name, Manager manager) throws IllegalArgumentException
 	{
 		super(company, name);
 		if(manager.getWorkingDepartment() != null)
-			throw new InvalidArgumentException("The manager is already managing elsewhere.");
+			throw new IllegalArgumentException("The manager is already managing elsewhere.");
 		manager.setWorkingDepartment(this);
 		setManager(manager);
 		company.addDepartment(this);

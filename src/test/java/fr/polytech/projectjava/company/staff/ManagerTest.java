@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.company.staff;
 
-import fr.polytech.projectjava.InvalidArgumentException;
 import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
@@ -20,7 +19,7 @@ public class ManagerTest
 	private Manager manager2;
 
 	@Before
-	public void setUp() throws InvalidArgumentException
+	public void setUp() throws IllegalArgumentException
 	{
 		manager1 = new Manager("A", "B");
 		manager2 = new Manager("A", "B");

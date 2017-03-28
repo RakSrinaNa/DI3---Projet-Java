@@ -2,12 +2,14 @@ package fr.polytech.projectjava.company.staff;
 
 import fr.polytech.projectjava.company.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Represent an employee in the company.
  * Each one have a unique ID that is also their card ID.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
@@ -15,21 +17,46 @@ import java.util.ArrayList;
  */
 public class Employee extends Person
 {
+	protected final static Time DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00");
+	protected final static Time DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00");
 	private final int ID;
 	private final ArrayList<CheckInOut> checks = new ArrayList<>();
 	protected static int NEXT_ID = 0;
 	private StandardDepartment workingDepartment;
+	private Time arrivalTime;
+	private Time departureTime;
 	
 	/**
 	 * Create an employee with his/her name.
 	 *
-	 * @param lastName          His/her last name.
-	 * @param firstName         His/her first name.
+	 * @param lastName  His/her last name.
+	 * @param firstName His/her first name.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public Employee(String lastName, String firstName)
+	public Employee(String lastName, String firstName) throws IllegalArgumentException
+	{
+		this(lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
+	}
+	
+	/**
+	 * Create an employee with his/her name and its departure and arrival times.
+	 *
+	 * @param lastName      His/her last name.
+	 * @param firstName     His/her first name.
+	 * @param arrivalTime   The arrival time.
+	 * @param departureTIme The departure time.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public Employee(String lastName, String firstName, Time arrivalTime, Time departureTIme) throws IllegalArgumentException
 	{
 		super(lastName, firstName);
+		if(arrivalTime.after(departureTIme))
+			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.ID = NEXT_ID++;
+		this.arrivalTime = arrivalTime;
+		this.departureTime = departureTIme;
 	}
 	
 	@Override
@@ -37,7 +64,7 @@ public class Employee extends Person
 	{
 		return super.toString() + "\nID: \t" + getID() + "\nDpt: \t" + getWorkingDepartment();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -55,6 +82,30 @@ public class Employee extends Person
 	}
 	
 	/**
+	 * Get the arrival time of this employee.
+	 *
+	 * @return The arrival time.
+	 */
+	public Time getArrivalTime()
+	{
+		return arrivalTime;
+	}
+	
+	/**
+	 * Set the arrival time for this employee.
+	 *
+	 * @param arrivalTime The arrival time to set.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public void setArrivalTime(Time arrivalTime) throws IllegalArgumentException
+	{
+		if(arrivalTime.after(departureTime))
+			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
+		this.arrivalTime = arrivalTime;
+	}
+	
+	/**
 	 * Get the list of checking the employee did.
 	 *
 	 * @return A list of the checking.
@@ -65,6 +116,30 @@ public class Employee extends Person
 	}
 	
 	/**
+	 * Get the departure time of this employee.
+	 *
+	 * @return The departure time.
+	 */
+	public Time getDepartureTime()
+	{
+		return departureTime;
+	}
+	
+	/**
+	 * Set the departure time for this employee.
+	 *
+	 * @param departureTime The departure time to set.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public void setDepartureTime(Time departureTime) throws IllegalArgumentException
+	{
+		if(arrivalTime.after(this.departureTime))
+			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
+		this.departureTime = departureTime;
+	}
+	
+	/**
 	 * Get the ID of the employee.
 	 *
 	 * @return Its ID.
@@ -72,6 +147,44 @@ public class Employee extends Person
 	public int getID()
 	{
 		return ID;
+	}
+	
+	/**
+	 * Get the number of minutes the employee done more.
+	 *
+	 * @return The number of minutes. If the number is negative it represents the number of minutes dues.
+	 */
+	public long getOverMinutes()
+	{
+		return checks.parallelStream().mapToLong(check ->
+		{
+			if(check.getCheckType() == CheckInOut.CheckType.IN)
+			{
+				Calendar defaultArrival = Calendar.getInstance();
+				defaultArrival.setTime(getArrivalTime());
+				
+				Calendar calendarArrival = Calendar.getInstance();
+				calendarArrival.setTime(check.getCheckDate());
+				calendarArrival.set(Calendar.HOUR, defaultArrival.get(Calendar.HOUR));
+				calendarArrival.set(Calendar.MINUTE, defaultArrival.get(Calendar.MINUTE));
+				calendarArrival.set(Calendar.SECOND, 0);
+				calendarArrival.set(Calendar.MILLISECOND, 0);
+				
+				return (calendarArrival.getTime().getTime() - check.getCheckDate().getTime()) / 60000;
+			}
+			
+			Calendar defaultDeparture = Calendar.getInstance();
+			defaultDeparture.setTime(getDepartureTime());
+			
+			Calendar calendarDeparture = Calendar.getInstance();
+			calendarDeparture.setTime(check.getCheckDate());
+			calendarDeparture.set(Calendar.HOUR, defaultDeparture.get(Calendar.HOUR));
+			calendarDeparture.set(Calendar.MINUTE, defaultDeparture.get(Calendar.MINUTE));
+			calendarDeparture.set(Calendar.SECOND, 0);
+			calendarDeparture.set(Calendar.MILLISECOND, 0);
+			
+			return (check.getCheckDate().getTime() - calendarDeparture.getTime().getTime()) / 60000;
+		}).sum();
 	}
 	
 	/**

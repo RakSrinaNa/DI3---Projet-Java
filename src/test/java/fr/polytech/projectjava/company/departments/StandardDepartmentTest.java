@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.company.departments;
 
-import fr.polytech.projectjava.InvalidArgumentException;
 import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Manager;
@@ -49,7 +48,7 @@ public class StandardDepartmentTest
 		assertEquals(manager3, department2.getManager());
 	}
 	
-	@Test(expected = InvalidArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void conflictManager() throws Exception
 	{
 		Company company = new Company("A", new Boss("A", "B"));
