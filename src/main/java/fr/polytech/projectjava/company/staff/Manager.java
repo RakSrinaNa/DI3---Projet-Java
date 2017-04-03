@@ -13,6 +13,7 @@ import java.sql.Time;
  */
 public class Manager extends Employee
 {
+	private static final long serialVersionUID = -2861031212711385809L;
 	private boolean managing;
 	
 	/**

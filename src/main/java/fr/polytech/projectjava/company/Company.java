@@ -6,6 +6,7 @@ import fr.polytech.projectjava.company.departments.StandardDepartment;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public class Company
+public class Company implements Serializable
 {
 	private final String name;
 	private final Boss boss;

@@ -13,6 +13,7 @@ import java.util.Date;
  */
 public class CheckInOut implements Serializable
 {
+	private static final long serialVersionUID = 2956226284028169226L;
 	private final static int MILLISECONDS_QUARTER = 900000;
 	private final CheckingDate checkDate;
 	private final CheckType checkType;

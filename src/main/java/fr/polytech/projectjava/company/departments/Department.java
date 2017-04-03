@@ -2,6 +2,7 @@ package fr.polytech.projectjava.company.departments;
 
 import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Employee;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -12,8 +13,9 @@ import java.util.ArrayList;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public abstract class Department
+public abstract class Department implements Serializable
 {
+	private static final long serialVersionUID = 3644405617796041285L;
 	protected final Company company;
 	private final int ID;
 	private final String name;

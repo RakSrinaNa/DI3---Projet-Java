@@ -1,5 +1,7 @@
 package fr.polytech.projectjava.company.staff;
 
+import java.io.Serializable;
+
 /**
  * Represent a parson in the company.
  * <p>
@@ -8,7 +10,7 @@ package fr.polytech.projectjava.company.staff;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-abstract class Person
+abstract class Person implements Serializable
 {
 	private final String lastName;
 	private final String firstName;

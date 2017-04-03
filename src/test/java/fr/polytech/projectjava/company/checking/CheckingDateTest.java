@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -25,7 +26,7 @@ public class CheckingDateTest
 		calendar.set(Calendar.MILLISECOND, 40);
 		
 		CheckingDate checkingDate = new CheckingDate(calendar.getTime());
-		assertEquals(12030040, checkingDate.getTimeDifferenceAsMilliseconds(Time.valueOf("09:00:00")));
-		assertEquals(-2369960, checkingDate.getTimeDifferenceAsMilliseconds(Time.valueOf("13:00:00")));
+		assertEquals(12030040, checkingDate.getTimeDifference(Time.valueOf("09:00:00"), TimeUnit.MILLISECONDS));
+		assertEquals(-2369960, checkingDate.getTimeDifference(Time.valueOf("13:00:00"), TimeUnit.MILLISECONDS));
 	}
 }

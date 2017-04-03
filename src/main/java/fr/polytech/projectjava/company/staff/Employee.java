@@ -4,6 +4,7 @@ import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represent an employee in the company.
@@ -16,9 +17,9 @@ import java.util.ArrayList;
  */
 public class Employee extends Person
 {
+	private static final long serialVersionUID = -8611138931676775765L;
 	protected final static Time DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00");
 	protected final static Time DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00");
-	private final static int MILLISECONDS_IN_MINUTE = 60000;
 	private final int ID;
 	private final ArrayList<CheckInOut> checks = new ArrayList<>();
 	protected static int NEXT_ID = 0;
@@ -159,8 +160,8 @@ public class Employee extends Person
 		return checks.parallelStream().mapToLong(check ->
 		{
 			if(check.getCheckType() == CheckInOut.CheckType.IN)
-				return -check.getCheckDate().getTimeDifferenceAsMilliseconds(getArrivalTime()) / MILLISECONDS_IN_MINUTE;
-			return check.getCheckDate().getTimeDifferenceAsMilliseconds(getDepartureTime()) / MILLISECONDS_IN_MINUTE;
+				return -check.getCheckDate().getTimeDifference(getArrivalTime(), TimeUnit.MINUTES);
+			return check.getCheckDate().getTimeDifference(getDepartureTime(), TimeUnit.MINUTES);
 		}).sum();
 	}
 	

@@ -3,6 +3,7 @@ package fr.polytech.projectjava.company.checking;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represent the date the employee checked at.
@@ -14,6 +15,8 @@ import java.util.Date;
  */
 public class CheckingDate extends Date
 {
+	private static final long serialVersionUID = 5823365881731658606L;
+	
 	/**
 	 * Constructor.
 	 *
@@ -25,13 +28,14 @@ public class CheckingDate extends Date
 	}
 	
 	/**
-	 * Get the difference in milliseconds between this date and the given time. This doesn't take the day into account.
+	 * Get the difference between this date and the given time. This doesn't take the day into account.
 	 *
 	 * @param time The time to compare to.
+	 * @param unit The unit of the time to return.
 	 *
 	 * @return The difference in milliseconds.
 	 */
-	public long getTimeDifferenceAsMilliseconds(Time time)
+	public long getTimeDifference(Time time, TimeUnit unit)
 	{
 		Calendar thisCalendar = Calendar.getInstance();
 		thisCalendar.setTime(this);
@@ -42,6 +46,6 @@ public class CheckingDate extends Date
 		calendar.set(Calendar.MONTH, thisCalendar.get(Calendar.MONTH));
 		calendar.set(Calendar.DAY_OF_MONTH, thisCalendar.get(Calendar.DAY_OF_MONTH));
 		
-		return getTime() - calendar.getTimeInMillis();
+		return unit.convert(getTime() - calendar.getTimeInMillis(), TimeUnit.MILLISECONDS);
 	}
 }
