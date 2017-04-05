@@ -2,9 +2,17 @@ package fr.polytech.projectjava.company.staff;
 
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
+import java.sql.Date;
 import java.sql.Time;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 /**
  * Represent an employee in the company.
@@ -17,15 +25,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class Employee extends Person
 {
+	protected final static LocalTime DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00").toLocalTime();
+	protected final static LocalTime DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00").toLocalTime();
 	private static final long serialVersionUID = -8611138931676775765L;
-	protected final static Time DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00");
-	protected final static Time DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00");
 	private final int ID;
 	private final ArrayList<CheckInOut> checks = new ArrayList<>();
+	private final ArrayList<DayOfWeek> workingDays = new ArrayList<>();
 	protected static int NEXT_ID = 0;
 	private StandardDepartment workingDepartment;
-	private Time arrivalTime;
-	private Time departureTime;
+	private LocalTime arrivalTime;
+	private LocalTime departureTime;
 	
 	/**
 	 * Create an employee with his/her name.
@@ -50,10 +59,10 @@ public class Employee extends Person
 	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public Employee(String lastName, String firstName, Time arrivalTime, Time departureTIme) throws IllegalArgumentException
+	public Employee(String lastName, String firstName, LocalTime arrivalTime, LocalTime departureTIme) throws IllegalArgumentException
 	{
 		super(lastName, firstName);
-		if(arrivalTime.after(departureTIme))
+		if(arrivalTime.isAfter(departureTIme))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.ID = NEXT_ID++;
 		this.arrivalTime = arrivalTime;
@@ -65,7 +74,7 @@ public class Employee extends Person
 	{
 		return super.toString() + "\nID: \t" + getID() + "\nDpt: \t" + getWorkingDepartment();
 	}
-
+	
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -82,12 +91,55 @@ public class Employee extends Person
 		checks.add(checkInOut);
 	}
 	
+	public void addWorkingDay(DayOfWeek day)
+	{
+		if(!workingDays.contains(day))
+			workingDays.add(day);
+	}
+	
+	/**
+	 * Get the number of minutes the employee done more.
+	 *
+	 * @return The number of minutes. If the number is negative it represents the number of minutes dues.
+	 */
+	public long getOverMinutes(LocalDate maxDate)
+	{
+		if(maxDate == null)
+			maxDate = new Date(System.currentTimeMillis()).toLocalDate();
+		Map<LocalDate, List<CheckInOut>> checksByDate = checks.stream().collect(Collectors.groupingBy(CheckInOut::getDay));
+		
+		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate());
+		
+		long total = 0;
+		
+		while(currentDate.compareTo(maxDate) <= 0)
+		{
+			List<CheckInOut> checks = checksByDate.containsKey(currentDate) ? checksByDate.get(currentDate) : new ArrayList<>();
+			if(checks.size() == 1 || checks.size() > 2 || (checks.size() == 2 && checks.get(0).getCheckType() == checks.get(1).getCheckType()))
+				throw new IllegalStateException("Problem with checks on day" + currentDate + "!");
+			
+			if(workingDays.contains(currentDate.getDayOfWeek()))
+			{
+				total -= arrivalTime.until(departureTime, MINUTES);
+				if(checks.size() == 2)
+					for(CheckInOut check : checks)
+						total += (check.getCheckType() == CheckInOut.CheckType.IN ? -1 : 1) * check.getTime().toSecondOfDay() / 60;
+			}
+			else if(checks.size() == 2)
+				for(CheckInOut check : checks)
+					total += (check.getCheckType() == CheckInOut.CheckType.IN ? -1 : 1) * check.getTime().toSecondOfDay() / 60;
+			currentDate = currentDate.plusDays(1);
+		}
+		
+		return total;
+	}
+	
 	/**
 	 * Get the arrival time of this employee.
 	 *
 	 * @return The arrival time.
 	 */
-	public Time getArrivalTime()
+	public LocalTime getArrivalTime()
 	{
 		return arrivalTime;
 	}
@@ -99,9 +151,9 @@ public class Employee extends Person
 	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public void setArrivalTime(Time arrivalTime) throws IllegalArgumentException
+	public void setArrivalTime(LocalTime arrivalTime) throws IllegalArgumentException
 	{
-		if(arrivalTime.after(departureTime))
+		if(arrivalTime.isAfter(departureTime))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.arrivalTime = arrivalTime;
 	}
@@ -121,7 +173,7 @@ public class Employee extends Person
 	 *
 	 * @return The departure time.
 	 */
-	public Time getDepartureTime()
+	public LocalTime getDepartureTime()
 	{
 		return departureTime;
 	}
@@ -133,9 +185,9 @@ public class Employee extends Person
 	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public void setDepartureTime(Time departureTime) throws IllegalArgumentException
+	public void setDepartureTime(LocalTime departureTime) throws IllegalArgumentException
 	{
-		if(arrivalTime.after(this.departureTime))
+		if(arrivalTime.isAfter(this.departureTime))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.departureTime = departureTime;
 	}
@@ -148,21 +200,6 @@ public class Employee extends Person
 	public int getID()
 	{
 		return ID;
-	}
-	
-	/**
-	 * Get the number of minutes the employee done more.
-	 *
-	 * @return The number of minutes. If the number is negative it represents the number of minutes dues.
-	 */
-	public long getOverMinutes()
-	{
-		return checks.parallelStream().mapToLong(check ->
-		{
-			if(check.getCheckType() == CheckInOut.CheckType.IN)
-				return -check.getCheckDate().getTimeDifference(getArrivalTime(), TimeUnit.MINUTES);
-			return check.getCheckDate().getTimeDifference(getDepartureTime(), TimeUnit.MINUTES);
-		}).sum();
 	}
 	
 	/**

@@ -1,6 +1,8 @@
 package fr.polytech.projectjava.company.checking;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -15,7 +17,8 @@ public class CheckInOut implements Serializable
 {
 	private static final long serialVersionUID = 2956226284028169226L;
 	private final static int MILLISECONDS_QUARTER = 900000;
-	private final CheckingDate checkDate;
+	private final LocalDate checkDate;
+	private final LocalTime checkTime;
 	private final CheckType checkType;
 	
 	/**
@@ -51,23 +54,14 @@ public class CheckInOut implements Serializable
 		if(quarterMillis >= MILLISECONDS_QUARTER / 2)
 			date.setTime(date.getTime() + MILLISECONDS_QUARTER);
 		
-		checkDate = new CheckingDate(date);
+		checkDate = new java.sql.Date(date.getTime()).toLocalDate();
+		checkTime = new java.sql.Time(date.getTime()).toLocalTime();
 	}
 	
 	@Override
 	public String toString()
 	{
 		return "Check " + checkType + " at " + checkDate;
-	}
-	
-	/**
-	 * Get the date of the checking.
-	 *
-	 * @return The date.
-	 */
-	public CheckingDate getCheckDate()
-	{
-		return checkDate;
 	}
 	
 	/**
@@ -78,5 +72,15 @@ public class CheckInOut implements Serializable
 	public CheckType getCheckType()
 	{
 		return checkType;
+	}
+	
+	public LocalDate getDay()
+	{
+		return checkDate;
+	}
+	
+	public LocalTime getTime()
+	{
+		return checkTime;
 	}
 }

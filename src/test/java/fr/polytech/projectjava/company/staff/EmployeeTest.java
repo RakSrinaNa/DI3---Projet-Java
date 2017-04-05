@@ -5,8 +5,10 @@ import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
+import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,32 +26,37 @@ public class EmployeeTest
 	@Test
 	public void getOverMinutes() throws Exception
 	{
-		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-		SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		Employee employee = new Employee("A", "B", Time.valueOf("08:00:00"), Time.valueOf("17:00:00"));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Employee employee = new Employee("A", "B", Time.valueOf("08:00:00").toLocalTime(), Time.valueOf("17:00:00").toLocalTime());
+		employee.addWorkingDay(DayOfWeek.MONDAY);
+		employee.addWorkingDay(DayOfWeek.TUESDAY);
+		employee.addWorkingDay(DayOfWeek.WEDNESDAY);
+		employee.addWorkingDay(DayOfWeek.THURSDAY);
+		employee.addWorkingDay(DayOfWeek.FRIDAY);
 		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("08:00:00")));
-		assertEquals(0, employee.getOverMinutes());
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/02 08:00:00")));
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/02 17:00:00")));
+		assertEquals(0, employee.getOverMinutes(Date.valueOf("2017-01-02").toLocalDate()));
 		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("08:05:00")));
-		assertEquals(0, employee.getOverMinutes());
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/03 08:10:00")));
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/03 17:00:00")));
+		assertEquals(-15, employee.getOverMinutes(Date.valueOf("2017-01-03").toLocalDate()));
 		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("08:10:00")));
-		assertEquals(-15, employee.getOverMinutes());
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/04 08:00:00")));
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/04 17:30:00")));
+		assertEquals(15, employee.getOverMinutes(Date.valueOf("2017-01-04").toLocalDate()));
 		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter2.parse("2016/01/21 07:30:00")));
-		assertEquals(15, employee.getOverMinutes());
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/05 07:45:00")));
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/05 17:30:00")));
+		assertEquals(60, employee.getOverMinutes(Date.valueOf("2017-01-05").toLocalDate()));
 		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("17:00:00")));
-		assertEquals(15, employee.getOverMinutes());
+		assertEquals(60 - (employee.getDepartureTime().toSecondOfDay() - employee.getArrivalTime().toSecondOfDay()) / 60, employee.getOverMinutes(Date.valueOf("2017-01-06").toLocalDate()));
 		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("17:15:00")));
-		assertEquals(30, employee.getOverMinutes());
-		
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter2.parse("2016/01/21 16:00:00")));
-		assertEquals(-30, employee.getOverMinutes());
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/07 08:00:00")));
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/07 17:00:00")));
+		assertEquals(60, employee.getOverMinutes(Date.valueOf("2017-01-07").toLocalDate()));
 	}
-
+	
 	@Before
 	public void setUp() throws IllegalArgumentException
 	{
@@ -60,7 +67,7 @@ public class EmployeeTest
 		employee = new Employee(PersonTest.LAST_NAME, PersonTest.FIRST_NAME);
 		workingDepartment.addEmployee(employee);
 	}
-
+	
 	@Test
 	public void getID() throws Exception
 	{
@@ -72,7 +79,7 @@ public class EmployeeTest
 		assertEquals(ID, employee1.getID());
 		assertEquals(ID + 1, employee2.getID());
 	}
-
+	
 	@Test
 	public void getWorkingDepartment() throws Exception
 	{
@@ -100,8 +107,8 @@ public class EmployeeTest
 		assertEquals(Employee.DEFAULT_ARRIVAL_TIME, employee1.getArrivalTime());
 		assertEquals(Employee.DEFAULT_DEPARTURE_TIME, employee1.getDepartureTime());
 		
-		Employee employee2 = new Employee("A", "B", Time.valueOf("01:02:03"), Time.valueOf("02:03:04"));
-		assertEquals(Time.valueOf("01:02:03"), employee2.getArrivalTime());
-		assertEquals(Time.valueOf("02:03:04"), employee2.getDepartureTime());
+		Employee employee2 = new Employee("A", "B", Time.valueOf("01:02:03").toLocalTime(), Time.valueOf("02:03:04").toLocalTime());
+		assertEquals(Time.valueOf("01:02:03").toLocalTime(), employee2.getArrivalTime());
+		assertEquals(Time.valueOf("02:03:04").toLocalTime(), employee2.getDepartureTime());
 	}
 }
