@@ -36,5 +36,5 @@ comment:
 
 ignore:
   - **/*Test.*
-  - fr/polytech/projectjava/checkingSimulation/*.*
-  - fr/polytech/projectjava/checkingSimulation/**/*.*
+  - src/main/java/fr/polytech/projectjava/checkingSimulation/*.*
+  - src/main/java/fr/polytech/projectjava/checkingSimulation/**/*.*
