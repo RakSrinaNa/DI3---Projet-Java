@@ -11,6 +11,8 @@ package fr.polytech.projectjava.company.staff;
  */
 public class Boss extends Person
 {
+	private static final long serialVersionUID = -6683924518878506618L;
+	
 	/**
 	 * Construct the boss with his/her name.
 	 *

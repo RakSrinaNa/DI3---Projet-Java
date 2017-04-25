@@ -1,6 +1,6 @@
 package fr.polytech.projectjava.company.staff;
 
-import java.sql.Time;
+import java.time.LocalTime;
 
 /**
  * Represent a manager in the company.
@@ -13,6 +13,7 @@ import java.sql.Time;
  */
 public class Manager extends Employee
 {
+	private static final long serialVersionUID = -2861031212711385809L;
 	private boolean managing;
 	
 	/**
@@ -39,7 +40,7 @@ public class Manager extends Employee
 	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public Manager(String lastName, String firstName, Time arrivalTime, Time departureTIme) throws IllegalArgumentException
+	public Manager(String lastName, String firstName, LocalTime arrivalTime, LocalTime departureTIme) throws IllegalArgumentException
 	{
 		super(lastName, firstName, arrivalTime, departureTIme);
 		managing = false;

@@ -14,6 +14,7 @@ import fr.polytech.projectjava.company.staff.Manager;
  */
 public class StandardDepartment extends Department
 {
+	private static final long serialVersionUID = 5920779023965916148L;
 	private Manager manager;
 	
 	/**

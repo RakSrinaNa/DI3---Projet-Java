@@ -20,24 +20,6 @@ import java.util.function.Consumer;
 public class SimulationApplication extends ApplicationBase
 {
 	@Override
-	public String getFrameTitle()
-	{
-		return "CheckingSimulation";
-	}
-	
-	@Override
-	public Consumer<Stage> getStageHandler()
-	{
-		return null;
-	}
-	
-	@Override
-	public Consumer<Stage> getOnStageDisplayed() throws Exception
-	{
-		return null;
-	}
-	
-	@Override
 	public Parent createContent(Stage stage)
 	{
 		VBox root = new VBox();
@@ -51,12 +33,31 @@ public class SimulationApplication extends ApplicationBase
 		DatePicker dateField = new DatePicker();
 		TimePicker timePicker = new TimePicker();
 		
-		inputs.getChildren().addAll(IDfield, typeField, dateField);
+		inputs.getChildren().addAll(IDfield, typeField, dateField, timePicker);
 		
 		Button sendButton = new Button("Send");
 		sendButton.setMaxWidth(Double.MAX_VALUE);
+		sendButton.setOnAction(evt -> SimulationController.sendInfos(evt, IDfield.getInt(), typeField.getSelectionModel().getSelectedItem(), dateField.getValue(), timePicker.getTime()));
 		
 		root.getChildren().addAll(inputs, sendButton);
 		return root;
+	}
+	
+	@Override
+	public String getFrameTitle()
+	{
+		return "CheckingSimulation";
+	}
+	
+	@Override
+	public Consumer<Stage> getOnStageDisplayed() throws Exception
+	{
+		return null;
+	}
+	
+	@Override
+	public Consumer<Stage> getStageHandler()
+	{
+		return null;
 	}
 }

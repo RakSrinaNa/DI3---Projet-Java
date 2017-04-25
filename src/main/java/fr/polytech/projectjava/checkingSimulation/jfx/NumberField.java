@@ -21,7 +21,7 @@ public class NumberField extends TextField
 	@Override
 	public void replaceText(int start, int end, String text)
 	{
-		if(validate(text))
+		if(validate(getText().substring(0, start) + text + getText().substring(Math.min(start + 1, getText().length()))))
 			super.replaceText(start, end, text);
 	}
 	
@@ -34,7 +34,7 @@ public class NumberField extends TextField
 	
 	private boolean validate(String text)
 	{
-		return text.matches("[0-9]*") && (verify == null ? true : verify.apply(Integer.parseInt(text)));
+		return text.matches("[0-9]*") && ((verify == null || text.equals("")) ? true : verify.apply(Integer.parseInt(text)));
 	}
 	
 	public int getInt()
