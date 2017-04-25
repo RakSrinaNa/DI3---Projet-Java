@@ -38,3 +38,7 @@ ignore:
   - **/*Test.*
   - src/main/java/fr/polytech/projectjava/checkingSimulation/*.*
   - src/main/java/fr/polytech/projectjava/checkingSimulation/**/*.*
+  - src/main/java/fr/polytech/projectjava/utils/*.*
+  - src/main/java/fr/polytech/projectjava/utils/**/*.*
+  - src/main/java/fr/polytech/projectjava/Main.java
+  - src/main/java/fr/polytech/projectjava/ThreadCheckingReceiver.java.java
