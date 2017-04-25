@@ -9,6 +9,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -55,6 +57,14 @@ public class EmployeeTest
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/07 08:00:00")));
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/07 17:00:00")));
 		assertEquals(60, employee.getOverMinutes(Date.valueOf("2017-01-07").toLocalDate()));
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void getOverMinutesFail()
+	{
+		Employee employee = new Employee("A", "B");
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN));
+		employee.getOverMinutes(LocalDate.now());
 	}
 	
 	@Before
@@ -110,5 +120,35 @@ public class EmployeeTest
 		Employee employee2 = new Employee("A", "B", Time.valueOf("01:02:03").toLocalTime(), Time.valueOf("02:03:04").toLocalTime());
 		assertEquals(Time.valueOf("01:02:03").toLocalTime(), employee2.getArrivalTime());
 		assertEquals(Time.valueOf("02:03:04").toLocalTime(), employee2.getDepartureTime());
+	}
+	
+	@Test
+	public void setArrivalDepartureTime()
+	{
+		Employee employee1 = new Employee("A", "B");
+		LocalTime time = LocalTime.of(10, 0);
+		
+		employee1.setArrivalTime(time);
+		employee1.setDepartureTime(time);
+		assertEquals(time, employee1.getArrivalTime());
+		assertEquals(time, employee1.getDepartureTime());
+		
+		time = LocalTime.of(15, 34);
+		employee1.setDepartureTime(time);
+		employee1.setArrivalTime(time);
+		assertEquals(time, employee1.getArrivalTime());
+		assertEquals(time, employee1.getDepartureTime());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void setArrivalDepartureTimeFail()
+	{
+		Employee employee1 = new Employee("A", "B");
+		
+		LocalTime time = LocalTime.of(0, 0);
+		employee1.setDepartureTime(time);
+		
+		time = LocalTime.of(23, 59);
+		employee1.setArrivalTime(time);
 	}
 }

@@ -37,6 +37,7 @@ public class SimulationApplication extends ApplicationBase
 		
 		Button sendButton = new Button("Send");
 		sendButton.setMaxWidth(Double.MAX_VALUE);
+		sendButton.setOnAction(evt -> SimulationController.sendInfos(evt, IDfield.getInt(), typeField.getSelectionModel().getSelectedItem(), dateField.getValue(), timePicker.getTime()));
 		
 		root.getChildren().addAll(inputs, sendButton);
 		return root;

@@ -91,6 +91,11 @@ public class Employee extends Person
 		checks.add(checkInOut);
 	}
 	
+	/**
+	 * Add a working day for this employee.
+	 *
+	 * @param day The day to add.
+	 */
 	public void addWorkingDay(DayOfWeek day)
 	{
 		if(!workingDays.contains(day))
@@ -102,7 +107,7 @@ public class Employee extends Person
 	 *
 	 * @return The number of minutes. If the number is negative it represents the number of minutes dues.
 	 */
-	public long getOverMinutes(LocalDate maxDate)
+	public long getOverMinutes(LocalDate maxDate) throws IllegalStateException
 	{
 		if(maxDate == null)
 			maxDate = new Date(System.currentTimeMillis()).toLocalDate();

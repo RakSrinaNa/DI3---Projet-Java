@@ -3,6 +3,7 @@ package fr.polytech.projectjava.checkingSimulation.jfx;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import java.sql.Time;
+import java.time.LocalTime;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 28/03/2017.
@@ -28,8 +29,8 @@ public class TimePicker extends HBox
 		getChildren().addAll(hoursField, separator1, minutesField, separator2, secondsField);
 	}
 	
-	public Time getTime()
+	public LocalTime getTime()
 	{
-		return Time.valueOf("" + hoursField.getInt() + ":" + minutesField.getInt() + ":" + secondsField.getInt());
+		return Time.valueOf("" + hoursField.getInt() + ":" + minutesField.getInt() + ":" + secondsField.getInt()).toLocalTime();
 	}
 }
