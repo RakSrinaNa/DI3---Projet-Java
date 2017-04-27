@@ -19,6 +19,7 @@ public class SimulationController
 {
 	public static void sendInfos(ActionEvent evt, int employeeID, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
 	{
+		CheckInfos checkInfos = new CheckInfos(employeeID, checkType, date, time);
 		try
 		{
 			if(date == null)
@@ -31,7 +32,7 @@ public class SimulationController
 				((Button) evt.getSource()).setDisable(true);
 				((Button) evt.getSource()).setText("Sending...");
 			}
-			CheckingSender.sendInfos(new CheckInfos(employeeID, checkType, date, time));
+			CheckingSender.sendInfos(checkInfos);
 			if(evt.getSource() instanceof Button)
 				((Button) evt.getSource()).setText("Send");
 		}

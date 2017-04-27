@@ -1,5 +1,8 @@
 package fr.polytech.projectjava;
 
+import fr.polytech.projectjava.jfx.main.MainApplication;
+import javafx.application.Application;
+
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
@@ -15,5 +18,6 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
+		Application.launch(MainApplication.class, args);
 	}
 }
