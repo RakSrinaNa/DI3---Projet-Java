@@ -1,5 +1,8 @@
 package fr.polytech.projectjava.checkingSimulation.jfx;
 
+import fr.polytech.projectjava.checkingSimulation.Employee;
+import fr.polytech.projectjava.checkingSimulation.jfx.components.CheckList;
+import fr.polytech.projectjava.checkingSimulation.jfx.components.TimePicker;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.utils.ApplicationBase;
 import javafx.scene.Parent;
@@ -7,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.function.Consumer;
@@ -19,6 +23,16 @@ import java.util.function.Consumer;
  */
 public class SimulationApplication extends ApplicationBase
 {
+	private SimulationController controller;
+	private CheckList checkList;
+	
+	@Override
+	public void preInit() throws Exception
+	{
+		super.preInit();
+		controller = new SimulationController();
+	}
+	
 	@Override
 	public Parent createContent(Stage stage)
 	{
@@ -26,20 +40,33 @@ public class SimulationApplication extends ApplicationBase
 		
 		HBox inputs = new HBox();
 		
-		NumberField IDfield = new NumberField();
+		ComboBox<Employee> employeeField = new ComboBox<>();
+		employeeField.setItems(controller.getModel().getEmployeeList());
+		employeeField.getSelectionModel().selectFirst();
+		
 		ComboBox<CheckInOut.CheckType> typeField = new ComboBox<>();
 		typeField.getItems().addAll(CheckInOut.CheckType.values());
 		typeField.getSelectionModel().selectFirst();
 		DatePicker dateField = new DatePicker();
 		TimePicker timePicker = new TimePicker();
 		
-		inputs.getChildren().addAll(IDfield, typeField, dateField, timePicker);
+		inputs.getChildren().addAll(employeeField, typeField, dateField, timePicker);
+		
+		checkList = new CheckList(controller.getModel().getCheckings());
+		checkList.setMaxWidth(Double.MAX_VALUE);
+		checkList.setMaxHeight(Double.MAX_VALUE);
 		
 		Button sendButton = new Button("Send");
 		sendButton.setMaxWidth(Double.MAX_VALUE);
-		sendButton.setOnAction(evt -> SimulationController.sendInfos(evt, IDfield.getInt(), typeField.getSelectionModel().getSelectedItem(), dateField.getValue(), timePicker.getTime()));
+		sendButton.setOnAction(evt -> controller.sendInfos(evt, employeeField.getSelectionModel().getSelectedItem(), typeField.getSelectionModel().getSelectedItem(), dateField.getValue(), timePicker.getTime()));
 		
-		root.getChildren().addAll(inputs, sendButton);
+		Button refreshButton = new Button("Refresh employees");
+		refreshButton.setMaxWidth(Double.MAX_VALUE);
+		refreshButton.setOnAction(evt -> controller.refreshEmployees());
+		
+		root.getChildren().addAll(inputs, checkList, sendButton, refreshButton);
+		
+		VBox.setVgrow(checkList, Priority.ALWAYS);
 		return root;
 	}
 	
@@ -58,6 +85,6 @@ public class SimulationApplication extends ApplicationBase
 	@Override
 	public Consumer<Stage> getStageHandler()
 	{
-		return null;
+		return stage -> stage.setOnCloseRequest(controller::close);
 	}
 }

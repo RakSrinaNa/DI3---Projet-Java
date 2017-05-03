@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.checkingSimulation.jfx;
+package fr.polytech.projectjava.checkingSimulation.jfx.components;
 
 import javafx.scene.control.TextField;
 import java.util.function.Function;

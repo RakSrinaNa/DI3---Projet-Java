@@ -1,8 +1,12 @@
 package fr.polytech.projectjava.checkingSimulation;
 
+import fr.polytech.projectjava.utils.Configuration;
+import fr.polytech.projectjava.utils.UDPClientBuilder;
+import javafx.util.Pair;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
+import java.util.Iterator;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 28/03/2017.
@@ -10,21 +14,41 @@ import java.net.Socket;
  * @author Thomas Couchoud
  * @since 2017-03-28
  */
-public class CheckingSender
+public class CheckingSender extends UDPClientBuilder
 {
-	private static final String HOST = "127.0.0.1";
-	private static final int PORT_NUMBER = 9842;
+	private final Iterator<CheckInfos> datas;
 	
-	public static void sendInfos(CheckInfos infos) throws IOException
+	public CheckingSender(Iterator<CheckInfos> datas) throws IOException
 	{
-		Socket socket = new Socket(HOST, PORT_NUMBER);
-		sendInfos(infos, socket.getOutputStream());
-		socket.close();
+		super();
+		setTimeout(10000);
+		this.datas = datas;
 	}
 	
-	private static void sendInfos(CheckInfos infos, OutputStream outputStream) throws IOException
+	@Override
+	protected void processData() throws Exception
 	{
-		for(char c : infos.getForSocket().toCharArray())
-			outputStream.write((byte) c);
+		int packetSize = Configuration.getInt("socketPacketSize");
+		
+		connect(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
+		
+		while(datas.hasNext())
+		{
+			sendPacket("CHECK".getBytes());
+			
+			Pair<DatagramPacket, byte[]> response = receivePacket(packetSize);
+			if(!new String(response.getValue()).equals("OK"))
+				return;
+			
+			sendPacket(datas.next().getForSocket().getBytes());
+			
+			response = receivePacket(packetSize);
+			if(!new String(response.getValue()).equals("OK"))
+				return;
+			
+			datas.remove();
+		}
+		
+		sendPacket("END".getBytes());
 	}
 }

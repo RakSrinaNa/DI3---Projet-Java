@@ -2,9 +2,12 @@ package fr.polytech.projectjava.checkingSimulation.jfx;
 
 import fr.polytech.projectjava.checkingSimulation.CheckInfos;
 import fr.polytech.projectjava.checkingSimulation.CheckingSender;
+import fr.polytech.projectjava.checkingSimulation.Employee;
+import fr.polytech.projectjava.checkingSimulation.EmployeeGetter;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.stage.WindowEvent;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,9 +20,17 @@ import java.time.LocalTime;
  */
 public class SimulationController
 {
-	public static void sendInfos(ActionEvent evt, int employeeID, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
+	private final SimulationModel model;
+	
+	public SimulationController()
 	{
-		CheckInfos checkInfos = new CheckInfos(employeeID, checkType, date, time);
+		model = new SimulationModel();
+		refreshEmployees();
+	}
+	
+	public void sendInfos(ActionEvent evt, Employee employee, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
+	{
+		CheckInfos checkInfos = new CheckInfos(employee, checkType, date, time);
 		try
 		{
 			if(date == null)
@@ -32,7 +43,11 @@ public class SimulationController
 				((Button) evt.getSource()).setDisable(true);
 				((Button) evt.getSource()).setText("Sending...");
 			}
-			CheckingSender.sendInfos(checkInfos);
+			
+			model.addChecking(checkInfos);
+			
+			new Thread(new CheckingSender(model.getCheckings().iterator())).start();
+			
 			if(evt.getSource() instanceof Button)
 				((Button) evt.getSource()).setText("Send");
 		}
@@ -47,5 +62,28 @@ public class SimulationController
 			if(evt.getSource() instanceof Button)
 				((Button) evt.getSource()).setDisable(false);
 		}
+	}
+	
+	public void refreshEmployees()
+	{
+		try
+		{
+			model.getEmployeeList().clear();
+			new Thread(new EmployeeGetter(model.getEmployeeList())).start();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void close(WindowEvent windowEvent)
+	{
+		model.saveDatas();
+	}
+	
+	public SimulationModel getModel()
+	{
+		return model;
 	}
 }

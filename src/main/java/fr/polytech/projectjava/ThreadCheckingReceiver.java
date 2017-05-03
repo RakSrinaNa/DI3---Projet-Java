@@ -56,6 +56,7 @@ public class ThreadCheckingReceiver extends Thread
 		
 		while(!isInterrupted())
 		{
+			
 			try(Socket clientSocket = serverSocket.accept())
 			{
 				sendEmployees(clientSocket.getOutputStream());
