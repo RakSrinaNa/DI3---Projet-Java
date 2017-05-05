@@ -7,9 +7,9 @@ import fr.polytech.projectjava.jfx.dialogs.listemployees.ListEmployeesDialog;
 import javafx.event.ActionEvent;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
-import javafx.util.Pair;
-import java.util.ArrayList;
+import java.net.SocketException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 27/04/2017.
@@ -27,23 +27,36 @@ public class MainController
 	{
 		view = mainApplication;
 		model = new MainModel(mainApplication);
-		socketReceiver = new ThreadCheckingReceiver(this);
+		try
+		{
+			socketReceiver = new ThreadCheckingReceiver(this);
+		}
+		catch(SocketException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public void close(WindowEvent windowEvent)
 	{
-		socketReceiver.interrupt();
+		socketReceiver.stop();
 		model.saveDatas();
 	}
 	
 	public Collection<Employee> listEmployees()
 	{
-		return new ArrayList<>(); //TODO
+		return model.getCompany().getEmployees();
 	}
 	
-	public void addChecking(Pair<Integer, CheckInOut> integerCheckInOutPair)
+	public boolean addChecking(int employeeID, CheckInOut check)
 	{
-		//TODO
+		Optional<Employee> employee = model.getCompany().getEmployee(employeeID);
+		if(employee.isPresent())
+		{
+			employee.get().addCheckInOut(check);
+			return true;
+		}
+		return false;
 	}
 	
 	public void displayEmployees(ActionEvent actionEvent)
@@ -57,6 +70,11 @@ public class MainController
 	public void loadCompany()
 	{
 		if(model.loadCompany())
-			socketReceiver.start();
+			new Thread(socketReceiver).start();
+	}
+	
+	public Optional<Employee> getEmployeeByID(int ID)
+	{
+		return model.getCompany().getEmployee(ID);
 	}
 }

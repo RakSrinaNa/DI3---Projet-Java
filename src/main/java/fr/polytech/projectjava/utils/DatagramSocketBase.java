@@ -43,18 +43,20 @@ public abstract class DatagramSocketBase implements Runnable
 	
 	public Pair<DatagramPacket, byte[]> receivePacket(int size, int offset) throws IOException, IllegalStateException
 	{
+		System.out.println("Waiting for packet.");
 		byte buffer[] = new byte[size];
 		DatagramPacket packet = new DatagramPacket(buffer, offset, size);
 		try
 		{
 			socket.receive(packet);
-			System.out.println("Received data: " + Arrays.toString(buffer));
+			byte datas[] = Arrays.copyOf(buffer, packet.getLength());
+			System.out.println("Received data: " + Arrays.toString(datas) + "(" + new String(datas) + ")");
+			return new Pair<>(packet, datas);
 		}
-		catch(SocketTimeoutException e)
+		catch(SocketTimeoutException ignored)
 		{
-			return null;
 		}
-		return new Pair<>(packet, buffer);
+		return new Pair<>(packet, "ERROR".getBytes());
 	}
 	
 	public void sendPacket(byte[] data) throws IOException, IllegalStateException
@@ -63,14 +65,19 @@ public abstract class DatagramSocketBase implements Runnable
 			throw new IllegalStateException("Socket is not connected");
 		DatagramPacket packet = new DatagramPacket(data, 0, data.length);
 		socket.send(packet);
-		System.out.println("Sent data: " + Arrays.toString(data));
+		System.out.println("Sent data: " + Arrays.toString(data) + "(" + new String(data) + ")");
 	}
 	
 	public void sendPacket(InetSocketAddress address, byte[] data) throws IOException
 	{
 		DatagramPacket packet = new DatagramPacket(data, 0, data.length, address);
 		socket.send(packet);
-		System.out.println("Sent data: " + Arrays.toString(data));
+		System.out.println("Sent data: " + Arrays.toString(data) + "(" + new String(data) + ")");
+	}
+	
+	public void replyPacket(DatagramPacket datagramPacket, byte[] data) throws IOException
+	{
+		sendPacket(new InetSocketAddress(datagramPacket.getAddress(), datagramPacket.getPort()), data);
 	}
 	
 	@Override

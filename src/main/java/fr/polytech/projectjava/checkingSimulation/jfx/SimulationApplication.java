@@ -42,7 +42,6 @@ public class SimulationApplication extends ApplicationBase
 		
 		ComboBox<Employee> employeeField = new ComboBox<>();
 		employeeField.setItems(controller.getModel().getEmployeeList());
-		employeeField.getSelectionModel().selectFirst();
 		
 		ComboBox<CheckInOut.CheckType> typeField = new ComboBox<>();
 		typeField.getItems().addAll(CheckInOut.CheckType.values());

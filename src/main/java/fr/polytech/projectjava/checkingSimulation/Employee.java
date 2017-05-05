@@ -28,6 +28,11 @@ public class Employee implements Serializable
 		return new Employee(Integer.parseInt(parts[0]), parts[1], parts[2]);
 	}
 	
+	public String getName()
+	{
+		return first + " " + last;
+	}
+	
 	public String getFirst()
 	{
 		return first;

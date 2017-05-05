@@ -3,14 +3,14 @@ package fr.polytech.projectjava;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.jfx.main.MainController;
+import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
+import fr.polytech.projectjava.utils.UDPServerBuilder;
 import javafx.util.Pair;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -22,112 +22,83 @@ import java.text.SimpleDateFormat;
  * @author Thomas Couchoud
  * @since 2017-03-28
  */
-public class ThreadCheckingReceiver extends Thread
+public class ThreadCheckingReceiver extends UDPServerBuilder
 {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private final int PORT_NUMBER = 9842;
 	private final MainController controller;
+	private boolean stop = false;
 	
 	/**
 	 * Constructor.
 	 *
 	 * @param controller The controller of the main application
 	 */
-	public ThreadCheckingReceiver(MainController controller)
+	public ThreadCheckingReceiver(MainController controller) throws SocketException
 	{
+		super(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
 		this.controller = controller;
-		setName("ThreadCheckingReceiver");
-		setDaemon(true);
+		setTimeout(20000);
+	}
+	
+	public void stop()
+	{
+		stop = true;
 	}
 	
 	@Override
-	public void run()
+	protected void processData() throws Exception
 	{
-		ServerSocket serverSocket = null;
-		try
-		{
-			serverSocket = new ServerSocket(PORT_NUMBER);
-			serverSocket.setSoTimeout(1000);
-		}
-		catch(IOException e)
-		{
-			Log.error("Couldn't create socket", e);
-		}
+		int packetSize = Configuration.getInt("socketPacketSize");
 		
-		while(!isInterrupted())
+		while(!stop)
 		{
-			
-			try(Socket clientSocket = serverSocket.accept())
+			try
 			{
-				sendEmployees(clientSocket.getOutputStream());
-				controller.addChecking(readClient(clientSocket.getInputStream()));
+				Pair<DatagramPacket, byte[]> response = receivePacket(packetSize);
+				switch(new String(response.getValue()))
+				{
+					case "CHECK":
+						replyPacket(response.getKey(), "OK".getBytes());
+						processCheck(receivePacket(packetSize));
+						break;
+					case "EMPLOYEE":
+						sendEmployees(packetSize, response.getKey());
+						break;
+					case "END":
+					case "ERROR":
+						break;
+					default:
+						Log.warning("Unknown socket command: " + new String(response.getValue()));
+				}
 			}
-			catch(SocketTimeoutException ignored)
+			catch(Exception ignored)
 			{
-			}
-			catch(IOException | ParseException exception)
-			{
-				Log.error("Error reading checking system message", exception);
 			}
 		}
 	}
 	
-	private void sendEmployees(OutputStream outputStream) throws IOException
+	private void processCheck(Pair<DatagramPacket, byte[]> datagramPacketPair) throws IOException, ParseException
+	{
+		String response[] = new String(datagramPacketPair.getValue()).split(";");
+		if(controller.addChecking(Integer.parseInt(response[0]), new CheckInOut(CheckInOut.CheckType.valueOf(response[1]), dateFormat.parse(response[2]))))
+			replyPacket(datagramPacketPair.getKey(), "OK".getBytes());
+	}
+	
+	private void sendEmployees(int packetSize, DatagramPacket datagramPacket) throws IOException
 	{
 		for(Employee employee : controller.listEmployees())
-			sendEmployee(outputStream, employee);
-		outputStream.close();
+		{
+			replyPacket(datagramPacket, employeeToString(employee).getBytes());
+			Pair<DatagramPacket, byte[]> response = receivePacket(packetSize);
+			if(!new String(response.getValue()).equals("OK"))
+				throw new IllegalStateException("Received not OK");
+		}
+		replyPacket(datagramPacket, "DONE".getBytes());
 	}
 	
-	private void sendEmployee(OutputStream outputStream, Employee employee) throws IOException
+	private String employeeToString(Employee employee)
 	{
-		outputStream.write((byte) employee.getID());
-		outputStream.write((byte) '=');
-		for(char c : employee.getFirstName().toCharArray())
-			outputStream.write((byte) c);
-		outputStream.write((byte) ' ');
-		for(char c : employee.getLastName().toCharArray())
-			outputStream.write((byte) c);
-		outputStream.write((byte) ';');
-	}
-	
-	/**
-	 * Used to read the stream of data received.
-	 *
-	 * @param inputStream The stream of data.
-	 *
-	 * @return The read string.
-	 *
-	 * @throws IOException    If an error occurred reading the stream.
-	 * @throws ParseException If the date could not be parsed.
-	 */
-	private Pair<Integer, CheckInOut> readClient(InputStream inputStream) throws IOException, ParseException
-	{
-		StringBuilder stringRead = new StringBuilder();
-		int read;
-		while((read = inputStream.read()) != -1)
-			stringRead.append((char) read);
-		
-		inputStream.close();
-		return readMessage(stringRead.toString());
-	}
-	
-	/**
-	 * Convert a message received into checking object.
-	 *
-	 * @param string The message received.
-	 *
-	 * @return A pair having as key the employee ID and the checking object as value.
-	 *
-	 * @throws ParseException If the date could not be parsed.
-	 */
-	private Pair<Integer, CheckInOut> readMessage(String string) throws ParseException
-	{
-		String[] messageParts = string.split(";");
-		
-		int employeeID = Integer.valueOf(messageParts[0]);
-		CheckInOut check = new CheckInOut(CheckInOut.CheckType.valueOf(messageParts[1].toUpperCase()), dateFormat.parse(messageParts[2]));
-		
-		return new Pair<>(employeeID, check);
+		return employee.getID() + ";" + employee.getFirstName() + ";" + employee.getLastName();
 	}
 }

@@ -156,7 +156,7 @@ public class Company implements Serializable
 	 *
 	 * @return A list of the employees.
 	 */
-	private List<Employee> getEmployees()
+	public List<Employee> getEmployees()
 	{
 		return employees;
 	}

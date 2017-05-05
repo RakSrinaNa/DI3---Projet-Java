@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public class MainModel
 {
-	private static final String FILENAME = "company.pjv";
+	private static final String FILENAME = "tCompany.pjv";
 	
 	private final MainApplication view;
 	private Company company;

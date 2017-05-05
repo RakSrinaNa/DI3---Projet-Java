@@ -20,8 +20,8 @@ public class SimulationModel
 	
 	public SimulationModel()
 	{
-		employees = FXCollections.emptyObservableList();
-		checkings = FXCollections.emptyObservableList();
+		employees = FXCollections.observableArrayList();
+		checkings = FXCollections.observableArrayList();
 		File f = new File(Configuration.getString("simulationSaveFile"));
 		if(f.exists() && f.isFile())
 		{
