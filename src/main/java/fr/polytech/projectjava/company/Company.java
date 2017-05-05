@@ -1,16 +1,15 @@
 package fr.polytech.projectjava.company;
 
-import fr.polytech.projectjava.company.departments.Department;
 import fr.polytech.projectjava.company.departments.ManagementDepartment;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
+import javafx.beans.property.SimpleStringProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Represent a company.
@@ -22,9 +21,11 @@ import java.util.stream.Collectors;
  */
 public class Company implements Serializable
 {
+	private final ArrayList<Employee> employees = new ArrayList<>();
 	private final String name;
 	private final Boss boss;
 	private final ManagementDepartment managementDepartment;
+	private SimpleStringProperty a;
 	private final ArrayList<StandardDepartment> departments = new ArrayList<>();
 	
 	/**
@@ -108,6 +109,18 @@ public class Company implements Serializable
 			departments.add(department);
 	}
 	
+	public void addEmployee(Employee employee)
+	{
+		if(!employees.contains(employee))
+			employees.add(employee);
+	}
+	
+	public void removeEmployee(Employee employee)
+	{
+		if(employee.getWorkingDepartment() == null)
+			employees.remove(employee);
+	}
+	
 	/**
 	 * Get the boss of the company.
 	 *
@@ -145,7 +158,7 @@ public class Company implements Serializable
 	 */
 	private List<Employee> getEmployees()
 	{
-		return departments.parallelStream().map(Department::getEmployees).flatMap(List::stream).collect(Collectors.toList());
+		return employees;
 	}
 	
 	/**

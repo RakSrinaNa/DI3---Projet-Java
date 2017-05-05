@@ -31,7 +31,7 @@ public class StandardDepartment extends Department
 		super(company, name);
 		if(manager.getWorkingDepartment() != null)
 			throw new IllegalArgumentException("The manager is already managing elsewhere.");
-		manager.setWorkingDepartment(this);
+		addEmployee(manager);
 		setManager(manager);
 		company.addDepartment(this);
 	}
@@ -48,10 +48,7 @@ public class StandardDepartment extends Department
 		if(manager.getWorkingDepartment() == this)
 		{
 			if(this.manager != null)
-			{
-				this.manager.setWorkingDepartment(null);
 				company.removeFromManagementTeam(this.manager);
-			}
 			
 			this.manager = manager;
 			manager.setWorkingDepartment(this);
@@ -64,13 +61,13 @@ public class StandardDepartment extends Department
 	@Override
 	public void addEmployee(Employee employee)
 	{
-		super.addEmployee(employee);
 		if(employee.getWorkingDepartment() != this)
 		{
 			if(employee.getWorkingDepartment() != null)
 				employee.getWorkingDepartment().removeEmployee(employee);
 			employee.setWorkingDepartment(this);
 		}
+		super.addEmployee(employee);
 	}
 	
 	@Override

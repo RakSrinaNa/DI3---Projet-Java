@@ -72,7 +72,7 @@ public class Employee extends Person
 	@Override
 	public String toString()
 	{
-		return super.toString() + "\nID: \t" + getID() + "\nDpt: \t" + getWorkingDepartment();
+		return super.toString() + "\nID: \t" + getID() + "\nDpt: \t" + (getWorkingDepartment() != null ? getWorkingDepartment().getName() : "~None~");
 	}
 	
 	@Override

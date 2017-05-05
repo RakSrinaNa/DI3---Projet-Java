@@ -43,7 +43,10 @@ public abstract class Department implements Serializable
 	public void addEmployee(Employee employee)
 	{
 		if(!employees.contains(employee))
+		{
 			employees.add(employee);
+			company.addEmployee(employee);
+		}
 	}
 	
 	@Override
@@ -66,6 +69,8 @@ public abstract class Department implements Serializable
 	public void removeEmployee(Employee employee)
 	{
 		this.employees.remove(employee);
+		employee.setWorkingDepartment(null);
+		company.removeEmployee(employee);
 	}
 	
 	/**
