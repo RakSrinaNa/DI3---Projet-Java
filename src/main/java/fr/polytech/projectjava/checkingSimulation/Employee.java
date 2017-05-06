@@ -24,6 +24,8 @@ public class Employee implements Serializable
 	
 	public static Employee parse(String s)
 	{
+		if(s.equals("ERROR"))
+			return null;
 		String parts[] = s.split(";");
 		return new Employee(Integer.parseInt(parts[0]), parts[1], parts[2]);
 	}
