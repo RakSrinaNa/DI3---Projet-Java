@@ -6,13 +6,12 @@ import fr.polytech.projectjava.checkingSimulation.jfx.components.TimePicker;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.utils.ApplicationBase;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import java.util.function.Consumer;
 
 /**
@@ -42,6 +41,27 @@ public class SimulationApplication extends ApplicationBase
 		
 		ComboBox<Employee> employeeField = new ComboBox<>();
 		employeeField.setItems(controller.getModel().getEmployeeList());
+		Callback<ListView<Employee>, ListCell<Employee>> employeeCellFactory = new Callback<ListView<Employee>, ListCell<Employee>>()
+		{
+			@Override
+			public ListCell<Employee> call(ListView<Employee> param)
+			{
+				return new ListCell<Employee>()
+				{
+					@Override
+					protected void updateItem(Employee item, boolean empty)
+					{
+						super.updateItem(item, empty);
+						if(item == null || empty)
+							setText(null);
+						else
+							setText(item.getID() + ": " + item.getName());
+					}
+				};
+			}
+		};
+		employeeField.setButtonCell(employeeCellFactory.call(null));
+		employeeField.setCellFactory(employeeCellFactory);
 		
 		ComboBox<CheckInOut.CheckType> typeField = new ComboBox<>();
 		typeField.getItems().addAll(CheckInOut.CheckType.values());
