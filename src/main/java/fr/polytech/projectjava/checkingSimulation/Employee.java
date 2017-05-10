@@ -1,5 +1,10 @@
 package fr.polytech.projectjava.checkingSimulation;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -11,15 +16,15 @@ import java.io.Serializable;
 public class Employee implements Serializable
 {
 	private static final long serialVersionUID = 4718302840198002134L;
-	private final int ID;
-	private final String first;
-	private final String last;
+	private SimpleIntegerProperty ID;
+	private SimpleStringProperty first;
+	private SimpleStringProperty last;
 	
 	public Employee(int ID, String first, String last)
 	{
-		this.ID = ID;
-		this.first = first;
-		this.last = last;
+		this.ID = new SimpleIntegerProperty(ID);
+		this.first = new SimpleStringProperty(first);
+		this.last = new SimpleStringProperty(last);
 	}
 	
 	public static Employee parse(String s)
@@ -30,23 +35,52 @@ public class Employee implements Serializable
 		return new Employee(Integer.parseInt(parts[0]), parts[1], parts[2]);
 	}
 	
-	public String getName()
-	{
-		return first + " " + last;
-	}
-	
-	public String getFirst()
-	{
-		return first;
-	}
-	
-	public int getID()
+	public SimpleIntegerProperty IDProperty()
 	{
 		return ID;
 	}
 	
-	public String getLast()
+	public SimpleStringProperty firstnameProperty()
+	{
+		return first;
+	}
+	
+	public SimpleStringProperty lastnameProperty()
 	{
 		return last;
+	}
+	
+	public String getName()
+	{
+		return getFirst() + " " + getLast();
+	}
+	
+	public String getFirst()
+	{
+		return firstnameProperty().get();
+	}
+	
+	public int getID()
+	{
+		return IDProperty().get();
+	}
+	
+	public String getLast()
+	{
+		return lastnameProperty().get();
+	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeInt(getID());
+		oos.writeObject(getFirst());
+		oos.writeObject(getLast());
+	}
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		ID = new SimpleIntegerProperty(ois.readInt());
+		first = new SimpleStringProperty((String) ois.readObject());
+		last = new SimpleStringProperty((String) ois.readObject());
 	}
 }

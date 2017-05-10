@@ -1,6 +1,11 @@
 package fr.polytech.projectjava.checkingSimulation;
 
 import fr.polytech.projectjava.company.checking.CheckInOut;
+import fr.polytech.projectjava.utils.SimpleLocalDateTimeProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,25 +22,33 @@ public class CheckInfos implements Serializable
 {
 	private transient static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	private static final long serialVersionUID = -3180459411345585955L;
-	private final Employee employee;
-	private final CheckInOut.CheckType checkType;
-	private final LocalDate date;
-	private final LocalTime time;
+	private Employee employee;
+	private SimpleObjectProperty<CheckInOut.CheckType> checkType;
+	private SimpleLocalDateTimeProperty date;
 	
 	public CheckInfos(Employee employee, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
 	{
 		this.employee = employee;
-		this.checkType = checkType;
-		this.date = date;
-		this.time = time;
+		this.checkType = new SimpleObjectProperty<>(checkType);
+		this.date = new SimpleLocalDateTimeProperty(LocalDateTime.of(date, time), dateFormat);
+	}
+	
+	public SimpleLocalDateTimeProperty dateProperty()
+	{
+		return date;
 	}
 	
 	public LocalDateTime getCheckDate()
 	{
-		return LocalDateTime.of(date, time);
+		return dateProperty().getDate();
 	}
 	
 	public CheckInOut.CheckType getCheckType()
+	{
+		return checkTypeProperty().get();
+	}
+	
+	public SimpleObjectProperty<CheckInOut.CheckType> checkTypeProperty()
 	{
 		return checkType;
 	}
@@ -53,5 +66,19 @@ public class CheckInfos implements Serializable
 	public String getFormattedCheckDate()
 	{
 		return getCheckDate().format(dateFormat);
+	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeObject(getEmployee());
+		oos.writeObject(getCheckType());
+		oos.writeObject(getCheckDate());
+	}
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		employee = (Employee) ois.readObject();
+		checkType = new SimpleObjectProperty<>((CheckInOut.CheckType) ois.readObject());
+		date = new SimpleLocalDateTimeProperty((LocalDateTime) ois.readObject(), dateFormat);
 	}
 }

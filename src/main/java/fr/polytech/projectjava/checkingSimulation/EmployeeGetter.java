@@ -37,7 +37,7 @@ public class EmployeeGetter extends UDPClientBuilder
 			sendPacket("EMPLOYEE".getBytes());
 			
 			Pair<DatagramPacket, byte[]> response;
-			while((response = receivePacket(packetSize)) != null && !new String(response.getValue()).equals("DONE"))
+			while((response = receivePacket(packetSize)) != null && !new String(response.getValue()).equals("ERROR") && !new String(response.getValue()).equals("DONE"))
 			{
 				datas.add(Employee.parse(new String(response.getValue())));
 				

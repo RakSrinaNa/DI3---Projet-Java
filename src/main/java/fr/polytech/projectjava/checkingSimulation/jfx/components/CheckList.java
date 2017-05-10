@@ -1,8 +1,8 @@
 package fr.polytech.projectjava.checkingSimulation.jfx.components;
 
 import fr.polytech.projectjava.checkingSimulation.CheckInfos;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import fr.polytech.projectjava.company.checking.CheckInOut;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,20 +23,26 @@ public class CheckList extends TableView<CheckInfos>
 		TableColumn columnEmployee = new TableColumn("Employee");
 		
 		TableColumn<CheckInfos, Number> columnEmployeeID = new TableColumn<>("ID");
-		columnEmployeeID.setCellValueFactory(value -> new SimpleIntegerProperty(value.getValue().getEmployee().getID()));
+		columnEmployeeID.setCellValueFactory(value -> value.getValue().getEmployee().IDProperty());
 		
 		TableColumn<CheckInfos, String> columnEmployeeName = new TableColumn<>("Name");
-		columnEmployeeName.setCellValueFactory(value -> new SimpleStringProperty(value.getValue().getEmployee().getName()));
+		columnEmployeeName.setCellValueFactory(value -> value.getValue().getEmployee().firstnameProperty().concat(" ").concat(value.getValue().getEmployee().lastnameProperty()));
 		
-		TableColumn<CheckInfos, String> columnCheckType = new TableColumn<>("In/Out");
-		columnCheckType.setCellValueFactory(value -> new SimpleStringProperty(value.getValue().getCheckType().toString()));
+		TableColumn<CheckInfos, CheckInOut.CheckType> columnCheckType = new TableColumn<>("In/Out");
+		columnCheckType.setCellValueFactory(value -> value.getValue().checkTypeProperty());
 		
 		TableColumn<CheckInfos, String> columnDate = new TableColumn<>("Date");
-		columnDate.setCellValueFactory(value -> new SimpleStringProperty(value.getValue().getFormattedCheckDate()));
+		columnDate.setCellValueFactory(value -> value.getValue().dateProperty());
 		
 		columnEmployee.getColumns().addAll(columnEmployeeID, columnEmployeeName);
 		getColumns().addAll(columnEmployee, columnCheckType, columnDate);
 		
+		setSortPolicy(p -> false);
 		setItems(checkings);
+		
+		Platform.runLater(() -> {
+			setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+			setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		});
 	}
 }
