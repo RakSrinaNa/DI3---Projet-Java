@@ -16,22 +16,21 @@ import javafx.stage.Stage;
 public class ListEmployeesDialog extends Stage
 {
 	private final ListEmployeesDialogController controller;
-	private EmployeeList employeeList;
 	
 	public ListEmployeesDialog(Company company)
 	{
 		super();
 		controller = new ListEmployeesDialogController(this);
 		setTitle("Employees");
-		setScene(new Scene(buildStage()));
+		setScene(new Scene(buildStage(company)));
 		sizeToScene();
 	}
 	
-	private Parent buildStage()
+	private Parent buildStage(Company company)
 	{
 		VBox root = new VBox();
 		
-		employeeList = new EmployeeList();
+		EmployeeList employeeList = new EmployeeList(company.getEmployees());
 		
 		root.getChildren().addAll(employeeList);
 		VBox.setVgrow(employeeList, Priority.ALWAYS);

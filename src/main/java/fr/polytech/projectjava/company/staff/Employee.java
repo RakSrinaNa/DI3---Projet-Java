@@ -2,6 +2,13 @@ package fr.polytech.projectjava.company.staff;
 
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
@@ -23,18 +30,18 @@ import static java.time.temporal.ChronoUnit.MINUTES;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public class Employee extends Person
+public class Employee extends Person implements Serializable
 {
 	protected final static LocalTime DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00").toLocalTime();
 	protected final static LocalTime DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00").toLocalTime();
 	private static final long serialVersionUID = -8611138931676775765L;
-	private final int ID;
-	private final ArrayList<CheckInOut> checks = new ArrayList<>();
-	private final ArrayList<DayOfWeek> workingDays = new ArrayList<>();
+	private int ID;
+	private ObservableList<CheckInOut> checks = FXCollections.observableArrayList();
+	private ObservableList<DayOfWeek> workingDays = FXCollections.observableArrayList();
 	protected static int NEXT_ID = 0;
-	private StandardDepartment workingDepartment;
-	private LocalTime arrivalTime;
-	private LocalTime departureTime;
+	private SimpleObjectProperty<StandardDepartment> workingDepartment;
+	private SimpleObjectProperty<LocalTime> arrivalTime;
+	private SimpleObjectProperty<LocalTime> departureTime;
 	
 	/**
 	 * Create an employee with his/her name.
@@ -65,8 +72,9 @@ public class Employee extends Person
 		if(arrivalTime.isAfter(departureTIme))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.ID = NEXT_ID++;
-		this.arrivalTime = arrivalTime;
-		this.departureTime = departureTIme;
+		this.arrivalTime = new SimpleObjectProperty<>(arrivalTime);
+		this.departureTime = new SimpleObjectProperty<>(departureTIme);
+		workingDepartment = new SimpleObjectProperty<>(null);
 	}
 	
 	@Override
@@ -125,7 +133,7 @@ public class Employee extends Person
 			
 			if(workingDays.contains(currentDate.getDayOfWeek()))
 			{
-				total -= arrivalTime.until(departureTime, MINUTES);
+				total -= getArrivalTime().until(getDepartureTime(), MINUTES);
 				if(checks.size() == 2)
 					for(CheckInOut check : checks)
 						total += (check.getCheckType() == CheckInOut.CheckType.IN ? -1 : 1) * check.getTime().toSecondOfDay() / 60;
@@ -146,6 +154,11 @@ public class Employee extends Person
 	 */
 	public LocalTime getArrivalTime()
 	{
+		return arrivalTimeProperty().get();
+	}
+	
+	private SimpleObjectProperty<LocalTime> arrivalTimeProperty()
+	{
 		return arrivalTime;
 	}
 	
@@ -158,9 +171,9 @@ public class Employee extends Person
 	 */
 	public void setArrivalTime(LocalTime arrivalTime) throws IllegalArgumentException
 	{
-		if(arrivalTime.isAfter(departureTime))
+		if(arrivalTime.isAfter(getDepartureTime()))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
-		this.arrivalTime = arrivalTime;
+		this.arrivalTime.set(arrivalTime);
 	}
 	
 	/**
@@ -168,7 +181,7 @@ public class Employee extends Person
 	 *
 	 * @return A list of the checking.
 	 */
-	public ArrayList<CheckInOut> getChecks()
+	public ObservableList<CheckInOut> getChecks()
 	{
 		return checks;
 	}
@@ -179,6 +192,11 @@ public class Employee extends Person
 	 * @return The departure time.
 	 */
 	public LocalTime getDepartureTime()
+	{
+		return departureTimeProperty().get();
+	}
+	
+	private SimpleObjectProperty<LocalTime> departureTimeProperty()
 	{
 		return departureTime;
 	}
@@ -192,9 +210,9 @@ public class Employee extends Person
 	 */
 	public void setDepartureTime(LocalTime departureTime) throws IllegalArgumentException
 	{
-		if(arrivalTime.isAfter(this.departureTime))
+		if(getArrivalTime().isAfter(departureTime))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
-		this.departureTime = departureTime;
+		this.departureTime.set(departureTime);
 	}
 	
 	/**
@@ -214,6 +232,11 @@ public class Employee extends Person
 	 */
 	public StandardDepartment getWorkingDepartment()
 	{
+		return workingDepartmentProperty().get();
+	}
+	
+	public SimpleObjectProperty<StandardDepartment> workingDepartmentProperty()
+	{
 		return workingDepartment;
 	}
 	
@@ -224,6 +247,38 @@ public class Employee extends Person
 	 */
 	public void setWorkingDepartment(StandardDepartment workingDepartment)
 	{
-		this.workingDepartment = workingDepartment;
+		this.workingDepartment.set(workingDepartment);
+	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeInt(getID());
+		oos.writeObject(getWorkingDepartment());
+		oos.writeObject(getArrivalTime());
+		oos.writeObject(getDepartureTime());
+		oos.writeInt(workingDays.size());
+		for(DayOfWeek workingDay : workingDays)
+			oos.writeObject(workingDay);
+		oos.writeInt(checks.size());
+		for(CheckInOut check : checks)
+			oos.writeObject(check);
+	}
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		ID = ois.readInt();
+		workingDepartment = new SimpleObjectProperty<>((StandardDepartment) ois.readObject());
+		arrivalTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());
+		departureTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());
+		
+		workingDays = FXCollections.observableArrayList();
+		int wkdCount = ois.readInt();
+		for(int i = 0; i < wkdCount; i++)
+			workingDays.add((DayOfWeek) ois.readObject());
+		
+		checks = FXCollections.observableArrayList();
+		int chkCount = ois.readInt();
+		for(int i = 0; i < wkdCount; i++)
+			checks.add((CheckInOut) ois.readObject());
 	}
 }

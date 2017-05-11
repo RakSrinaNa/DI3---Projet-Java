@@ -3,6 +3,7 @@ package fr.polytech.projectjava.company.departments;
 import fr.polytech.projectjava.company.Company;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
+import java.io.Serializable;
 
 /**
  * Represent a standard department.
@@ -12,27 +13,26 @@ import fr.polytech.projectjava.company.staff.Manager;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public class StandardDepartment extends Department
+public class StandardDepartment extends Department<Manager, Employee> implements Serializable
 {
 	private static final long serialVersionUID = 5920779023965916148L;
-	private Manager manager;
 	
 	/**
 	 * Construct a department with its name and the manager.
 	 *
 	 * @param company The company the department is in.
-	 * @param name The department's name.
+	 * @param name    The department's name.
 	 * @param manager The manager of the department.
 	 *
 	 * @throws IllegalArgumentException If the manager is already working elsewhere.
 	 */
 	public StandardDepartment(Company company, String name, Manager manager) throws IllegalArgumentException
 	{
-		super(company, name);
+		super(company, name, manager);
 		if(manager.getWorkingDepartment() != null)
 			throw new IllegalArgumentException("The manager is already managing elsewhere.");
 		addEmployee(manager);
-		setManager(manager);
+		setLeader(manager);
 		company.addDepartment(this);
 	}
 	
@@ -40,22 +40,18 @@ public class StandardDepartment extends Department
 	 * Set the manager of the department.
 	 *
 	 * @param manager The manager to set, null allows to reset the manager.
-	 *
-	 * @return true if the manager was set, false if not.
 	 */
-	public boolean setManager(Manager manager)
+	public void setLeader(Manager manager)
 	{
 		if(manager.getWorkingDepartment() == this)
 		{
-			if(this.manager != null)
-				company.removeFromManagementTeam(this.manager);
+			if(getLeader() != null)
+				company.removeFromManagementTeam(getLeader());
 			
-			this.manager = manager;
+			super.setLeader(manager);
 			manager.setWorkingDepartment(this);
 			company.addToManagementTeam(manager);
-			return true;
 		}
-		return false;
 	}
 	
 	@Override
@@ -71,18 +67,15 @@ public class StandardDepartment extends Department
 	}
 	
 	@Override
-	public String toString()
+	public void removeEmployee(Employee employee)
 	{
-		return super.toString() + "\nManager: \t" + getManager();
+		employee.setWorkingDepartment(null);
+		super.removeEmployee(employee);
 	}
 	
-	/**
-	 * Get the manager of the department.
-	 *
-	 * @return The manager.
-	 */
-	public Manager getManager()
+	@Override
+	public String toString()
 	{
-		return manager;
+		return super.toString();
 	}
 }

@@ -41,11 +41,18 @@ public class StandardDepartmentTest
 	@Test
 	public void getSetManager() throws Exception
 	{
-		assertEquals(manager1, department1.getManager());
-		assertEquals(manager2, department2.getManager());
-		assertFalse(department1.setManager(manager3));
-		assertTrue(department2.setManager(manager3));
-		assertEquals(manager3, department2.getManager());
+		assertEquals(manager1, department1.getLeader());
+		assertEquals(manager2, department2.getLeader());
+		
+		department1.setLeader(manager3);
+		assertFalse(manager3.isManaging());
+		
+		department2.setLeader(manager3);
+		assertFalse(manager2.isManaging());
+		assertTrue(manager3.isManaging());
+		assertEquals(department2, manager2.getWorkingDepartment());
+		assertEquals(department2, manager3.getWorkingDepartment());
+		assertEquals(manager3, department2.getLeader());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -57,10 +64,13 @@ public class StandardDepartmentTest
 		StandardDepartment department1 = new StandardDepartment(company, "StandardDepartment1", manager1);
 		
 		Manager manager2 = new Manager("A", "B");
-		new StandardDepartment(company, "StandardDepartment2", manager2);
+		StandardDepartment dpt = new StandardDepartment(company, "StandardDepartment2", manager2);
 		
-		assertFalse(department1.setManager(manager2));
-		assertEquals(manager1, department1.getManager());
+		department1.setLeader(manager2);
+		assertTrue(manager2.isManaging());
+		assertEquals(dpt, manager2.getWorkingDepartment());
+		assertEquals(manager2, dpt.getLeader());
+		assertEquals(manager1, department1.getLeader());
 		
 		new StandardDepartment(company, "StandardDepartment2", manager2);
 	}

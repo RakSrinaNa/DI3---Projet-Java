@@ -1,5 +1,7 @@
 package fr.polytech.projectjava.company.staff;
 
+import java.io.Serializable;
+
 /**
  * Represent the boss of a company.
  * He's not an employee and does not need to check in/out.
@@ -9,7 +11,7 @@ package fr.polytech.projectjava.company.staff;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public class Boss extends Person
+public class Boss extends Person implements Serializable
 {
 	private static final long serialVersionUID = -6683924518878506618L;
 	

@@ -82,7 +82,7 @@ public class MainModel
 			view.getStage().close();
 			return false;
 		}
-		view.setCompanyName(company.getName());
+		view.getCompanyNameTextProperty().bind(company.nameProperty());
 		return true;
 	}
 	

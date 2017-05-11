@@ -114,7 +114,7 @@ public class CompanyTest
 	@Test
 	public void getManagementDepartment() throws Exception
 	{
-		assertEquals(boss, company.getManagementDepartment().getManager());
+		assertEquals(boss, company.getManagementDepartment().getLeader());
 	}
 	
 	@Test

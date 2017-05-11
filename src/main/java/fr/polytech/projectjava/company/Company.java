@@ -5,15 +5,19 @@ import fr.polytech.projectjava.company.departments.StandardDepartment;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Represent a company.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
  *
  * @author Thomas Couchoud
@@ -21,12 +25,11 @@ import java.util.Optional;
  */
 public class Company implements Serializable
 {
-	private final ArrayList<Employee> employees = new ArrayList<>();
-	private final String name;
-	private final Boss boss;
-	private final ManagementDepartment managementDepartment;
-	private SimpleStringProperty a;
-	private final ArrayList<StandardDepartment> departments = new ArrayList<>();
+	private ObservableList<Employee> employees = FXCollections.observableArrayList();
+	private ObservableList<StandardDepartment> departments = FXCollections.observableArrayList();
+	private SimpleStringProperty name;
+	private SimpleObjectProperty<Boss> boss;
+	private ManagementDepartment managementDepartment;
 	
 	/**
 	 * Construct a company with its name and boss.
@@ -36,8 +39,8 @@ public class Company implements Serializable
 	 */
 	public Company(String name, Boss boss)
 	{
-		this.name = name;
-		this.boss = boss;
+		this.name = new SimpleStringProperty(name);
+		this.boss = new SimpleObjectProperty<>(boss);
 		this.managementDepartment = new ManagementDepartment(this, boss);
 	}
 	
@@ -45,6 +48,7 @@ public class Company implements Serializable
 	 * Get an employee by its ID.
 	 *
 	 * @param ID The ID of the employee to find.
+	 *
 	 * @return An optional of the requested employee.
 	 */
 	public Optional<Employee> getEmployee(int ID)
@@ -83,7 +87,7 @@ public class Company implements Serializable
 	 */
 	public void removeFromManagementTeam(Manager manager)
 	{
-		managementDepartment.removeManager(manager);
+		managementDepartment.removeEmployee(manager);
 		manager.setManaging(false);
 	}
 	
@@ -94,7 +98,7 @@ public class Company implements Serializable
 	 */
 	public void addToManagementTeam(Manager manager)
 	{
-		managementDepartment.addManager(manager);
+		managementDepartment.addEmployee(manager);
 		manager.setManaging(true);
 	}
 	
@@ -128,6 +132,11 @@ public class Company implements Serializable
 	 */
 	public Boss getBoss()
 	{
+		return bossProperty().get();
+	}
+	
+	private SimpleObjectProperty<Boss> bossProperty()
+	{
 		return boss;
 	}
 	
@@ -156,7 +165,7 @@ public class Company implements Serializable
 	 *
 	 * @return A list of the employees.
 	 */
-	public List<Employee> getEmployees()
+	public ObservableList<Employee> getEmployees()
 	{
 		return employees;
 	}
@@ -178,6 +187,47 @@ public class Company implements Serializable
 	 */
 	public String getName()
 	{
+		return nameProperty().get();
+	}
+	
+	public SimpleStringProperty nameProperty()
+	{
 		return name;
+	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeObject(getName());
+		oos.writeObject(getBoss());
+		oos.writeObject(getManagementDepartment());
+		oos.writeInt(departments.size());
+		for(int i = 0; i < departments.size(); i++)
+			oos.writeObject(departments.get(i));
+		oos.writeInt(employees.size());
+		for(int i = 0; i < employees.size(); i++)
+			oos.writeObject(employees.get(i));
+	}
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		name = new SimpleStringProperty((String) ois.readObject());
+		boss = new SimpleObjectProperty<>((Boss) ois.readObject());
+		
+		managementDepartment = (ManagementDepartment) ois.readObject();
+		departments = FXCollections.observableArrayList();
+		int dptSize = ois.readInt();
+		for(int i = 0; i < dptSize; i++)
+			departments.add((StandardDepartment) ois.readObject());
+		
+		employees = FXCollections.observableArrayList();
+		int empSize = ois.readInt();
+		for(int i = 0; i < empSize; i++)
+		{
+			Object emp = ois.readObject();
+			if(emp instanceof Manager)
+				employees.add((Manager) emp);
+			else
+				employees.add((Employee) emp);
+		}
 	}
 }

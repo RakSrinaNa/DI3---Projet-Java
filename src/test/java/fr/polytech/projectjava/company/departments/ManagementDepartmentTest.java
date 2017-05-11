@@ -31,7 +31,7 @@ public class ManagementDepartmentTest
 	@Test
 	public void getManager() throws Exception
 	{
-		assertEquals(boss, department.getManager());
+		assertEquals(boss, department.getLeader());
 	}
 	
 	@Test
@@ -46,7 +46,7 @@ public class ManagementDepartmentTest
 		assertTrue(company.getManagementDepartment().hasEmployee(manager1));
 		assertFalse(company.getManagementDepartment().hasEmployee(manager2));
 		
-		department.setManager(manager2);
+		department.setLeader(manager2);
 		
 		assertFalse(company.getManagementDepartment().hasEmployee(manager1));
 		assertTrue(company.getManagementDepartment().hasEmployee(manager2));

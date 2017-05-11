@@ -1,6 +1,7 @@
 package fr.polytech.projectjava.jfx.main;
 
 import fr.polytech.projectjava.utils.ApplicationBase;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -43,6 +44,11 @@ public class MainApplication extends ApplicationBase
 		root.getChildren().addAll(companyNameBox, listEmployees);
 		
 		return root;
+	}
+	
+	public StringProperty getCompanyNameTextProperty()
+	{
+		return companyNameArea.textProperty();
 	}
 	
 	@Override

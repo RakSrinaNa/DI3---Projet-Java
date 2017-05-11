@@ -1,5 +1,10 @@
 package fr.polytech.projectjava.company.staff;
 
+import javafx.beans.property.SimpleBooleanProperty;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalTime;
 
 /**
@@ -11,10 +16,10 @@ import java.time.LocalTime;
  * @author Thomas Couchoud
  * @since 2017-03-23
  */
-public class Manager extends Employee
+public class Manager extends Employee implements Serializable
 {
 	private static final long serialVersionUID = -2861031212711385809L;
-	private boolean managing;
+	private SimpleBooleanProperty managing;
 	
 	/**
 	 * Construct a manager with his/her name and his affected department.
@@ -27,7 +32,7 @@ public class Manager extends Employee
 	public Manager(String lastName, String firstName) throws IllegalArgumentException
 	{
 		super(lastName, firstName);
-		managing = false;
+		managing = new SimpleBooleanProperty(false);
 	}
 	
 	/**
@@ -43,7 +48,7 @@ public class Manager extends Employee
 	public Manager(String lastName, String firstName, LocalTime arrivalTime, LocalTime departureTIme) throws IllegalArgumentException
 	{
 		super(lastName, firstName, arrivalTime, departureTIme);
-		managing = false;
+		managing = new SimpleBooleanProperty(false);
 	}
 	
 	@Override
@@ -59,6 +64,11 @@ public class Manager extends Employee
 	 */
 	public boolean isManaging()
 	{
+		return managingProperty().get();
+	}
+	
+	private SimpleBooleanProperty managingProperty()
+	{
 		return managing;
 	}
 	
@@ -69,6 +79,16 @@ public class Manager extends Employee
 	 */
 	public void setManaging(boolean managing)
 	{
-		this.managing = managing;
+		this.managing.set(managing);
+	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+			oos.writeBoolean(isManaging());
+	}
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		managing = new SimpleBooleanProperty(ois.readBoolean());
 	}
 }
