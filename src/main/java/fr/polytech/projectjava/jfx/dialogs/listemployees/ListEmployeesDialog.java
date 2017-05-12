@@ -30,7 +30,7 @@ public class ListEmployeesDialog extends Stage
 	{
 		VBox root = new VBox();
 		
-		EmployeeList employeeList = new EmployeeList(company.getEmployees());
+		EmployeeList employeeList = new EmployeeList(company.getEmployees(), controller);
 		
 		root.getChildren().addAll(employeeList);
 		VBox.setVgrow(employeeList, Priority.ALWAYS);

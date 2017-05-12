@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.company.staff;
 
+import javafx.beans.binding.StringExpression;
 import javafx.beans.property.SimpleStringProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -38,6 +39,11 @@ public abstract class Person implements Serializable
 		return "Name: \t" + getLastName().toUpperCase() + " " + getFirstName();
 	}
 	
+	public StringExpression fullNameProperty()
+	{
+		return firstNameProperty().concat(" ").concat(lastNameProperty());
+	}
+	
 	/**
 	 * Get the first name of the person.
 	 *
@@ -51,6 +57,11 @@ public abstract class Person implements Serializable
 	public SimpleStringProperty firstNameProperty()
 	{
 		return firstName;
+	}
+	
+	public String getFullName()
+	{
+		return fullNameProperty().get();
 	}
 	
 	/**

@@ -20,6 +20,7 @@ public class MainApplication extends ApplicationBase
 {
 	private MainController controller;
 	private Label companyNameArea;
+	private Label bossNameArea;
 	
 	@Override
 	public void preInit() throws Exception
@@ -37,13 +38,23 @@ public class MainApplication extends ApplicationBase
 		HBox companyNameBox = new HBox();
 		companyNameBox.getChildren().addAll(companyNameLabel, companyNameArea);
 		
+		Label bossNameLabel = new Label("Boss: ");
+		bossNameArea = new Label("");
+		HBox bossNameBox = new HBox();
+		bossNameBox.getChildren().addAll(bossNameLabel, bossNameArea);
+		
 		Button listEmployees = new Button("List employees");
 		listEmployees.setMaxWidth(Double.MAX_VALUE);
 		listEmployees.setOnAction(controller::displayEmployees);
 		
-		root.getChildren().addAll(companyNameBox, listEmployees);
+		root.getChildren().addAll(companyNameBox, bossNameBox, listEmployees);
 		
 		return root;
+	}
+	
+	public StringProperty getBossNameTextProperty()
+	{
+		return bossNameArea.textProperty();
 	}
 	
 	public StringProperty getCompanyNameTextProperty()

@@ -83,6 +83,7 @@ public class MainModel
 			return false;
 		}
 		view.getCompanyNameTextProperty().bind(company.nameProperty());
+		view.getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
 		return true;
 	}
 	

@@ -123,7 +123,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		return nameProperty().get();
 	}
 	
-	private SimpleStringProperty nameProperty()
+	public SimpleStringProperty nameProperty()
 	{
 		return name;
 	}
