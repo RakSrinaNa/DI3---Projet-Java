@@ -36,7 +36,7 @@ public class SimulationController
 		Button source = (Button) evt.getSource();
 		if(employee == null)
 		{
-			source.setText("Please select an employee - Send");
+			source.setText("Please select an employee - Check I/O");
 			return;
 		}
 		try
@@ -52,18 +52,18 @@ public class SimulationController
 			CheckInfos checkInfos = new CheckInfos(employee, checkType, date, time);
 			
 			source.setDisable(true);
-			source.setText("Sending...");
+			source.setText("Check I/O...");
 			
 			model.addChecking(checkInfos);
 			
 			new Thread(new CheckingSender(model.getCheckings().iterator())).start();
 			
-			source.setText("Send");
+			source.setText("Check I/O");
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
-			source.setText("Sending failed, try again");
+			source.setText("Sending failed, check queued");
 		}
 		finally
 		{

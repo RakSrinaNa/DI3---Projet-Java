@@ -99,7 +99,7 @@ public class SimulationApplication extends ApplicationBase
 		checkList.setMaxWidth(Double.MAX_VALUE);
 		checkList.setMaxHeight(Double.MAX_VALUE);
 		
-		Button sendButton = new Button("Send");
+		Button sendButton = new Button("Check I/O");
 		sendButton.setMaxWidth(Double.MAX_VALUE);
 		sendButton.setOnAction(evt -> controller.sendInfos(evt, employeeField.getSelectionModel().getSelectedItem(), typeField.getSelectionModel().getSelectedItem(), dateField.getValue(), timePicker.getTime()));
 		
