@@ -82,9 +82,9 @@ public class MainModel
 			view.getStage().close();
 			return false;
 		}
-		view.getCompanyNameTextProperty().bind(company.nameProperty());
-		view.getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
-		view.getEmployeesList().setItems(company.getEmployees());
+		view.getMainTab().getCompanyNameTextProperty().bind(company.nameProperty());
+		view.getMainTab().getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
+		view.getEmployeeTab().getList().setItems(company.getEmployees());
 		return true;
 	}
 	
