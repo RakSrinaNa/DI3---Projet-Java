@@ -5,6 +5,10 @@ import fr.polytech.projectjava.checkingSimulation.jfx.components.CheckList;
 import fr.polytech.projectjava.checkingSimulation.jfx.components.TimePicker;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.utils.ApplicationBase;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -12,6 +16,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -22,8 +29,12 @@ import java.util.function.Consumer;
  */
 public class SimulationApplication extends ApplicationBase
 {
+	private final static int MILLISECONDS_QUARTER = 900000;
 	private SimulationController controller;
 	private CheckList checkList;
+	private SimpleStringProperty currentTime = new SimpleStringProperty("");
+	private SimpleStringProperty roundedTime = new SimpleStringProperty("");
+	private Timeline currentTimeTimeline;
 	
 	@Override
 	public void preInit() throws Exception
@@ -36,6 +47,19 @@ public class SimulationApplication extends ApplicationBase
 	public Parent createContent(Stage stage)
 	{
 		VBox root = new VBox();
+		
+		HBox times = new HBox();
+		Label currentTime = new Label();
+		currentTime.textProperty().bind(this.currentTime);
+		currentTime.maxWidth(Double.MAX_VALUE);
+		
+		Label roundedTime = new Label();
+		roundedTime.textProperty().bind(this.roundedTime);
+		roundedTime.maxWidth(Double.MAX_VALUE);
+		
+		times.getChildren().addAll(currentTime, roundedTime);
+		HBox.setHgrow(currentTime, Priority.ALWAYS);
+		HBox.setHgrow(roundedTime, Priority.ALWAYS);
 		
 		HBox inputs = new HBox();
 		
@@ -83,10 +107,35 @@ public class SimulationApplication extends ApplicationBase
 		refreshButton.setMaxWidth(Double.MAX_VALUE);
 		refreshButton.setOnAction(evt -> controller.refreshEmployees());
 		
-		root.getChildren().addAll(inputs, checkList, sendButton, refreshButton);
+		root.getChildren().addAll(times, inputs, checkList, sendButton, refreshButton);
 		
 		VBox.setVgrow(checkList, Priority.ALWAYS);
 		return root;
+	}
+	
+	private void startTimeUpdated()
+	{
+		currentTimeTimeline = new Timeline(new KeyFrame(Duration.seconds(0), actionEvent -> {
+			Calendar calendar = Calendar.getInstance();
+			int hours = calendar.get(Calendar.HOUR_OF_DAY);
+			int minutes = calendar.get(Calendar.MINUTE);
+			int seconds = calendar.get(Calendar.SECOND);
+			currentTime.set(hours + ":" + minutes + ":" + seconds);
+			
+			Date time = calendar.getTime();
+			long quarterMillis = time.getTime() % MILLISECONDS_QUARTER;
+			time.setTime(time.getTime() - quarterMillis);
+			if(quarterMillis >= MILLISECONDS_QUARTER / 2)
+				time.setTime(time.getTime() + MILLISECONDS_QUARTER);
+			calendar.setTime(time);
+			
+			hours = calendar.get(Calendar.HOUR_OF_DAY);
+			minutes = calendar.get(Calendar.MINUTE);
+			seconds = calendar.get(Calendar.SECOND);
+			roundedTime.set(hours + ":" + minutes + ":" + seconds);
+		}), new KeyFrame(Duration.seconds(1)));
+		currentTimeTimeline.setCycleCount(Animation.INDEFINITE);
+		currentTimeTimeline.play();
 	}
 	
 	@Override
@@ -98,12 +147,17 @@ public class SimulationApplication extends ApplicationBase
 	@Override
 	public Consumer<Stage> getOnStageDisplayed() throws Exception
 	{
-		return null;
+		return stage -> {
+			startTimeUpdated();
+		};
 	}
 	
 	@Override
 	public Consumer<Stage> getStageHandler()
 	{
-		return stage -> stage.setOnCloseRequest(controller::close);
+		return stage -> stage.setOnCloseRequest(event -> {
+			if(controller.close(event))
+				currentTimeTimeline.stop();
+		});
 	}
 }

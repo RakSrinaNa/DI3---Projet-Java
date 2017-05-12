@@ -5,6 +5,7 @@ import fr.polytech.projectjava.checkingSimulation.CheckingSender;
 import fr.polytech.projectjava.checkingSimulation.Employee;
 import fr.polytech.projectjava.checkingSimulation.EmployeeGetter;
 import fr.polytech.projectjava.company.checking.CheckInOut;
+import fr.polytech.projectjava.utils.Log;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.WindowEvent;
@@ -30,37 +31,43 @@ public class SimulationController
 	
 	public void sendInfos(ActionEvent evt, Employee employee, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
 	{
-		CheckInfos checkInfos = new CheckInfos(employee, checkType, date, time);
+		if(!(evt.getSource() instanceof Button))
+			return;
+		Button source = (Button) evt.getSource();
+		if(employee == null)
+		{
+			source.setText("Please select an employee - Send");
+			return;
+		}
 		try
 		{
 			if(date == null)
 			{
-				((Button) evt.getSource()).setText("Please enter a correct date - Send");
-				return;
+				Log.info("Performing automatic check...");
+				checkType = employee.isInside() ? CheckInOut.CheckType.OUT : CheckInOut.CheckType.IN;
+				employee.setInside(!employee.isInside());
+				date = LocalDate.now();
+				time = LocalTime.now();
 			}
-			if(evt.getSource() instanceof Button)
-			{
-				((Button) evt.getSource()).setDisable(true);
-				((Button) evt.getSource()).setText("Sending...");
-			}
+			CheckInfos checkInfos = new CheckInfos(employee, checkType, date, time);
+			
+			source.setDisable(true);
+			source.setText("Sending...");
 			
 			model.addChecking(checkInfos);
 			
 			new Thread(new CheckingSender(model.getCheckings().iterator())).start();
 			
-			if(evt.getSource() instanceof Button)
-				((Button) evt.getSource()).setText("Send");
+			source.setText("Send");
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
-			if(evt.getSource() instanceof Button)
-				((Button) evt.getSource()).setText("Sending failed, try again");
+			source.setText("Sending failed, try again");
 		}
 		finally
 		{
-			if(evt.getSource() instanceof Button)
-				((Button) evt.getSource()).setDisable(false);
+			source.setDisable(false);
 		}
 	}
 	
@@ -77,9 +84,10 @@ public class SimulationController
 		}
 	}
 	
-	public void close(WindowEvent windowEvent)
+	public boolean close(WindowEvent windowEvent)
 	{
 		model.saveDatas();
+		return true;
 	}
 	
 	public SimulationModel getModel()

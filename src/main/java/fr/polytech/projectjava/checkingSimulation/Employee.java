@@ -19,12 +19,14 @@ public class Employee implements Serializable
 	private SimpleIntegerProperty ID;
 	private SimpleStringProperty first;
 	private SimpleStringProperty last;
+	private boolean inside;
 	
 	public Employee(int ID, String first, String last)
 	{
 		this.ID = new SimpleIntegerProperty(ID);
 		this.first = new SimpleStringProperty(first);
 		this.last = new SimpleStringProperty(last);
+		inside = false;
 	}
 	
 	public static Employee parse(String s)
@@ -82,5 +84,15 @@ public class Employee implements Serializable
 		ID = new SimpleIntegerProperty(ois.readInt());
 		first = new SimpleStringProperty((String) ois.readObject());
 		last = new SimpleStringProperty((String) ois.readObject());
+	}
+	
+	public boolean isInside()
+	{
+		return inside;
+	}
+	
+	public void setInside(boolean inside)
+	{
+		this.inside = inside;
 	}
 }

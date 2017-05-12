@@ -39,6 +39,6 @@ public class NumberField extends TextField
 	
 	public int getInt()
 	{
-		return Integer.parseInt(getText());
+		return getText().equals("") ? 0 : Integer.parseInt(getText());
 	}
 }
