@@ -84,6 +84,7 @@ public class MainModel
 		}
 		view.getCompanyNameTextProperty().bind(company.nameProperty());
 		view.getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
+		view.getEmployeesList().setItems(company.getEmployees());
 		return true;
 	}
 	

@@ -4,9 +4,11 @@ import fr.polytech.projectjava.utils.ApplicationBase;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import java.util.function.Consumer;
 
@@ -19,8 +21,9 @@ import java.util.function.Consumer;
 public class MainApplication extends ApplicationBase
 {
 	private MainController controller;
-	private Label companyNameArea;
-	private Label bossNameArea;
+	private Text companyNameArea;
+	private Text bossNameArea;
+	private EmployeeList employeeList;
 	
 	@Override
 	public void preInit() throws Exception
@@ -33,21 +36,24 @@ public class MainApplication extends ApplicationBase
 	{
 		VBox root = new VBox();
 		
-		Label companyNameLabel = new Label("Company name: ");
-		companyNameArea = new Label("");
-		HBox companyNameBox = new HBox();
-		companyNameBox.getChildren().addAll(companyNameLabel, companyNameArea);
+		Text companyNameLabel = new Text("Company name: ");
+		companyNameArea = new Text("");
+		TextFlow companyNameBox = new TextFlow(companyNameLabel, companyNameArea);
 		
-		Label bossNameLabel = new Label("Boss: ");
-		bossNameArea = new Label("");
-		HBox bossNameBox = new HBox();
-		bossNameBox.getChildren().addAll(bossNameLabel, bossNameArea);
+		Text bossNameLabel = new Text("Boss: ");
+		bossNameArea = new Text("");
+		TextFlow bossNameBox = new TextFlow(bossNameLabel, bossNameArea);
 		
-		Button listEmployees = new Button("List employees");
-		listEmployees.setMaxWidth(Double.MAX_VALUE);
-		listEmployees.setOnAction(controller::displayEmployees);
+		employeeList = new EmployeeList(controller);
 		
-		root.getChildren().addAll(companyNameBox, bossNameBox, listEmployees);
+		Button addEmployeeButton = new Button("Add employee");
+		addEmployeeButton.setMaxWidth(Double.MAX_VALUE);
+		
+		HBox employeeControls = new HBox();
+		employeeControls.getChildren().addAll(addEmployeeButton);
+		HBox.setHgrow(addEmployeeButton, Priority.ALWAYS);
+		
+		root.getChildren().addAll(companyNameBox, bossNameBox, employeeList, employeeControls);
 		
 		return root;
 	}
@@ -60,6 +66,11 @@ public class MainApplication extends ApplicationBase
 	public StringProperty getCompanyNameTextProperty()
 	{
 		return companyNameArea.textProperty();
+	}
+	
+	public EmployeeList getEmployeesList()
+	{
+		return employeeList;
 	}
 	
 	@Override

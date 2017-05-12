@@ -1,9 +1,8 @@
-package fr.polytech.projectjava.jfx.dialogs.listemployees;
+package fr.polytech.projectjava.jfx.main;
 
 import fr.polytech.projectjava.company.staff.Employee;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -16,7 +15,7 @@ import javafx.scene.control.TableView;
  */
 public class EmployeeList extends TableView<Employee>
 {
-	public EmployeeList(ObservableList<Employee> employees, ListEmployeesDialogController controller)
+	public EmployeeList(MainController controller)
 	{
 		super();
 		setEditable(true);
@@ -40,7 +39,6 @@ public class EmployeeList extends TableView<Employee>
 		});
 		
 		setSortPolicy(p -> false);
-		setItems(employees);
 		
 		Platform.runLater(() -> {
 			setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
