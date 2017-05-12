@@ -9,10 +9,12 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -48,18 +50,16 @@ public class SimulationApplication extends ApplicationBase
 	{
 		VBox root = new VBox();
 		
-		HBox times = new HBox();
+		StackPane times = new StackPane();
 		Label currentTime = new Label();
 		currentTime.textProperty().bind(this.currentTime);
-		currentTime.maxWidth(Double.MAX_VALUE);
 		
 		Label roundedTime = new Label();
 		roundedTime.textProperty().bind(this.roundedTime);
-		roundedTime.maxWidth(Double.MAX_VALUE);
 		
 		times.getChildren().addAll(currentTime, roundedTime);
-		HBox.setHgrow(currentTime, Priority.ALWAYS);
-		HBox.setHgrow(roundedTime, Priority.ALWAYS);
+		StackPane.setAlignment(currentTime, Pos.CENTER_LEFT);
+		StackPane.setAlignment(roundedTime, Pos.CENTER_RIGHT);
 		
 		HBox inputs = new HBox();
 		
@@ -120,7 +120,7 @@ public class SimulationApplication extends ApplicationBase
 			int hours = calendar.get(Calendar.HOUR_OF_DAY);
 			int minutes = calendar.get(Calendar.MINUTE);
 			int seconds = calendar.get(Calendar.SECOND);
-			currentTime.set(hours + ":" + minutes + ":" + seconds);
+			currentTime.set((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
 			
 			Date time = calendar.getTime();
 			long quarterMillis = time.getTime() % MILLISECONDS_QUARTER;
@@ -131,8 +131,7 @@ public class SimulationApplication extends ApplicationBase
 			
 			hours = calendar.get(Calendar.HOUR_OF_DAY);
 			minutes = calendar.get(Calendar.MINUTE);
-			seconds = calendar.get(Calendar.SECOND);
-			roundedTime.set(hours + ":" + minutes + ":" + seconds);
+			roundedTime.set((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes);
 		}), new KeyFrame(Duration.seconds(1)));
 		currentTimeTimeline.setCycleCount(Animation.INDEFINITE);
 		currentTimeTimeline.play();
