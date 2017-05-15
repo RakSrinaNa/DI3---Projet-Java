@@ -22,12 +22,10 @@ import java.util.Optional;
 public class MainController
 {
 	private final MainModel model;
-	private final MainApplication view;
 	private ThreadCheckingReceiver socketReceiver;
 	
 	public MainController(MainApplication mainApplication)
 	{
-		view = mainApplication;
 		model = new MainModel(mainApplication);
 		try
 		{

@@ -8,6 +8,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 /**
+ * Represent a list of checkings.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 03/05/2017.
  *
  * @author Thomas Couchoud
@@ -34,7 +36,9 @@ public class CheckList extends TableView<CheckInfos>
 		TableColumn<CheckInfos, String> columnDate = new TableColumn<>("Date");
 		columnDate.setCellValueFactory(value -> value.getValue().dateProperty());
 		
+		//noinspection unchecked
 		columnEmployee.getColumns().addAll(columnEmployeeID, columnEmployeeName);
+		//noinspection unchecked
 		getColumns().addAll(columnEmployee, columnCheckType, columnDate);
 		
 		setSortPolicy(p -> false);

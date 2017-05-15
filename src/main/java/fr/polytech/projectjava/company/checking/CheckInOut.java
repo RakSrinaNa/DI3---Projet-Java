@@ -74,11 +74,21 @@ public class CheckInOut implements Serializable
 		return checkType;
 	}
 	
+	/**
+	 * Get the day of the check.
+	 *
+	 * @return The day.
+	 */
 	public LocalDate getDay()
 	{
 		return checkDate;
 	}
 	
+	/**
+	 * Get the time of the check.
+	 *
+	 * @return The time.
+	 */
 	public LocalTime getTime()
 	{
 		return checkTime;

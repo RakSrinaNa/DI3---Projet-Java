@@ -10,6 +10,7 @@ import javafx.util.Pair;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,7 +33,8 @@ public class ThreadCheckingReceiver extends UDPServerBuilder
 	/**
 	 * Constructor.
 	 *
-	 * @param controller The controller of the main application
+	 * @param controller The controller of the main application.
+	 * @throws SocketException {@link java.net.DatagramSocket#DatagramSocket(SocketAddress)} If the socket could not be opened, or the socket could not bind to the specified local port.
 	 */
 	public ThreadCheckingReceiver(MainController controller) throws SocketException
 	{
@@ -41,6 +43,9 @@ public class ThreadCheckingReceiver extends UDPServerBuilder
 		setTimeout(20000);
 	}
 	
+	/**
+	 * Stop the server.
+	 */
 	public void stop()
 	{
 		stop = true;
@@ -78,6 +83,13 @@ public class ThreadCheckingReceiver extends UDPServerBuilder
 		}
 	}
 	
+	/**
+	 * Handle the reception of new datas.
+	 *
+	 * @param datagramPacketPair The data received.
+	 * @throws IOException If the ACK couldn't be sent.
+	 * @throws ParseException If the date couldn't be read.
+	 */
 	private void processCheck(Pair<DatagramPacket, byte[]> datagramPacketPair) throws IOException, ParseException
 	{
 		String response[] = new String(datagramPacketPair.getValue()).split(";");
@@ -85,6 +97,13 @@ public class ThreadCheckingReceiver extends UDPServerBuilder
 			replyPacket(datagramPacketPair.getKey(), "OK".getBytes());
 	}
 	
+	/**
+	 * Send an employee.
+	 *
+	 * @param packetSize The maximum packet size.
+	 * @param datagramPacket The packet to reply to.
+	 * @throws IOException If the data couldn't be sent.
+	 */
 	private void sendEmployees(int packetSize, DatagramPacket datagramPacket) throws IOException
 	{
 		for(Employee employee : controller.listEmployees())
@@ -97,6 +116,12 @@ public class ThreadCheckingReceiver extends UDPServerBuilder
 		replyPacket(datagramPacket, "DONE".getBytes());
 	}
 	
+	/**
+	 * Transform an employee to a string ready to be sent.
+	 *
+	 * @param employee The employee to stringify.
+	 * @return The string to send corresponding to the employee.
+	 */
 	private String employeeToString(Employee employee)
 	{
 		return employee.getID() + ";" + employee.getFirstName() + ";" + employee.getLastName();

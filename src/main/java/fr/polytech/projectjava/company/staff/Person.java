@@ -39,6 +39,11 @@ public abstract class Person implements Serializable
 		return "Name: \t" + getLastName().toUpperCase() + " " + getFirstName();
 	}
 	
+	/**
+	 * Get the full name string expression.
+	 *
+	 * @return The full name expression.
+	 */
 	public StringExpression fullNameProperty()
 	{
 		return firstNameProperty().concat(" ").concat(lastNameProperty());
@@ -54,14 +59,24 @@ public abstract class Person implements Serializable
 		return firstNameProperty().get();
 	}
 	
+	/**
+	 * Get the first name property.
+	 *
+	 * @return The first name property.
+	 */
 	public SimpleStringProperty firstNameProperty()
 	{
 		return firstName;
 	}
 	
-	public String getFullName()
+	/**
+	 * Get the last name property.
+	 *
+	 * @return The last name property.
+	 */
+	public SimpleStringProperty lastNameProperty()
 	{
-		return fullNameProperty().get();
+		return lastName;
 	}
 	
 	/**
@@ -74,20 +89,39 @@ public abstract class Person implements Serializable
 		return lastNameProperty().get();
 	}
 	
-	public SimpleStringProperty lastNameProperty()
-	{
-		return lastName;
-	}
-	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 * @throws IOException If the serialization failed.
+	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
 		oos.writeObject(lastName.get());
 		oos.writeObject(firstName.get());
 	}
 	
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		lastName = new SimpleStringProperty((String) ois.readObject());
 		firstName = new SimpleStringProperty((String) ois.readObject());
+	}
+	
+	/**
+	 * Get the full name of the person.
+	 *
+	 * @return The full name.
+	 */
+	public String getFullName()
+	{
+		return fullNameProperty().get();
 	}
 }

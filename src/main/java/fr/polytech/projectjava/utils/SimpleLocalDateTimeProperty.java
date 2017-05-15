@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * Property to modify a StringProperty depending on a date.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 06/05/2017.
  *
  * @author Thomas Couchoud
@@ -15,6 +17,12 @@ public class SimpleLocalDateTimeProperty extends SimpleStringProperty
 	private final DateTimeFormatter formatter;
 	private LocalDateTime date;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param date      The default date to set.
+	 * @param formatter The formatter to use with the date.
+	 */
 	public SimpleLocalDateTimeProperty(LocalDateTime date, DateTimeFormatter formatter)
 	{
 		super(formatter.format(date));
@@ -22,19 +30,22 @@ public class SimpleLocalDateTimeProperty extends SimpleStringProperty
 		this.formatter = formatter;
 	}
 	
-	@Override
-	@Deprecated
-	public void set(String newValue)
-	{
-		super.set(newValue);
-	}
-	
+	/**
+	 * Set the date of the property.
+	 *
+	 * @param newValue The new date to set.
+	 */
 	public void set(LocalDateTime newValue)
 	{
 		super.set(formatter.format(newValue));
 		date = newValue;
 	}
 	
+	/**
+	 * Get the date of the property.
+	 *
+	 * @return The date.
+	 */
 	public LocalDateTime getDate()
 	{
 		return date;

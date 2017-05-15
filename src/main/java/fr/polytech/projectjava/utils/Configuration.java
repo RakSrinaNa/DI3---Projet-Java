@@ -11,7 +11,7 @@ import java.util.Properties;
  */
 public class Configuration
 {
-	private static Properties properties = new Properties();
+	private static final Properties properties = new Properties();
 	
 	public static int getInt(String key)
 	{

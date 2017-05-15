@@ -8,6 +8,8 @@ import javafx.collections.ObservableList;
 import java.io.*;
 
 /**
+ * Model for the checking application.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 03/05/2017.
  *
  * @author Thomas Couchoud
@@ -18,6 +20,9 @@ public class SimulationModel
 	private final ObservableList<Employee> employees;
 	private final ObservableList<CheckInfos> checkings;
 	
+	/**
+	 * Constructor.
+	 */
 	public SimulationModel()
 	{
 		employees = FXCollections.observableArrayList();
@@ -38,11 +43,19 @@ public class SimulationModel
 		}
 	}
 	
+	/**
+	 * Add a checking to the model.
+	 *
+	 * @param checkInfos The checking to add.
+	 */
 	public void addChecking(CheckInfos checkInfos)
 	{
 		checkings.add(checkInfos);
 	}
 	
+	/**
+	 * Save the model into a file.
+	 */
 	public void saveDatas()
 	{
 		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("simulationSaveFile")))))
@@ -57,11 +70,21 @@ public class SimulationModel
 		}
 	}
 	
+	/**
+	 * Get the list of the checkings.
+	 *
+	 * @return The checking list.
+	 */
 	public ObservableList<CheckInfos> getCheckings()
 	{
 		return checkings;
 	}
 	
+	/**
+	 * Get the list of the employees.
+	 *
+	 * @return The employee list.
+	 */
 	public ObservableList<Employee> getEmployeeList()
 	{
 		return employees;

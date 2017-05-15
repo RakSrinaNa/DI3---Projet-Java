@@ -113,12 +113,23 @@ public class Company implements Serializable
 			departments.add(department);
 	}
 	
+	/**
+	 * Add an employee to the company.
+	 *
+	 * @param employee The employee to add.
+	 */
 	public void addEmployee(Employee employee)
 	{
 		if(!employees.contains(employee))
 			employees.add(employee);
 	}
 	
+	/**
+	 * Remove an employee from the company.
+	 * If the employee is currently affected to a department, he/she won't be removed from the company.
+	 *
+	 * @param employee The employee to remove.
+	 */
 	public void removeEmployee(Employee employee)
 	{
 		if(employee.getWorkingDepartment() == null)
@@ -135,6 +146,11 @@ public class Company implements Serializable
 		return bossProperty().get();
 	}
 	
+	/**
+	 * Get the boss property.
+	 *
+	 * @return The boss property.
+	 */
 	private SimpleObjectProperty<Boss> bossProperty()
 	{
 		return boss;
@@ -190,11 +206,23 @@ public class Company implements Serializable
 		return nameProperty().get();
 	}
 	
+	/**
+	 * Get the name property.
+	 *
+	 * @return The name porperty.
+	 */
 	public SimpleStringProperty nameProperty()
 	{
 		return name;
 	}
 	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
 		oos.writeObject(getName());
@@ -208,6 +236,14 @@ public class Company implements Serializable
 			oos.writeObject(employees.get(i));
 	}
 	
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		name = new SimpleStringProperty((String) ois.readObject());

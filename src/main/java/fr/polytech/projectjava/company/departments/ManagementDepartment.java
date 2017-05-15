@@ -28,11 +28,4 @@ public class ManagementDepartment extends Department<Boss, Manager> implements S
 	{
 		super(company, "Management department", boss);
 	}
-	
-	@Override
-	public String toString()
-	{
-		return super.toString();
-	}
-	
 }

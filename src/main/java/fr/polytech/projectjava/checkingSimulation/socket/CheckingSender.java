@@ -1,5 +1,6 @@
-package fr.polytech.projectjava.checkingSimulation;
+package fr.polytech.projectjava.checkingSimulation.socket;
 
+import fr.polytech.projectjava.checkingSimulation.CheckInfos;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.UDPClientBuilder;
 import javafx.util.Pair;
@@ -9,6 +10,8 @@ import java.net.InetSocketAddress;
 import java.util.Iterator;
 
 /**
+ * The socket client sending the checks to the server.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 28/03/2017.
  *
  * @author Thomas Couchoud
@@ -18,6 +21,13 @@ public class CheckingSender extends UDPClientBuilder
 {
 	private final Iterator<CheckInfos> datas;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param datas An iterator of the checkings to send.
+	 *
+	 * @throws IOException If an error occurred creating the client.
+	 */
 	public CheckingSender(Iterator<CheckInfos> datas) throws IOException
 	{
 		super();

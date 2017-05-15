@@ -1,5 +1,6 @@
-package fr.polytech.projectjava.checkingSimulation;
+package fr.polytech.projectjava.checkingSimulation.socket;
 
+import fr.polytech.projectjava.checkingSimulation.Employee;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.UDPClientBuilder;
 import javafx.collections.ObservableList;

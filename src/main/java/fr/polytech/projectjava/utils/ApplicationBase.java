@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * Basic scheme for a JavaFX application.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 28/03/2017.
  *
  * @author Thomas Couchoud
@@ -31,20 +31,12 @@ public abstract class ApplicationBase extends Application
 			setIcon(getIcon());
 		if(getStageHandler() != null)
 			this.getStageHandler().accept(stage);
-		if(shouldDisplayAtStart())
-		{
-			stage.show();
-			if(getOnStageDisplayed() != null)
-				this.getOnStageDisplayed().accept(stage);
-		}
+		stage.show();
+		if(getOnStageDisplayed() != null)
+			this.getOnStageDisplayed().accept(stage);
 	}
 	
 	public void preInit() throws Exception{}
-	
-	public boolean shouldDisplayAtStart()
-	{
-		return true;
-	}
 	
 	public Scene buildScene(Stage stage)
 	{

@@ -22,7 +22,7 @@ public class CompanyCreateDialog extends Stage
 	private TextField companyNameInput;
 	private TextField bossFirstNameInput;
 	private TextField bossLastNameInput;
-	private CompanyCreateDialogController controller;
+	private final CompanyCreateDialogController controller;
 	
 	public CompanyCreateDialog()
 	{

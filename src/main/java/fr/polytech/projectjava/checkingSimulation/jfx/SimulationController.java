@@ -1,11 +1,10 @@
 package fr.polytech.projectjava.checkingSimulation.jfx;
 
 import fr.polytech.projectjava.checkingSimulation.CheckInfos;
-import fr.polytech.projectjava.checkingSimulation.CheckingSender;
 import fr.polytech.projectjava.checkingSimulation.Employee;
-import fr.polytech.projectjava.checkingSimulation.EmployeeGetter;
+import fr.polytech.projectjava.checkingSimulation.socket.CheckingSender;
+import fr.polytech.projectjava.checkingSimulation.socket.EmployeeGetter;
 import fr.polytech.projectjava.company.checking.CheckInOut;
-import fr.polytech.projectjava.utils.Log;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.WindowEvent;
@@ -14,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
+ * The controller for the checking application.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 25/04/2017.
  *
  * @author Thomas Couchoud
@@ -23,13 +24,22 @@ public class SimulationController
 {
 	private final SimulationModel model;
 	
+	/**
+	 * Constructor.
+	 */
 	public SimulationController()
 	{
 		model = new SimulationModel();
 		refreshEmployees();
 	}
 	
-	public void sendInfos(ActionEvent evt, Employee employee, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
+	/**
+	 * Called when the check I/O button is clicked.
+	 *
+	 * @param evt      The event that happened.
+	 * @param employee The employee concerned with the check.
+	 */
+	public void sendInfos(ActionEvent evt, Employee employee)
 	{
 		if(!(evt.getSource() instanceof Button))
 			return;
@@ -41,15 +51,8 @@ public class SimulationController
 		}
 		try
 		{
-			if(date == null)
-			{
-				Log.info("Performing automatic check...");
-				checkType = employee.isInside() ? CheckInOut.CheckType.OUT : CheckInOut.CheckType.IN;
-				employee.setInside(!employee.isInside());
-				date = LocalDate.now();
-				time = LocalTime.now();
-			}
-			CheckInfos checkInfos = new CheckInfos(employee, checkType, date, time);
+			CheckInfos checkInfos = new CheckInfos(employee, employee.isInside() ? CheckInOut.CheckType.OUT : CheckInOut.CheckType.IN, LocalDate.now(), LocalTime.now());
+			employee.setInside(!employee.isInside());
 			
 			source.setDisable(true);
 			source.setText("Check I/O...");
@@ -71,6 +74,9 @@ public class SimulationController
 		}
 	}
 	
+	/**
+	 * Refresh the employee list with the server.
+	 */
 	public void refreshEmployees()
 	{
 		try
@@ -84,12 +90,25 @@ public class SimulationController
 		}
 	}
 	
+	/**
+	 * Called when the window have to close.
+	 * Save the model.
+	 *
+	 * @param windowEvent The event closing the window.
+	 *
+	 * @return True if everything went fine, false else.
+	 */
 	public boolean close(WindowEvent windowEvent)
 	{
 		model.saveDatas();
 		return true;
 	}
 	
+	/**
+	 * Get the model.
+	 *
+	 * @return The model.
+	 */
 	public SimulationModel getModel()
 	{
 		return model;

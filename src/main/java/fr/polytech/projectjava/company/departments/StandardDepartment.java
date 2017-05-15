@@ -72,10 +72,4 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 		employee.setWorkingDepartment(null);
 		super.removeEmployee(employee);
 	}
-	
-	@Override
-	public String toString()
-	{
-		return super.toString();
-	}
 }

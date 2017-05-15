@@ -113,7 +113,11 @@ public class Employee extends Person implements Serializable
 	/**
 	 * Get the number of minutes the employee done more.
 	 *
+	 * @param maxDate The maximum date to check for the times. If null, the current time will be used.
+	 *
 	 * @return The number of minutes. If the number is negative it represents the number of minutes dues.
+	 *
+	 * @throws IllegalStateException If the checks are in an invalid state (more than 2 checks a day or 2 times the same type of check).
 	 */
 	public long getOverMinutes(LocalDate maxDate) throws IllegalStateException
 	{
@@ -128,8 +132,11 @@ public class Employee extends Person implements Serializable
 		while(currentDate.compareTo(maxDate) <= 0)
 		{
 			List<CheckInOut> checks = checksByDate.containsKey(currentDate) ? checksByDate.get(currentDate) : new ArrayList<>();
-			if(checks.size() == 1 || checks.size() > 2 || (checks.size() == 2 && checks.get(0).getCheckType() == checks.get(1).getCheckType()))
+			if(checks.size() > 2 || (checks.size() == 2 && checks.get(0).getCheckType() == checks.get(1).getCheckType()))
 				throw new IllegalStateException("Problem with checks on day" + currentDate + "!");
+			
+			if(checks.size() == 1)
+				continue;
 			
 			if(workingDays.contains(currentDate.getDayOfWeek()))
 			{
@@ -157,6 +164,11 @@ public class Employee extends Person implements Serializable
 		return arrivalTimeProperty().get();
 	}
 	
+	/**
+	 * Get the arrival time property.
+	 *
+	 * @return The arrival time property.
+	 */
 	private SimpleObjectProperty<LocalTime> arrivalTimeProperty()
 	{
 		return arrivalTime;
@@ -196,6 +208,11 @@ public class Employee extends Person implements Serializable
 		return departureTimeProperty().get();
 	}
 	
+	/**
+	 * Get the departure time property.
+	 *
+	 * @return The departure time property.
+	 */
 	private SimpleObjectProperty<LocalTime> departureTimeProperty()
 	{
 		return departureTime;
@@ -235,6 +252,11 @@ public class Employee extends Person implements Serializable
 		return workingDepartmentProperty().get();
 	}
 	
+	/**
+	 * Get the working department property.
+	 *
+	 * @return The working department property.
+	 */
 	public SimpleObjectProperty<StandardDepartment> workingDepartmentProperty()
 	{
 		return workingDepartment;
@@ -250,6 +272,13 @@ public class Employee extends Person implements Serializable
 		this.workingDepartment.set(workingDepartment);
 	}
 	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
 		oos.writeInt(getID());
@@ -264,9 +293,18 @@ public class Employee extends Person implements Serializable
 			oos.writeObject(check);
 	}
 	
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		ID = ois.readInt();
+		NEXT_ID = Math.max(ID, NEXT_ID);
 		workingDepartment = new SimpleObjectProperty<>((StandardDepartment) ois.readObject());
 		arrivalTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());
 		departureTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());

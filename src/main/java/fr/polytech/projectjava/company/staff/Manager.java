@@ -67,6 +67,11 @@ public class Manager extends Employee implements Serializable
 		return managingProperty().get();
 	}
 	
+	/**
+	 * Get the managing property.
+	 *
+	 * @return The managing property.
+	 */
 	private SimpleBooleanProperty managingProperty()
 	{
 		return managing;
@@ -82,11 +87,26 @@ public class Manager extends Employee implements Serializable
 		this.managing.set(managing);
 	}
 	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
-			oos.writeBoolean(isManaging());
+		oos.writeBoolean(isManaging());
 	}
 	
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		managing = new SimpleBooleanProperty(ois.readBoolean());

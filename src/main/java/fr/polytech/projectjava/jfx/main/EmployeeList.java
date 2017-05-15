@@ -29,6 +29,7 @@ public class EmployeeList extends TableView<Employee>
 		TableColumn<Employee, String> columnEmployeeDepartment = new TableColumn<>("Working department");
 		columnEmployeeDepartment.setCellValueFactory(value -> value.getValue().workingDepartmentProperty().get().nameProperty());
 		
+		//noinspection unchecked
 		getColumns().addAll(columnEmployeeID, columnEmployeeName, columnEmployeeDepartment);
 		
 		this.setRowFactory(tv ->
