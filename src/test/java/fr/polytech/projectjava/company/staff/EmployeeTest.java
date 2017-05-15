@@ -64,6 +64,7 @@ public class EmployeeTest
 	{
 		Employee employee = new Employee("A", "B");
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN));
+		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN));
 		employee.getOverMinutes(LocalDate.now());
 	}
 	
