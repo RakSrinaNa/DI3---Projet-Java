@@ -12,14 +12,13 @@ import java.util.logging.Logger;
  * @author Thomas Couchoud
  * @since 2017-03-28
  */
-@SuppressWarnings("unused")
 public class Log
 {
 	private static final ArrayList<LogListener> listeners = new ArrayList<>();
 	private static Logger logger;
 	
 	/**
-	 * Interface to lister new messages.
+	 * Interface to listen new messages.
 	 */
 	public interface LogListener
 	{

@@ -107,6 +107,7 @@ public class Manager extends Employee implements Serializable
 	 * @throws IOException            If the deserialization failed.
 	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
 	 */
+	@SuppressWarnings("RedundantThrows")
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		managing = new SimpleBooleanProperty(ois.readBoolean());

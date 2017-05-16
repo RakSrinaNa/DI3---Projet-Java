@@ -26,6 +26,7 @@ public abstract class UDPClientBuilder extends DatagramSocketBase
 	 * Constructor.
 	 *
 	 * @param address Bind this client to this address.
+	 *
 	 * @throws SocketException {@link java.net.DatagramSocket#DatagramSocket(SocketAddress)} If the socket could not be opened, or the socket could not bind to the specified local port.
 	 */
 	public UDPClientBuilder(InetSocketAddress address) throws SocketException

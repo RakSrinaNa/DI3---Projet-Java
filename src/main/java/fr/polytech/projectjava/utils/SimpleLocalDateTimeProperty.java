@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Property to modify a StringProperty depending on a date.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 06/05/2017.
  *
  * @author Thomas Couchoud
