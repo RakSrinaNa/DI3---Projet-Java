@@ -98,6 +98,7 @@ public class SimulationController
 	 *
 	 * @return True if everything went fine, false else.
 	 */
+	@SuppressWarnings("SameReturnValue")
 	public boolean close(WindowEvent windowEvent)
 	{
 		model.saveDatas();
