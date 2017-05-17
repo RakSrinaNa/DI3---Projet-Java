@@ -9,10 +9,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
@@ -38,34 +36,25 @@ public class EmployeeTest
 		
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/02 08:00:00")));
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/02 17:00:00")));
-		assertEquals(0, employee.getOverMinutes(Date.valueOf("2017-01-02").toLocalDate()));
+		assertEquals(0, employee.updateOvertime(Date.valueOf("2017-01-02").toLocalDate()));
 		
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/03 08:10:00")));
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/03 17:00:00")));
-		assertEquals(-15, employee.getOverMinutes(Date.valueOf("2017-01-03").toLocalDate()));
+		assertEquals(-15, employee.updateOvertime(Date.valueOf("2017-01-03").toLocalDate()));
 		
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/04 08:00:00")));
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/04 17:30:00")));
-		assertEquals(15, employee.getOverMinutes(Date.valueOf("2017-01-04").toLocalDate()));
+		assertEquals(15, employee.updateOvertime(Date.valueOf("2017-01-04").toLocalDate()));
 		
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/05 07:45:00")));
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/05 17:30:00")));
-		assertEquals(60, employee.getOverMinutes(Date.valueOf("2017-01-05").toLocalDate()));
+		assertEquals(60, employee.updateOvertime(Date.valueOf("2017-01-05").toLocalDate()));
 		
-		assertEquals(60 - (employee.getDepartureTime().toSecondOfDay() - employee.getArrivalTime().toSecondOfDay()) / 60, employee.getOverMinutes(Date.valueOf("2017-01-06").toLocalDate()));
+		assertEquals(60 - (employee.getDepartureTime().toSecondOfDay() - employee.getArrivalTime().toSecondOfDay()) / 60, employee.updateOvertime(Date.valueOf("2017-01-06").toLocalDate()));
 		
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN, formatter.parse("2017/01/07 08:00:00")));
 		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.OUT, formatter.parse("2017/01/07 17:00:00")));
-		assertEquals(60, employee.getOverMinutes(Date.valueOf("2017-01-07").toLocalDate()));
-	}
-	
-	@Test(expected = IllegalStateException.class)
-	public void getOverMinutesFail()
-	{
-		Employee employee = new Employee("A", "B");
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN));
-		employee.addCheckInOut(new CheckInOut(CheckInOut.CheckType.IN));
-		employee.getOverMinutes(LocalDate.now());
+		assertEquals(60, employee.updateOvertime(Date.valueOf("2017-01-07").toLocalDate()));
 	}
 	
 	@Before
@@ -106,8 +95,7 @@ public class EmployeeTest
 		employee.addCheckInOut(check1);
 		employee.addCheckInOut(check2);
 		
-		assertTrue(employee.getChecks().contains(check1));
-		assertTrue(employee.getChecks().contains(check2));
+		assertEquals(1, employee.getChecks().size());
 	}
 	
 	@Test

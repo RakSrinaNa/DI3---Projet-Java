@@ -1,7 +1,9 @@
 package fr.polytech.projectjava.company.staff;
 
 import fr.polytech.projectjava.company.checking.CheckInOut;
+import fr.polytech.projectjava.company.checking.EmployeeCheck;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,14 +14,14 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * Represent an employee in the company.
@@ -36,8 +38,10 @@ public class Employee extends Person implements Serializable
 	protected final static LocalTime DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00").toLocalTime();
 	private static final long serialVersionUID = -8611138931676775765L;
 	private int ID;
-	private ObservableList<CheckInOut> checks = FXCollections.observableArrayList();
+	private ObservableList<EmployeeCheck> checks = FXCollections.observableArrayList();
 	private ObservableList<DayOfWeek> workingDays = FXCollections.observableArrayList();
+	private SimpleObjectProperty<Duration> lateDuration;
+	private SimpleBooleanProperty isPresent;
 	protected static int NEXT_ID = 0;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
 	private SimpleObjectProperty<LocalTime> arrivalTime;
@@ -74,7 +78,9 @@ public class Employee extends Person implements Serializable
 		this.ID = NEXT_ID++;
 		this.arrivalTime = new SimpleObjectProperty<>(arrivalTime);
 		this.departureTime = new SimpleObjectProperty<>(departureTIme);
+		this.lateDuration = new SimpleObjectProperty<>(Duration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
+		isPresent = new SimpleBooleanProperty(false);
 	}
 	
 	@Override
@@ -96,7 +102,31 @@ public class Employee extends Person implements Serializable
 	 */
 	public void addCheckInOut(CheckInOut checkInOut)
 	{
-		checks.add(checkInOut);
+		boolean found = false;
+		for(EmployeeCheck check : checks)
+			if(check.isDateOf(checkInOut))
+			{
+				check.setInOut(checkInOut);
+				found = true;
+				break;
+			}
+		if(!found)
+			checks.add(new EmployeeCheck(checkInOut));
+		updateOvertime(null);
+		updatePresence();
+	}
+	
+	/**
+	 * Update the presence of the employee based on the checks.
+	 */
+	private void updatePresence()
+	{
+		EmployeeCheck lastCheck = null;
+		for(EmployeeCheck check : checks)
+			if(lastCheck == null || lastCheck.getDate().isBefore(check.getDate()))
+				lastCheck = check;
+		if(lastCheck != null)
+			isPresent.set(lastCheck.isInProgress());
 	}
 	
 	/**
@@ -115,43 +145,48 @@ public class Employee extends Person implements Serializable
 	 *
 	 * @param maxDate The maximum date to check for the times. If null, the current time will be used.
 	 *
-	 * @return The number of minutes. If the number is negative it represents the number of minutes dues.
+	 * @return The number of minutes overtime.
 	 *
 	 * @throws IllegalStateException If the checks are in an invalid state (more than 2 checks a day or 2 times the same type of check).
 	 */
-	public long getOverMinutes(LocalDate maxDate) throws IllegalStateException
+	public long updateOvertime(LocalDate maxDate) throws IllegalStateException
 	{
 		if(maxDate == null)
 			maxDate = new Date(System.currentTimeMillis()).toLocalDate();
-		Map<LocalDate, List<CheckInOut>> checksByDate = checks.stream().collect(Collectors.groupingBy(CheckInOut::getDay));
 		
+		Map<LocalDate, EmployeeCheck> checksByDate = checks.stream().collect(Collectors.toMap(EmployeeCheck::getDate, Function.identity()));
 		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate());
-		
-		long total = 0;
-		
+		Duration overtime = Duration.ZERO;
 		while(currentDate.compareTo(maxDate) <= 0)
 		{
-			List<CheckInOut> checks = checksByDate.containsKey(currentDate) ? checksByDate.get(currentDate) : new ArrayList<>();
-			if(checks.size() > 2 || (checks.size() == 2 && checks.get(0).getCheckType() == checks.get(1).getCheckType()))
-				throw new IllegalStateException("Problem with checks on day" + currentDate + "!");
-			
-			if(checks.size() == 1)
-				continue;
-			
-			if(workingDays.contains(currentDate.getDayOfWeek()))
+			if(checksByDate.containsKey(currentDate))
 			{
-				total -= getArrivalTime().until(getDepartureTime(), MINUTES);
-				if(checks.size() == 2)
-					for(CheckInOut check : checks)
-						total += (check.getCheckType() == CheckInOut.CheckType.IN ? -1 : 1) * check.getTime().toSecondOfDay() / 60;
+				overtime = overtime.plus(checksByDate.get(currentDate).getWorkedTime()).minus(getWorkTimeForDay(currentDate.getDayOfWeek()));
 			}
-			else if(checks.size() == 2)
-				for(CheckInOut check : checks)
-					total += (check.getCheckType() == CheckInOut.CheckType.IN ? -1 : 1) * check.getTime().toSecondOfDay() / 60;
+			else
+			{
+				overtime = overtime.minus(getWorkTimeForDay(currentDate.getDayOfWeek()));
+			}
 			currentDate = currentDate.plusDays(1);
 		}
 		
-		return total;
+		
+		lateDuration.set(overtime);
+		return overtime.toMinutes();
+	}
+	
+	/**
+	 * Get the duration the employee should work for this day.
+	 *
+	 * @param dayOfWeek The day of the week concerned.
+	 *
+	 * @return The duration to work.
+	 */
+	private Duration getWorkTimeForDay(DayOfWeek dayOfWeek)
+	{
+		if(workingDays.contains(dayOfWeek))
+			return Duration.of(getDepartureTime().toSecondOfDay() - getArrivalTime().toSecondOfDay(), SECONDS);
+		return Duration.ZERO;
 	}
 	
 	/**
@@ -193,7 +228,7 @@ public class Employee extends Person implements Serializable
 	 *
 	 * @return A list of the checking.
 	 */
-	public ObservableList<CheckInOut> getChecks()
+	public ObservableList<EmployeeCheck> getChecks()
 	{
 		return checks;
 	}
@@ -289,7 +324,7 @@ public class Employee extends Person implements Serializable
 		for(DayOfWeek workingDay : workingDays)
 			oos.writeObject(workingDay);
 		oos.writeInt(checks.size());
-		for(CheckInOut check : checks)
+		for(EmployeeCheck check : checks)
 			oos.writeObject(check);
 	}
 	
@@ -317,6 +352,9 @@ public class Employee extends Person implements Serializable
 		checks = FXCollections.observableArrayList();
 		int chkCount = ois.readInt();
 		for(int i = 0; i < wkdCount; i++)
-			checks.add((CheckInOut) ois.readObject());
+			checks.add((EmployeeCheck) ois.readObject());
+		
+		updateOvertime(null);
+		updatePresence();
 	}
 }

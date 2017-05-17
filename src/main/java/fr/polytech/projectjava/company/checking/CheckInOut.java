@@ -1,5 +1,8 @@
 package fr.polytech.projectjava.company.checking;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,7 +16,7 @@ import java.util.Date;
  * @author Thomas Couchoud
  * @since 2017-03-27
  */
-public class CheckInOut implements Serializable
+public class CheckInOut implements Serializable //TODO Serializable
 {
 	private static final long serialVersionUID = 2956226284028169226L;
 	private final static int MILLISECONDS_QUARTER = 900000;
@@ -92,5 +95,30 @@ public class CheckInOut implements Serializable
 	public LocalTime getTime()
 	{
 		return checkTime;
+	}
+	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+	
+	}
+	
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+	
 	}
 }
