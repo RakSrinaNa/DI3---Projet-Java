@@ -71,12 +71,12 @@ public abstract class SocketUtils
 				return null;
 			buffer = Arrays.copyOf(buffer, read);
 			if(log)
-				System.out.println("Received data: " + Arrays.toString(buffer));
+				Log.info("Received data: " + Arrays.toString(buffer));
 			return buffer;
 		}
 		catch(Exception e)
 		{
-			System.out.println("Failed to received data " + e.getMessage());
+			Log.info("Failed to received data " + e.getMessage());
 		}
 		return null;
 	}
@@ -96,7 +96,7 @@ public abstract class SocketUtils
 		socket.getOutputStream().write(data);
 		socket.getOutputStream().flush();
 		if(log)
-			System.out.println("Sent data: " + Arrays.toString(data));
+			Log.info("Sent data: " + Arrays.toString(data));
 	}
 	
 	/**
@@ -118,7 +118,7 @@ public abstract class SocketUtils
 	 */
 	void disconnect() throws IOException
 	{
-		System.out.println("Closing socket");
+		Log.info("Closing socket");
 		if(!socket.isClosed())
 			socket.close();
 	}

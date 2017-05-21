@@ -48,7 +48,7 @@ public abstract class ServerSocketBase implements Runnable
 			try
 			{
 				buildClient(this.socket.accept());
-				System.out.println("Server accepted client");
+				Log.info("Server accepted client");
 			}
 			catch(SocketTimeoutException ignored)
 			{
@@ -84,7 +84,7 @@ public abstract class ServerSocketBase implements Runnable
 	 */
 	public void stop()
 	{
-		System.out.println("Stopping server...");
+		Log.info("Stopping server...");
 		stop = true;
 	}
 }

@@ -35,7 +35,6 @@ public class SimulationController
 	public SimulationController(SimulationApplication simulationApplication)
 	{
 		this.parent = simulationApplication;
-		refreshEmployees();
 	}
 	
 	/**

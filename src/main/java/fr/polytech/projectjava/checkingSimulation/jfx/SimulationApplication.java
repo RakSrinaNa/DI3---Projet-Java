@@ -178,6 +178,7 @@ public class SimulationApplication extends ApplicationBase
 					currentTimeTimeline.stop();
 			});
 			controller.loadDatas();
+			controller.refreshEmployees();
 		};
 	}
 }
