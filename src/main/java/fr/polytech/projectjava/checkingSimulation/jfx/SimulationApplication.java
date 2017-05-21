@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.checkingSimulation.jfx;
 
+import fr.polytech.projectjava.checkingSimulation.CheckInfos;
 import fr.polytech.projectjava.checkingSimulation.Employee;
 import fr.polytech.projectjava.checkingSimulation.jfx.components.CheckList;
 import fr.polytech.projectjava.utils.ApplicationBase;
@@ -7,6 +8,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -35,12 +38,14 @@ public class SimulationApplication extends ApplicationBase
 	private final SimpleStringProperty currentTime = new SimpleStringProperty("");
 	private final SimpleStringProperty roundedTime = new SimpleStringProperty("");
 	private Timeline currentTimeTimeline;
+	private ComboBox<Employee> employeeField;
+	private CheckList checkList;
 	
 	@Override
 	public void preInit() throws Exception
 	{
 		super.preInit();
-		controller = new SimulationController();
+		controller = new SimulationController(this);
 	}
 	
 	@Override
@@ -59,8 +64,8 @@ public class SimulationApplication extends ApplicationBase
 		StackPane.setAlignment(currentTime, Pos.CENTER_LEFT);
 		StackPane.setAlignment(roundedTime, Pos.CENTER_RIGHT);
 		
-		ComboBox<Employee> employeeField = new ComboBox<>();
-		employeeField.setItems(controller.getModel().getEmployeeList());
+		employeeField = new ComboBox<>();
+		employeeField.setItems(FXCollections.observableArrayList());
 		Callback<ListView<Employee>, ListCell<Employee>> employeeCellFactory = new Callback<ListView<Employee>, ListCell<Employee>>()
 		{
 			@Override
@@ -84,7 +89,7 @@ public class SimulationApplication extends ApplicationBase
 		employeeField.setCellFactory(employeeCellFactory);
 		employeeField.setMaxWidth(Double.MAX_VALUE);
 		
-		CheckList checkList = new CheckList(controller.getModel().getCheckings());
+		checkList = new CheckList();
 		checkList.setMaxWidth(Double.MAX_VALUE);
 		checkList.setMaxHeight(Double.MAX_VALUE);
 		
@@ -100,6 +105,26 @@ public class SimulationApplication extends ApplicationBase
 		
 		VBox.setVgrow(checkList, Priority.ALWAYS);
 		return root;
+	}
+	
+	/**
+	 * Get the checkings to be sent.
+	 *
+	 * @return The checkings.
+	 */
+	public ObservableList<CheckInfos> getCheckings()
+	{
+		return checkList.getItems();
+	}
+	
+	/**
+	 * Get the employee list.
+	 *
+	 * @return The employee list.
+	 */
+	public ObservableList<Employee> getEmployees()
+	{
+		return employeeField.getItems();
 	}
 	
 	@Override
@@ -119,7 +144,7 @@ public class SimulationApplication extends ApplicationBase
 	 */
 	private void startTimeUpdated()
 	{
-		if(currentTimeTimeline != null)
+		if(currentTimeTimeline == null)
 		{
 			currentTimeTimeline = new Timeline(new KeyFrame(Duration.seconds(0), actionEvent -> {
 				Calendar calendar = Calendar.getInstance();
@@ -147,9 +172,12 @@ public class SimulationApplication extends ApplicationBase
 	@Override
 	public Consumer<Stage> getStageHandler()
 	{
-		return stage -> stage.setOnCloseRequest(event -> {
-			if(controller.close(event))
-				currentTimeTimeline.stop();
-		});
+		return stage -> {
+			stage.setOnCloseRequest(event -> {
+				if(controller.close(event))
+					currentTimeTimeline.stop();
+			});
+			controller.loadDatas();
+		};
 	}
 }

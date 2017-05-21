@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
+ * Dialog window to create a company.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 27/04/2017.
  *
  * @author Thomas Couchoud
@@ -24,6 +26,9 @@ public class CompanyCreateDialog extends Stage
 	private TextField bossLastNameInput;
 	private final CompanyCreateDialogController controller;
 	
+	/**
+	 * Constructor.
+	 */
 	public CompanyCreateDialog()
 	{
 		super();
@@ -34,6 +39,11 @@ public class CompanyCreateDialog extends Stage
 		sizeToScene();
 	}
 	
+	/**
+	 * Build the window elements.
+	 *
+	 * @return The root element.
+	 */
 	private Parent buildStage()
 	{
 		VBox root = new VBox(2);
@@ -64,26 +74,51 @@ public class CompanyCreateDialog extends Stage
 		return root;
 	}
 	
+	/**
+	 * Get the first name of the boss.
+	 *
+	 * @return The boss' first name.
+	 */
 	public String getBossFirstName()
 	{
 		return bossFirstNameInput.getText();
 	}
 	
+	/**
+	 * Get the last name of the boss.
+	 *
+	 * @return The boss' last name.
+	 */
 	public String getBossLastName()
 	{
 		return bossLastNameInput.getText();
 	}
 	
+	/**
+	 * Get the company name.
+	 *
+	 * @return The company name.
+	 */
 	public String getCompanyName()
 	{
 		return companyNameInput.getText();
 	}
 	
+	/**
+	 * Get the built company.
+	 *
+	 * @return The company.
+	 */
 	public Company getResult()
 	{
 		return result;
 	}
 	
+	/**
+	 * Set the built company.
+	 *
+	 * @param company The built company.
+	 */
 	public void setResult(Company company)
 	{
 		result = company;

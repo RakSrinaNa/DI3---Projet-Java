@@ -3,7 +3,7 @@ package fr.polytech.projectjava.checkingSimulation.jfx.components;
 import fr.polytech.projectjava.checkingSimulation.CheckInfos;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -17,9 +17,12 @@ import javafx.scene.control.TableView;
  */
 public class CheckList extends TableView<CheckInfos>
 {
-	public CheckList(ObservableList<CheckInfos> checkings)
+	/**
+	 * Constructor.
+	 */
+	public CheckList()
 	{
-		super(checkings);
+		super();
 		setEditable(false);
 		
 		TableColumn columnEmployee = new TableColumn("Employee");
@@ -42,7 +45,7 @@ public class CheckList extends TableView<CheckInfos>
 		getColumns().addAll(columnEmployee, columnCheckType, columnDate);
 		
 		setSortPolicy(p -> false);
-		setItems(checkings);
+		setItems(FXCollections.observableArrayList());
 		
 		Platform.runLater(() -> {
 			setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

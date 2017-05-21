@@ -35,6 +35,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	 *
 	 * @param company The company the department is in.
 	 * @param name    The name of the department.
+	 * @param leader  The leader of this department.
 	 */
 	public Department(Company company, String name, B leader)
 	{
@@ -168,6 +169,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	 *
 	 * @throws IOException            If the deserialization failed.
 	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 * @throws ClassCastException     If the leader class isn't correct.
 	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException, ClassCastException
 	{

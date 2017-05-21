@@ -8,6 +8,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 /**
+ * Represent the main tab in the main window.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 12/05/2017.
  *
  * @author Thomas Couchoud
@@ -18,6 +20,11 @@ public class MainTab extends Tab
 	private Text companyNameArea;
 	private Text bossNameArea;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param controller The main controller.
+	 */
 	public MainTab(MainController controller)
 	{
 		super();
@@ -25,6 +32,13 @@ public class MainTab extends Tab
 		setContent(buildContent(controller));
 	}
 	
+	/**
+	 * Build the tab content.
+	 *
+	 * @param controller The main controller.
+	 *
+	 * @return The root note.
+	 */
 	private Node buildContent(MainController controller)
 	{
 		VBox root = new VBox();
@@ -41,11 +55,21 @@ public class MainTab extends Tab
 		return root;
 	}
 	
+	/**
+	 * Get the boss name property.
+	 *
+	 * @return The boss name property.
+	 */
 	public StringProperty getBossNameTextProperty()
 	{
 		return bossNameArea.textProperty();
 	}
 	
+	/**
+	 * Get the company name property.
+	 *
+	 * @return The company name property.
+	 */
 	public StringProperty getCompanyNameTextProperty()
 	{
 		return companyNameArea.textProperty();

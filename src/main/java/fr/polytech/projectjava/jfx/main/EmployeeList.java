@@ -8,6 +8,8 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 
 /**
+ * Represent a list of employees.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 27/04/2017.
  *
  * @author Thomas Couchoud
@@ -15,6 +17,11 @@ import javafx.scene.control.TableView;
  */
 public class EmployeeList extends TableView<Employee>
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param controller The main controller.
+	 */
 	public EmployeeList(MainController controller)
 	{
 		super();
@@ -32,11 +39,10 @@ public class EmployeeList extends TableView<Employee>
 		//noinspection unchecked
 		getColumns().addAll(columnEmployeeID, columnEmployeeName, columnEmployeeDepartment);
 		
-		this.setRowFactory(tv ->
-		{
+		this.setRowFactory(tv -> {
 			TableRow<Employee> row = new TableRow<>();
 			row.setOnMouseClicked(controller::employeeClick);
-			return row ;
+			return row;
 		});
 		
 		setSortPolicy(p -> false);

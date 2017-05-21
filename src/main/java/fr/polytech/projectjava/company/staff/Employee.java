@@ -354,6 +354,9 @@ public class Employee extends Person implements Serializable
 		for(int i = 0; i < wkdCount; i++)
 			checks.add((EmployeeCheck) ois.readObject());
 		
+		lateDuration = new SimpleObjectProperty<>(Duration.ZERO);
+		isPresent = new SimpleBooleanProperty(false);
+		
 		updateOvertime(null);
 		updatePresence();
 	}

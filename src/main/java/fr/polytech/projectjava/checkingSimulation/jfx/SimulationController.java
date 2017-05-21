@@ -5,10 +5,13 @@ import fr.polytech.projectjava.checkingSimulation.Employee;
 import fr.polytech.projectjava.checkingSimulation.socket.CheckingSender;
 import fr.polytech.projectjava.checkingSimulation.socket.EmployeeGetter;
 import fr.polytech.projectjava.company.checking.CheckInOut;
+import fr.polytech.projectjava.utils.Configuration;
+import fr.polytech.projectjava.utils.Log;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.WindowEvent;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -22,14 +25,16 @@ import java.time.LocalTime;
  */
 public class SimulationController
 {
-	private final SimulationModel model;
+	private final SimulationApplication parent;
 	
 	/**
 	 * Constructor.
+	 *
+	 * @param simulationApplication The simulation application.
 	 */
-	public SimulationController()
+	public SimulationController(SimulationApplication simulationApplication)
 	{
-		model = new SimulationModel();
+		this.parent = simulationApplication;
 		refreshEmployees();
 	}
 	
@@ -57,9 +62,9 @@ public class SimulationController
 			source.setDisable(true);
 			source.setText("Check I/O...");
 			
-			model.addChecking(checkInfos);
+			getCheckings().add(checkInfos);
 			
-			new Thread(new CheckingSender(model.getCheckings().iterator())).start();
+			new Thread(new CheckingSender(getCheckings().iterator())).start();
 			
 			source.setText("Check I/O");
 		}
@@ -81,12 +86,12 @@ public class SimulationController
 	{
 		try
 		{
-			model.getEmployeeList().clear();
-			new Thread(new EmployeeGetter(model.getEmployeeList())).start();
+			getEmployeeList().clear();
+			new Thread(new EmployeeGetter(getEmployeeList())).start();
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			Log.warning("Server not reachable");
 		}
 	}
 	
@@ -101,17 +106,75 @@ public class SimulationController
 	@SuppressWarnings("SameReturnValue")
 	public boolean close(WindowEvent windowEvent)
 	{
-		model.saveDatas();
+		saveDatas();
 		return true;
 	}
 	
 	/**
-	 * Get the model.
-	 *
-	 * @return The model.
+	 * Load the previously saved data.
 	 */
-	public SimulationModel getModel()
+	public void loadDatas()
 	{
-		return model;
+		File f = new File(Configuration.getString("simulationSaveFile"));
+		if(f.exists() && f.isFile())
+		{
+			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f)))
+			{
+				int count = ois.readInt();
+				for(int i = 0; i < count; i++)
+					getCheckings().add((CheckInfos) ois.readObject());
+			}
+			catch(IOException | ClassNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Add a checking to the model.
+	 *
+	 * @param checkInfos The checking to add.
+	 */
+	public void addChecking(CheckInfos checkInfos)
+	{
+		getCheckings().add(checkInfos);
+	}
+	
+	/**
+	 * Save the model into a file.
+	 */
+	public void saveDatas()
+	{
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("simulationSaveFile")))))
+		{
+			oos.writeInt(getCheckings().size());
+			for(CheckInfos infos : getCheckings())
+				oos.writeObject(infos);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Get the list of the checkings.
+	 *
+	 * @return The checking list.
+	 */
+	public ObservableList<CheckInfos> getCheckings()
+	{
+		return parent.getCheckings();
+	}
+	
+	/**
+	 * Get the list of the employees.
+	 *
+	 * @return The employee list.
+	 */
+	public ObservableList<Employee> getEmployeeList()
+	{
+		return parent.getEmployees();
 	}
 }

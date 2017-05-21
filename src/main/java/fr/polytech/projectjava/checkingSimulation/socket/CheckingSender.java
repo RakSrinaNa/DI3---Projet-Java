@@ -2,10 +2,8 @@ package fr.polytech.projectjava.checkingSimulation.socket;
 
 import fr.polytech.projectjava.checkingSimulation.CheckInfos;
 import fr.polytech.projectjava.utils.Configuration;
-import fr.polytech.projectjava.utils.UDPClientBuilder;
-import javafx.util.Pair;
+import fr.polytech.projectjava.utils.SocketBase;
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 
@@ -17,7 +15,7 @@ import java.util.Iterator;
  * @author Thomas Couchoud
  * @since 2017-03-28
  */
-public class CheckingSender extends UDPClientBuilder
+public class CheckingSender extends SocketBase
 {
 	private final Iterator<CheckInfos> datas;
 	
@@ -30,8 +28,8 @@ public class CheckingSender extends UDPClientBuilder
 	 */
 	public CheckingSender(Iterator<CheckInfos> datas) throws IOException
 	{
-		super();
-		setTimeout(10000);
+		super(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
+		setTimeout(5000);
 		this.datas = datas;
 	}
 	
@@ -40,20 +38,18 @@ public class CheckingSender extends UDPClientBuilder
 	{
 		int packetSize = Configuration.getInt("socketPacketSize");
 		
-		connect(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
-		
 		while(datas.hasNext())
 		{
 			sendPacket("CHECK".getBytes());
 			
-			Pair<DatagramPacket, byte[]> response = receivePacket(packetSize);
-			if(!new String(response.getValue()).equals("OK"))
+			byte[] response = receivePacket(packetSize);
+			if(response == null || !new String(response).equals("OK"))
 				return;
 			
 			sendPacket(datas.next().getForSocket().getBytes());
 			
 			response = receivePacket(packetSize);
-			if(!new String(response.getValue()).equals("OK"))
+			if(response == null || !new String(response).equals("OK"))
 				return;
 			
 			datas.remove();

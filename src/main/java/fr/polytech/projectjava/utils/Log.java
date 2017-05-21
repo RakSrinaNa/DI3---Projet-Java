@@ -1,6 +1,7 @@
 package fr.polytech.projectjava.utils;
 
 import java.util.ArrayList;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,6 +61,10 @@ public class Log
 	public static Logger setAppName(@SuppressWarnings("SameParameterValue") String name)
 	{
 		logger = Logger.getLogger(name);
+		logger.setUseParentHandlers(false);
+		ConsoleHandler handler = new ConsoleHandler();
+		handler.setFormatter(new LoggerFormatter());
+		logger.addHandler(handler);
 		return logger;
 	}
 	

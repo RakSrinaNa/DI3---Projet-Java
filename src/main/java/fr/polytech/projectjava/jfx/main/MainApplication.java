@@ -42,11 +42,21 @@ public class MainApplication extends ApplicationBase
 		return "CompanyManagement";
 	}
 	
+	/**
+	 * Get the main tab.
+	 *
+	 * @return The main tab.
+	 */
 	public MainTab getMainTab()
 	{
 		return mainTab;
 	}
 	
+	/**
+	 * Get the employee tab.
+	 *
+	 * @return The employee tab.
+	 */
 	public EmployeeTab getEmployeeTab()
 	{
 		return employeeTab;
