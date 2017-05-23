@@ -2,7 +2,7 @@ package fr.polytech.projectjava.checkingSimulation.socket;
 
 import fr.polytech.projectjava.checkingSimulation.CheckInfos;
 import fr.polytech.projectjava.utils.Configuration;
-import fr.polytech.projectjava.utils.SocketBase;
+import fr.polytech.projectjava.utils.socket.SocketBase;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
@@ -34,7 +34,7 @@ public class CheckingSender extends SocketBase
 	}
 	
 	@Override
-	protected void processData() throws Exception
+	protected boolean processData() throws Exception
 	{
 		int packetSize = Configuration.getInt("socketPacketSize");
 		
@@ -44,17 +44,18 @@ public class CheckingSender extends SocketBase
 			
 			byte[] response = receivePacket(packetSize);
 			if(response == null || !new String(response).equals("OK"))
-				return;
+				return false;
 			
 			sendPacket(datas.next().getForSocket().getBytes());
 			
 			response = receivePacket(packetSize);
 			if(response == null || !new String(response).equals("OK"))
-				return;
+				return false;
 			
 			datas.remove();
 		}
 		
 		sendPacket("END".getBytes());
+		return true;
 	}
 }

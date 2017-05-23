@@ -99,7 +99,7 @@ public class SimulationApplication extends ApplicationBase
 		
 		Button refreshButton = new Button("Refresh employees");
 		refreshButton.setMaxWidth(Double.MAX_VALUE);
-		refreshButton.setOnAction(evt -> controller.refreshEmployees());
+		refreshButton.setOnAction(controller::refreshEmployees);
 		
 		root.getChildren().addAll(times, employeeField, checkList, sendButton, refreshButton);
 		
@@ -178,7 +178,7 @@ public class SimulationApplication extends ApplicationBase
 					currentTimeTimeline.stop();
 			});
 			controller.loadDatas();
-			controller.refreshEmployees();
+			controller.refreshEmployees(null);
 		};
 	}
 }

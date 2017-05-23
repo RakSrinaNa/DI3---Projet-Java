@@ -1,15 +1,21 @@
 package fr.polytech.projectjava;
 
 import fr.polytech.projectjava.company.Company;
+import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
 import fr.polytech.projectjava.company.staff.Boss;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.company.staff.Manager;
 import fr.polytech.projectjava.jfx.main.MainApplication;
+import fr.polytech.projectjava.utils.Configuration;
 import javafx.application.Application;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import static fr.polytech.projectjava.company.checking.CheckInOut.CheckType.IN;
+import static fr.polytech.projectjava.company.checking.CheckInOut.CheckType.OUT;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
@@ -19,6 +25,8 @@ import java.io.ObjectOutputStream;
  */
 public class Main
 {
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	
 	/**
 	 * Temporary main method.
 	 *
@@ -35,7 +43,19 @@ public class Main
 		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee("D", "AEmployee")));
 		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee("E", "AEmployee")));
 		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee("F", "AEmployee")));
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(".", "tCompany.pjv"))))
+		comp.getEmployee(1).ifPresent(emp -> {
+			try
+			{
+				emp.addCheckInOut(new CheckInOut(IN, dateFormat.parse("23/05/2017 13:00:00")));
+				emp.addCheckInOut(new CheckInOut(OUT, dateFormat.parse("23/05/2017 15:00:00")));
+			}
+			catch(ParseException e)
+			{
+				e.printStackTrace();
+			}
+		});
+		
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(".", Configuration.getString("mainSaveFile")))))
 		{
 			oos.writeObject(comp);
 		}

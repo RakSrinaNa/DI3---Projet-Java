@@ -3,6 +3,7 @@ package fr.polytech.projectjava.company.staff;
 import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.checking.EmployeeCheck;
 import fr.polytech.projectjava.company.departments.StandardDepartment;
+import fr.polytech.projectjava.utils.Log;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -170,6 +171,7 @@ public class Employee extends Person implements Serializable
 			currentDate = currentDate.plusDays(1);
 		}
 		
+		Log.info("New overtime for " + getFullName() + ": " + overtime);
 		
 		lateDuration.set(overtime);
 		return overtime.toMinutes();
@@ -187,6 +189,16 @@ public class Employee extends Person implements Serializable
 		if(workingDays.contains(dayOfWeek))
 			return Duration.of(getDepartureTime().toSecondOfDay() - getArrivalTime().toSecondOfDay(), SECONDS);
 		return Duration.ZERO;
+	}
+	
+	/**
+	 * Get the overtime property.
+	 *
+	 * @return The overtime property.
+	 */
+	public SimpleObjectProperty<Duration> lateDurationProperty()
+	{
+		return lateDuration;
 	}
 	
 	/**
@@ -351,7 +363,7 @@ public class Employee extends Person implements Serializable
 		
 		checks = FXCollections.observableArrayList();
 		int chkCount = ois.readInt();
-		for(int i = 0; i < wkdCount; i++)
+		for(int i = 0; i < chkCount; i++)
 			checks.add((EmployeeCheck) ois.readObject());
 		
 		lateDuration = new SimpleObjectProperty<>(Duration.ZERO);
@@ -359,5 +371,15 @@ public class Employee extends Person implements Serializable
 		
 		updateOvertime(null);
 		updatePresence();
+	}
+	
+	/**
+	 * Get the presence property.
+	 *
+	 * @return The presence property.
+	 */
+	public SimpleBooleanProperty isPresentProperty()
+	{
+		return isPresent;
 	}
 }

@@ -157,6 +157,16 @@ public class Company implements Serializable
 	}
 	
 	/**
+	 * Get the departments.
+	 *
+	 * @return The departments.
+	 */
+	public ObservableList<StandardDepartment> getDepartements()
+	{
+		return departments;
+	}
+	
+	/**
 	 * Get the number of departments in the company.
 	 *
 	 * @return The department count.

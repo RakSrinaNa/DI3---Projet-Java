@@ -1,5 +1,6 @@
-package fr.polytech.projectjava.utils;
+package fr.polytech.projectjava.utils.socket;
 
+import fr.polytech.projectjava.utils.Log;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;

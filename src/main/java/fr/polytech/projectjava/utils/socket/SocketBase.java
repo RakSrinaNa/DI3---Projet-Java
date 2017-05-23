@@ -1,8 +1,9 @@
-package fr.polytech.projectjava.utils;
+package fr.polytech.projectjava.utils.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Represent a TCP Client.
@@ -14,38 +15,43 @@ import java.net.Socket;
  */
 public abstract class SocketBase extends SocketUtils implements Runnable
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param address The address to connect to.
-	 *
-	 * @throws IOException If an I/O error occurs when creating the socket.
-	 */
-	public SocketBase(InetSocketAddress address) throws IOException
-	{
-		super(new Socket(address.getAddress(), address.getPort()));
-	}
+	private final ArrayList<SocketDisconnectedListener> disconnectListeners;
 	
 	/**
 	 * Constructor.
+				*
+	 * @param address The address to connect to.
 	 *
-	 * @param socket TThe socket.
-	 */
+	 * @throws IOException If an I/O error occurs when creating the socket.
+			*/
+	public SocketBase(InetSocketAddress address) throws IOException
+		{
+			this(new Socket(address.getAddress(), address.getPort()));
+		}
+		
+		/**
+		 * Constructor.
+		 *
+		 * @param socket TThe socket.
+		 */
 	protected SocketBase(Socket socket)
-	{
-		super(socket);
+		{
+			super(socket);
+			disconnectListeners = new ArrayList<>();
 	}
 	
 	@Override
 	public void run()
 	{
+		boolean error = false;
 		try
 		{
-			processData();
+			error = processData();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
+			error = true;
 		}
 		finally
 		{
@@ -58,6 +64,8 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 				e.printStackTrace();
 			}
 		}
+		boolean finalError = error;
+		disconnectListeners.forEach(listener -> listener.onSocketDisconnected(new DisconnectedEvent(finalError)));
 	}
 	
 	/**
@@ -66,5 +74,10 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 	 *
 	 * @throws Exception If an error occurred.
 	 */
-	protected abstract void processData() throws Exception;
+	protected abstract boolean processData() throws Exception;
+	
+	public void addFinishedListener(SocketDisconnectedListener listener)
+	{
+		disconnectListeners.add(listener);
+	}
 }

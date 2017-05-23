@@ -3,7 +3,7 @@ package fr.polytech.projectjava.socket;
 import fr.polytech.projectjava.jfx.main.MainController;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
-import fr.polytech.projectjava.utils.ServerSocketBase;
+import fr.polytech.projectjava.utils.socket.ServerSocketBase;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;

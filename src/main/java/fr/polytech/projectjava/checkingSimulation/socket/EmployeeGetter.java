@@ -2,7 +2,7 @@ package fr.polytech.projectjava.checkingSimulation.socket;
 
 import fr.polytech.projectjava.checkingSimulation.Employee;
 import fr.polytech.projectjava.utils.Configuration;
-import fr.polytech.projectjava.utils.SocketBase;
+import fr.polytech.projectjava.utils.socket.SocketBase;
 import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -35,22 +35,22 @@ public class EmployeeGetter extends SocketBase
 	}
 	
 	@Override
-	protected void processData() throws Exception
+	protected boolean processData() throws Exception
 	{
-		synchronized(lock)
+		int packetSize = Configuration.getInt("socketPacketSize");
+		
+		sendPacket("EMPLOYEE".getBytes());
+		
+		byte[] response;
+		while((response = receivePacket(packetSize)) != null && !new String(response).equals("ERROR") && !new String(response).equals("DONE"))
 		{
-			int packetSize = Configuration.getInt("socketPacketSize");
-			
-			sendPacket("EMPLOYEE".getBytes());
-			
-			byte[] response;
-			while((response = receivePacket(packetSize)) != null && !new String(response).equals("ERROR") && !new String(response).equals("DONE"))
-			{
-				datas.add(Employee.parse(new String(response)));
-				sendPacket("OK".getBytes());
-			}
-			
-			sendPacket("END".getBytes());
+			Employee employee = Employee.parse(new String(response));
+			if(!datas.contains(employee))
+				datas.add(employee);
+			sendPacket("OK".getBytes());
 		}
+		
+		sendPacket("END".getBytes());
+		return true;
 	}
 }

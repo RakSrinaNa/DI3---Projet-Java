@@ -1,8 +1,15 @@
 package fr.polytech.projectjava.jfx.main;
 
+import fr.polytech.projectjava.company.departments.StandardDepartment;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 
 /**
  * Represent the employee tab in the main window.
@@ -15,6 +22,7 @@ import javafx.scene.layout.VBox;
 public class EmployeeTab extends Tab
 {
 	private EmployeeList employeesList;
+	private ComboBox<StandardDepartment> departmentFilter;
 	
 	/**
 	 * Constructor.
@@ -36,12 +44,51 @@ public class EmployeeTab extends Tab
 	 */
 	private Node buildContent(MainController controller)
 	{
-		VBox root = new VBox();
+		HBox root = new HBox(10);
 		
-		employeesList = new EmployeeList(controller);
+		VBox controls = new VBox();
+		departmentFilter = new ComboBox<>();
+		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = new Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>>()
+		{
+			@Override
+			public ListCell<StandardDepartment> call(ListView<StandardDepartment> param)
+			{
+				return new ListCell<StandardDepartment>()
+				{
+					@Override
+					protected void updateItem(StandardDepartment item, boolean empty)
+					{
+						super.updateItem(item, empty);
+						if(item == null || empty)
+							setText(null);
+						else
+							setText(item.getID() + ": " + item.getName());
+					}
+				};
+			}
+		};
+		departmentFilter.setButtonCell(standardDepartmentCellFactory.call(null));
+		departmentFilter.setCellFactory(standardDepartmentCellFactory);
+		departmentFilter.setMaxWidth(Double.MAX_VALUE);
 		
-		root.getChildren().addAll(employeesList);
+		controls.getChildren().addAll(departmentFilter);
+		
+		employeesList = new EmployeeList(controller, departmentFilter.getSelectionModel().selectedItemProperty());
+		employeesList.setMaxHeight(Double.MAX_VALUE);
+		
+		root.getChildren().addAll(employeesList, controls);
+		HBox.setHgrow(employeesList, Priority.ALWAYS);
 		return root;
+	}
+	
+	/**
+	 * Get the department filter combobox.
+	 *
+	 * @return The department combobox.
+	 */
+	public ComboBox<StandardDepartment> getDepartmentFilter()
+	{
+		return departmentFilter;
 	}
 	
 	/**

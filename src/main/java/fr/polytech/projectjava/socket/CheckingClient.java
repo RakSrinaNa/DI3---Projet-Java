@@ -4,7 +4,7 @@ import fr.polytech.projectjava.company.checking.CheckInOut;
 import fr.polytech.projectjava.company.staff.Employee;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
-import fr.polytech.projectjava.utils.SocketBase;
+import fr.polytech.projectjava.utils.socket.SocketBase;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -49,7 +49,7 @@ public class CheckingClient extends SocketBase
 	}
 	
 	@Override
-	protected void processData() throws Exception
+	protected boolean processData() throws Exception
 	{
 		int packetSize = Configuration.getInt("socketPacketSize");
 		while(!stop)
@@ -81,6 +81,7 @@ public class CheckingClient extends SocketBase
 				Log.error("Server error - " + e.getMessage());
 			}
 		}
+		return true;
 	}
 	
 	/**

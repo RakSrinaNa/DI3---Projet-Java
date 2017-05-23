@@ -178,4 +178,10 @@ public class Employee implements Serializable
 	{
 		this.inside = inside;
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return obj instanceof Employee && getID() == ((Employee) obj).getID();
+	}
 }

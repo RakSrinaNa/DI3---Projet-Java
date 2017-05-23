@@ -35,7 +35,7 @@ public class LoggerFormatter extends Formatter
 		}
 		stringBuilder.append(Thread.currentThread().getStackTrace()[stackIndex]);
 		
-		stringBuilder.append(" -> \t");
+		stringBuilder.append(" -> ");
 		
 		stringBuilder.append(record.getMessage());
 		if(record.getThrown() != null)
@@ -44,6 +44,6 @@ public class LoggerFormatter extends Formatter
 			stringBuilder.append(record.getThrown().toString());
 		}
 		
-		return stringBuilder.toString();
+		return stringBuilder.append("\n").toString();
 	}
 }

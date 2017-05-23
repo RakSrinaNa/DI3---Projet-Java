@@ -161,7 +161,7 @@ public class EmployeeCheck implements Serializable
 	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
 		oos.writeObject(getDate());
-		oos.writeInt((checkIn.get() != null ? 1 : 0) << 2 + (checkOut.get() != null ? 1 : 0));
+		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0));
 		if(checkIn.get() != null)
 			oos.writeObject(checkIn.get());
 		if(checkOut.get() != null)
@@ -182,7 +182,17 @@ public class EmployeeCheck implements Serializable
 		int infos = ois.readInt();
 		if((infos & 0x02) == 0x02)
 			checkIn = new SimpleObjectProperty<>((CheckInOut) ois.readObject());
+		else
+			checkIn = new SimpleObjectProperty<>(null);
 		if((infos & 0x01) == 0x01)
 			checkOut = new SimpleObjectProperty<>((CheckInOut) ois.readObject());
+		else
+			checkOut = new SimpleObjectProperty<>(null);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return date + " IN: " + (checkIn == null ? "?" : checkIn) + " / OUT: " + (checkOut == null ? "?" : checkOut);
 	}
 }

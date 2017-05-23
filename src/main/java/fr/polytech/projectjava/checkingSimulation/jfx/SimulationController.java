@@ -81,12 +81,19 @@ public class SimulationController
 	/**
 	 * Refresh the employee list with the server.
 	 */
-	public void refreshEmployees()
+	public void refreshEmployees(ActionEvent evt)
 	{
 		try
 		{
 			getEmployeeList().clear();
-			new Thread(new EmployeeGetter(getEmployeeList())).start();
+			EmployeeGetter employeeGetter = new EmployeeGetter(getEmployeeList());
+			new Thread(employeeGetter).start();
+			if(evt != null && evt.getSource() instanceof Button)
+			{
+				Button button = (Button)evt.getSource();
+				button.setDisable(true);
+				employeeGetter.addFinishedListener(event -> button.setDisable(false));
+			}
 		}
 		catch(IOException e)
 		{

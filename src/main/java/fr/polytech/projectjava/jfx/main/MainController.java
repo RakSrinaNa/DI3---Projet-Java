@@ -91,13 +91,13 @@ public class MainController
 	 */
 	public void employeeClick(MouseEvent event)
 	{
-		if(event.getSource() instanceof TableRow)
+		if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
 		{
 			TableRow source = (TableRow) event.getSource();
 			if(source.getItem() instanceof Employee)
 			{
 				Employee employee = (Employee) source.getItem();
-				if(event.getButton() == MouseButton.PRIMARY)
+				if(event.getButton() == MouseButton.PRIMARY  && event.isAltDown())
 				{
 					((TableRow) event.getSource()).getScene();
 					EmployeeDialog dialog = new EmployeeDialog(employee);
@@ -200,7 +200,8 @@ public class MainController
 		}
 		parent.getMainTab().getCompanyNameTextProperty().bind(company.nameProperty());
 		parent.getMainTab().getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
-		parent.getEmployeeTab().getList().setItems(company.getEmployees());
+		parent.getEmployeeTab().getList().setList(company.getEmployees());
+		parent.getEmployeeTab().getDepartmentFilter().setItems(company.getDepartements());
 		return true;
 	}
 	
