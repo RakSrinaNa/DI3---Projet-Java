@@ -1,4 +1,4 @@
-package fr.polytech.projectjava;
+package fr.polytech.projectjava.mainapp;
 
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;

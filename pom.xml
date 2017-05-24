@@ -35,7 +35,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>fr.polytech.projectjava.Main</mainClass>
+                            <mainClass>fr.polytech.projectjava.mainapp.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
