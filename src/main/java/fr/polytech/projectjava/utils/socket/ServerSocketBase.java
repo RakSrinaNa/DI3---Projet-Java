@@ -85,7 +85,14 @@ public abstract class ServerSocketBase implements Runnable
 	 */
 	public void stop()
 	{
-		Log.info("Stopping server...");
+		try
+		{
+			Log.info("Stopping server... This may take up to " + (socket.getSoTimeout() / 1000) + "s");
+		}
+		catch(IOException e)
+		{
+			Log.error("", e);
+		}
 		stop = true;
 	}
 }

@@ -23,9 +23,9 @@ public class LoggerFormatter extends Formatter
 		StringBuilder stringBuilder = new StringBuilder();
 		
 		stringBuilder.append(record.getLevel().getLocalizedName());
-		stringBuilder.append(": \t");
+		stringBuilder.append(": ");
 		stringBuilder.append(dateFormat.format(new Date(record.getMillis())));
-		stringBuilder.append(" \t");
+		stringBuilder.append(" ");
 		int stackIndex;
 		for(stackIndex = 0; stackIndex < Thread.currentThread().getStackTrace().length; stackIndex++)
 		{
@@ -40,8 +40,9 @@ public class LoggerFormatter extends Formatter
 		stringBuilder.append(record.getMessage());
 		if(record.getThrown() != null)
 		{
-			stringBuilder.append(System.getProperty("line.separator"));
+			stringBuilder.append(" (");
 			stringBuilder.append(record.getThrown().toString());
+			stringBuilder.append(")");
 		}
 		
 		return stringBuilder.append("\n").toString();

@@ -8,15 +8,25 @@ package fr.polytech.projectjava.utils.socket;
  */
 public class DisconnectedEvent
 {
-	private final boolean errored;
+	private final boolean result;
 	
-	public boolean isErrored()
+	/**
+	 * Get the result of the disconnect.
+	 *
+	 * @return True if everything went fine, false else.
+	 */
+	public boolean isResult()
 	{
-		return errored;
+		return result;
 	}
 	
-	public DisconnectedEvent(boolean errored)
+	/**
+	 * Constructor.
+	 *
+	 * @param result The result of the processData function.
+	 */
+	public DisconnectedEvent(boolean result)
 	{
-		this.errored = errored;
+		this.result = result;
 	}
 }

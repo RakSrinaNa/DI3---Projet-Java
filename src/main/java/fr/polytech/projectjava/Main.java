@@ -1,12 +1,12 @@
 package fr.polytech.projectjava;
 
-import fr.polytech.projectjava.company.Company;
-import fr.polytech.projectjava.company.checking.CheckInOut;
-import fr.polytech.projectjava.company.departments.StandardDepartment;
-import fr.polytech.projectjava.company.staff.Boss;
-import fr.polytech.projectjava.company.staff.Employee;
-import fr.polytech.projectjava.company.staff.Manager;
-import fr.polytech.projectjava.jfx.main.MainApplication;
+import fr.polytech.projectjava.mainapp.company.Company;
+import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
+import fr.polytech.projectjava.mainapp.company.staff.Boss;
+import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.mainapp.company.staff.Manager;
+import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
+import fr.polytech.projectjava.mainapp.jfx.main.MainApplication;
 import fr.polytech.projectjava.utils.Configuration;
 import javafx.application.Application;
 import java.io.File;
@@ -14,8 +14,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import static fr.polytech.projectjava.company.checking.CheckInOut.CheckType.IN;
-import static fr.polytech.projectjava.company.checking.CheckInOut.CheckType.OUT;
+import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.IN;
+import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.OUT;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
@@ -34,15 +34,24 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
+		//buildCompany();
+		Application.launch(MainApplication.class, args);
+	}
+	
+	/**
+	 * Build a company that will be serialized for testing.
+	 */
+	private static void buildCompany()
+	{
 		Company comp = new Company("TheCompany", new Boss("Robert", "LeBoss"));
-		comp.addDepartment(new StandardDepartment(comp, "IT Dpt", new Manager("Victor", "AManager")));
-		comp.addDepartment(new StandardDepartment(comp, "MC Dpt", new Manager("Maxence", "AManager")));
-		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee("A", "AEmployee")));
-		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee("B", "AEmployee")));
-		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee("C", "AEmployee")));
-		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee("D", "AEmployee")));
-		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee("E", "AEmployee")));
-		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee("F", "AEmployee")));
+		comp.addDepartment(new StandardDepartment(comp, "IT Dpt", new Manager(comp, "Victor", "AManager")));
+		comp.addDepartment(new StandardDepartment(comp, "MC Dpt", new Manager(comp, "Maxence", "AManager")));
+		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "A", "AEmployee")));
+		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "B", "AEmployee")));
+		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "C", "AEmployee")));
+		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "D", "AEmployee")));
+		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "E", "AEmployee")));
+		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "F", "AEmployee")));
 		comp.getEmployee(1).ifPresent(emp -> {
 			try
 			{
@@ -63,6 +72,5 @@ public class Main
 		{
 			e.printStackTrace();
 		}
-		Application.launch(MainApplication.class, args);
 	}
 }

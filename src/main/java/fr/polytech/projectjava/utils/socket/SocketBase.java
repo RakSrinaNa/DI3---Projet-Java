@@ -19,31 +19,31 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 	
 	/**
 	 * Constructor.
-				*
+	 *
 	 * @param address The address to connect to.
 	 *
 	 * @throws IOException If an I/O error occurs when creating the socket.
-			*/
+	 */
 	public SocketBase(InetSocketAddress address) throws IOException
-		{
-			this(new Socket(address.getAddress(), address.getPort()));
-		}
-		
-		/**
-		 * Constructor.
-		 *
-		 * @param socket TThe socket.
-		 */
+	{
+		this(new Socket(address.getAddress(), address.getPort()));
+	}
+	
+	/**
+	 * Constructor.
+	 *
+	 * @param socket TThe socket.
+	 */
 	protected SocketBase(Socket socket)
-		{
-			super(socket);
-			disconnectListeners = new ArrayList<>();
+	{
+		super(socket);
+		disconnectListeners = new ArrayList<>();
 	}
 	
 	@Override
 	public void run()
 	{
-		boolean error = false;
+		boolean error;
 		try
 		{
 			error = processData();
@@ -72,10 +72,17 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 	 * Function called when the runnable is started.
 	 * Disconnect is called after this method.
 	 *
+	 * @return True if everything went fine, false else.
+	 *
 	 * @throws Exception If an error occurred.
 	 */
 	protected abstract boolean processData() throws Exception;
 	
+	/**
+	 * Register a SocketDisconnectedListener/
+	 *
+	 * @param listener The listener to add.
+	 */
 	public void addFinishedListener(SocketDisconnectedListener listener)
 	{
 		disconnectListeners.add(listener);
