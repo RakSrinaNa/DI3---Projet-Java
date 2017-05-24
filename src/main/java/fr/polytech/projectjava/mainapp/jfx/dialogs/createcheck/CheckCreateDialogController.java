@@ -39,6 +39,8 @@ public class CheckCreateDialogController
 	{
 		if(view.getEmployee() != null && view.getDate() != null && (view.getInTime() != null || view.getOutTime() != null))
 		{
+			if(view.getEmployee().hasCheckForDate(view.getDate()))
+				return;
 			try
 			{
 				EmployeeCheck check = new EmployeeCheck(view.getEmployee(), view.getDate());

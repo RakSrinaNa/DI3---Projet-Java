@@ -201,6 +201,7 @@ public class Employee extends Person implements Serializable
 	
 	/**
 	 * Remove a check from this employee.
+	 *
 	 * @param check The check to remove.
 	 */
 	public void removeCheck(EmployeeCheck check)
@@ -211,6 +212,7 @@ public class Employee extends Person implements Serializable
 	
 	/**
 	 * Add a check to the employee.
+	 *
 	 * @param check he check to add.
 	 */
 	public void addCheck(EmployeeCheck check)
@@ -220,6 +222,21 @@ public class Employee extends Person implements Serializable
 			checks.add(check);
 			company.registerCheck(check);
 		}
+	}
+	
+	/**
+	 * Tell if this employee have a check for a date.
+	 *
+	 * @param date The date to look for.
+	 *
+	 * @return True if the employee have a check on this date, false else.
+	 */
+	public boolean hasCheckForDate(LocalDate date)
+	{
+		for(EmployeeCheck check : checks)
+			if(check.getDate().equals(date))
+				return true;
+		return false;
 	}
 	
 	/**

@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -50,21 +51,27 @@ public class CompanyCreateDialog extends Stage
 		
 		Label companyNameLabel = new Label("Company name:");
 		companyNameInput = new TextField();
+		companyNameInput.setMaxWidth(Double.MAX_VALUE);
 		
 		HBox companyNameBox = new HBox();
 		companyNameBox.getChildren().addAll(companyNameLabel, companyNameInput);
+		HBox.setHgrow(companyNameInput, Priority.ALWAYS);
 		
 		Label bossFirstNameLabel = new Label("Boss first name:");
 		bossFirstNameInput = new TextField();
+		bossFirstNameInput.setMaxWidth(Double.MAX_VALUE);
 		
 		HBox bossFirstNameBox = new HBox();
 		bossFirstNameBox.getChildren().addAll(bossFirstNameLabel, bossFirstNameInput);
+		HBox.setHgrow(bossFirstNameInput, Priority.ALWAYS);
 		
 		Label bossLastNameLabel = new Label("Boss last name:");
 		bossLastNameInput = new TextField();
+		bossLastNameInput.setMaxWidth(Double.MAX_VALUE);
 		
 		HBox bossLastNameBox = new HBox();
 		bossLastNameBox.getChildren().addAll(bossLastNameLabel, bossLastNameInput);
+		HBox.setHgrow(bossLastNameInput, Priority.ALWAYS);
 		
 		Button valid = new Button("OK");
 		valid.setMaxWidth(Double.MAX_VALUE);
