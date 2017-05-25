@@ -46,7 +46,7 @@ public class Configuration
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			Log.error("Failed to load settings", e);
 		}
 	}
 }

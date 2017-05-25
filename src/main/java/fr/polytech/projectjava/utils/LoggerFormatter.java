@@ -27,13 +27,15 @@ public class LoggerFormatter extends Formatter
 		stringBuilder.append(dateFormat.format(new Date(record.getMillis())));
 		stringBuilder.append(" ");
 		int stackIndex;
+		StackTraceElement trace = null;
 		for(stackIndex = 0; stackIndex < Thread.currentThread().getStackTrace().length; stackIndex++)
 		{
-			StackTraceElement trace = Thread.currentThread().getStackTrace()[stackIndex];
+			trace = Thread.currentThread().getStackTrace()[stackIndex];
 			if(trace.getClassName().startsWith("fr.polytech.projectjava") && !trace.getClassName().startsWith("fr.polytech.projectjava.utils.LoggerFormatter") && !trace.getClassName().startsWith("fr.polytech.projectjava.utils.Log"))
 				break;
 		}
-		stringBuilder.append(Thread.currentThread().getStackTrace()[stackIndex]);
+		if(trace != null)
+			stringBuilder.append(trace.toString().replace("fr.polytech.projectjava.", ""));
 		
 		stringBuilder.append(" -> ");
 		

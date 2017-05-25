@@ -1,10 +1,12 @@
 package fr.polytech.projectjava.mainapp.jfx.main;
 
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 
 /**
@@ -19,6 +21,8 @@ public class MainTab extends Tab
 {
 	private Text companyNameArea;
 	private Text bossNameArea;
+	private Text employeeCountArea;
+	private Text departmentCountArea;
 	
 	/**
 	 * Constructor.
@@ -41,17 +45,34 @@ public class MainTab extends Tab
 	 */
 	private Node buildContent(MainController controller)
 	{
-		VBox root = new VBox();
+		VBox root = new VBox(10);
+		root.setPadding(new Insets(20, 0, 20, 0));
 		
-		Text companyNameLabel = new Text("Company name: ");
 		companyNameArea = new Text("");
-		TextFlow companyNameBox = new TextFlow(companyNameLabel, companyNameArea);
+		companyNameArea.setStyle("-fx-font-size: 50;");
+		TextFlow companyNameBox = new TextFlow(companyNameArea);
+		companyNameBox.setTextAlignment(TextAlignment.CENTER);
+		companyNameBox.setMaxWidth(Double.MAX_VALUE);
 		
 		Text bossNameLabel = new Text("Boss: ");
 		bossNameArea = new Text("");
 		TextFlow bossNameBox = new TextFlow(bossNameLabel, bossNameArea);
+		bossNameBox.setTextAlignment(TextAlignment.CENTER);
+		bossNameBox.setMaxWidth(Double.MAX_VALUE);
 		
-		root.getChildren().addAll(companyNameBox, bossNameBox);
+		Text employeeCountLabel = new Text("Employee count: ");
+		employeeCountArea = new Text("");
+		TextFlow employeeCountBox = new TextFlow(employeeCountLabel, employeeCountArea);
+		employeeCountBox.setTextAlignment(TextAlignment.CENTER);
+		employeeCountBox.setMaxWidth(Double.MAX_VALUE);
+		
+		Text departmentCountLabel = new Text("Department count: ");
+		departmentCountArea = new Text("");
+		TextFlow departmentCountBox = new TextFlow(departmentCountLabel, departmentCountArea);
+		departmentCountBox.setTextAlignment(TextAlignment.CENTER);
+		departmentCountBox.setMaxWidth(Double.MAX_VALUE);
+		
+		root.getChildren().addAll(companyNameBox, bossNameBox, employeeCountBox, departmentCountBox);
 		return root;
 	}
 	
@@ -73,5 +94,25 @@ public class MainTab extends Tab
 	public StringProperty getCompanyNameTextProperty()
 	{
 		return companyNameArea.textProperty();
+	}
+	
+	/**
+	 * Get the employee count property.
+	 *
+	 * @return The employee count property.
+	 */
+	public StringProperty getEmployeeCountTextProperty()
+	{
+		return employeeCountArea.textProperty();
+	}
+	
+	/**
+	 * Get the department count property.
+	 *
+	 * @return The department count property.
+	 */
+	public StringProperty getDepartmentCountTextProperty()
+	{
+		return departmentCountArea.textProperty();
 	}
 }

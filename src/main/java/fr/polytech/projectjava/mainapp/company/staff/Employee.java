@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.IN;
 
 /**
  * Represent an employee in the company.
@@ -86,6 +87,7 @@ public class Employee extends Person implements Serializable
 		this.lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
+		workingDays.addAll(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY);
 	}
 	
 	@Override
@@ -105,7 +107,11 @@ public class Employee extends Person implements Serializable
 		for(EmployeeCheck check : checks)
 			if(check.isDateOf(checkInOut))
 			{
-				check.setInOut(checkInOut);
+				if(checkInOut.getCheckType() == IN)
+					check.setIn(checkInOut.getTime());
+				else
+					check.setOut(checkInOut.getTime());
+					
 				found = true;
 				break;
 			}
@@ -118,7 +124,7 @@ public class Employee extends Person implements Serializable
 	/**
 	 * Update the presence of the employee based on the checks.
 	 */
-	private void updatePresence()
+	public void updatePresence()
 	{
 		EmployeeCheck lastCheck = null;
 		for(EmployeeCheck check : checks)
@@ -159,13 +165,9 @@ public class Employee extends Person implements Serializable
 		while(currentDate.compareTo(maxDate) <= 0)
 		{
 			if(checksByDate.containsKey(currentDate))
-			{
-				overtime = overtime.add(checksByDate.get(currentDate).getWorkedTime()).subtract(getWorkTimeForDay(currentDate.getDayOfWeek()));
-			}
+				overtime = overtime.add(checksByDate.get(currentDate).getWorkedTime()).substract(getWorkTimeForDay(currentDate.getDayOfWeek()));
 			else
-			{
-				overtime = overtime.add(getWorkTimeForDay(currentDate.getDayOfWeek()));
-			}
+				overtime = overtime.substract(getWorkTimeForDay(currentDate.getDayOfWeek()));
 			currentDate = currentDate.plusDays(1);
 		}
 		

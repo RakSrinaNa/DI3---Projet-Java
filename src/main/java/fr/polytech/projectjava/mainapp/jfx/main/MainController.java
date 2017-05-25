@@ -5,20 +5,20 @@ import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
-import fr.polytech.projectjava.mainapp.jfx.dialogs.company.DepartmentDialog;
-import fr.polytech.projectjava.mainapp.jfx.dialogs.createcheck.CheckCreateDialog;
-import fr.polytech.projectjava.mainapp.jfx.dialogs.createcompany.CompanyCreateDialog;
-import fr.polytech.projectjava.mainapp.jfx.dialogs.employee.EmployeeDialog;
+import fr.polytech.projectjava.mainapp.jfx.main.check.CheckList;
+import fr.polytech.projectjava.mainapp.jfx.main.check.create.CheckCreateDialog;
+import fr.polytech.projectjava.mainapp.jfx.main.company.create.CompanyCreateDialog;
+import fr.polytech.projectjava.mainapp.jfx.main.department.DepartmentList;
 import fr.polytech.projectjava.mainapp.socket.CheckingServer;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableRow;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
@@ -99,7 +99,7 @@ public class MainController
 	 */
 	public void employeeClick(MouseEvent event)
 	{
-		if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
+		/*if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
 		{
 			TableRow source = (TableRow) event.getSource();
 			if(source.getItem() instanceof Employee)
@@ -114,7 +114,7 @@ public class MainController
 					dialog.showAndWait();
 				}
 			}
-		}
+		}*///TODO
 	}
 	
 	/**
@@ -160,9 +160,9 @@ public class MainController
 			{
 				company = (Company) ois.readObject();
 			}
-			catch(IOException | ClassNotFoundException e)
+			catch(IOException | ClassNotFoundException | ClassCastException e)
 			{
-				e.printStackTrace();
+				Log.warning("Failed to load last company", e);
 			}
 			return Optional.ofNullable(company);
 		}
@@ -182,7 +182,7 @@ public class MainController
 			}
 			catch(IOException e)
 			{
-				e.printStackTrace();
+				Log.error("Failed to save company", e);
 			}
 		}
 	}
@@ -201,18 +201,27 @@ public class MainController
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("No company loaded");
 			alert.setHeaderText("No company loaded");
-			alert.setContentText("A company need to be loaded or create in order to work.");
+			alert.setContentText("A company need to be loaded or created for the application to work.");
 			alert.showAndWait();
 			parent.getStage().close();
 			Platform.exit();
 			return false;
 		}
+		SimpleStringProperty employeeCount = new SimpleStringProperty("" + getCompany().getEmployees().size());
+		SimpleStringProperty departmentCount = new SimpleStringProperty("" + getCompany().getDepartements().size());
+		company.getEmployees().addListener((InvalidationListener) observable -> employeeCount.set("" + company.getEmployees().size()));
+		company.getDepartements().addListener((InvalidationListener) observable -> departmentCount.set("" + company.getDepartements().size()));
+		
 		parent.getMainTab().getCompanyNameTextProperty().bind(company.nameProperty());
 		parent.getMainTab().getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
+		parent.getMainTab().getEmployeeCountTextProperty().bind(employeeCount);
+		parent.getMainTab().getDepartmentCountTextProperty().bind(departmentCount);
 		parent.getEmployeeTab().getList().setList(company.getEmployees());
 		parent.getEmployeeTab().getDepartmentFilter().setItems(company.getDepartements());
 		parent.getDepartmentTab().getList().setList(company.getDepartements());
 		parent.getCheckTab().getList().setList(company.getChecks());
+		parent.getCheckTab().getDepartmentFilter().setItems(company.getDepartements());
+		parent.getCheckTab().getEmployeeFilter().setItems(company.getEmployees());
 		return true;
 	}
 	
@@ -268,7 +277,7 @@ public class MainController
 	 */
 	public void departmentClick(MouseEvent event)
 	{
-		if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
+		/*if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
 		{
 			TableRow source = (TableRow) event.getSource();
 			if(source.getItem() instanceof StandardDepartment)
@@ -283,7 +292,7 @@ public class MainController
 					dialog.showAndWait();
 				}
 			}
-		}
+		}*///TODO
 	}
 	
 	/**

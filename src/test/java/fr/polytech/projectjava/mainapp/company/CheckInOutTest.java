@@ -30,20 +30,16 @@ public class CheckInOutTest
 		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 5);
 		CheckInOut check2 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
-		calendar.set(Calendar.MINUTE, 0);
 		assertEquals(new Time(calendar.getTimeInMillis()).toLocalTime(), check2.getTime());
 		
 		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 10);
 		CheckInOut check3 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
-		calendar.set(Calendar.MINUTE, 15);
 		assertEquals(new Time(calendar.getTimeInMillis()).toLocalTime(), check3.getTime());
 		
 		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 55);
 		CheckInOut check4 = new CheckInOut(CheckInOut.CheckType.IN, calendar.getTime());
-		calendar.set(Calendar.HOUR_OF_DAY, 11);
-		calendar.set(Calendar.MINUTE, 0);
 		assertEquals(new Time(calendar.getTimeInMillis()).toLocalTime(), check4.getTime());
 	}
 	

@@ -56,8 +56,16 @@ public abstract class ServerSocketBase implements Runnable
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				Log.warning("Error in server socket", e);
 			}
+		}
+		try
+		{
+			socket.close();
+		}
+		catch(IOException e)
+		{
+			Log.warning("Error closing server socket", e);
 		}
 	}
 	

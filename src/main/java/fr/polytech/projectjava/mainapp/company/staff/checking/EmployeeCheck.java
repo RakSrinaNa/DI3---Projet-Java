@@ -2,12 +2,14 @@ package fr.polytech.projectjava.mainapp.company.staff.checking;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
+import fr.polytech.projectjava.utils.jfx.RoundedLocalTimeProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * Represent a day check.
@@ -22,31 +24,39 @@ public class EmployeeCheck implements Serializable
 	private static final long serialVersionUID = 2289845323375640933L;
 	private SimpleObjectProperty<Employee> employee;
 	private SimpleObjectProperty<LocalDate> date;
-	private SimpleObjectProperty<CheckInOut> checkIn = new SimpleObjectProperty<>();
-	private SimpleObjectProperty<CheckInOut> checkOut = new SimpleObjectProperty<>();
+	private RoundedLocalTimeProperty checkIn;
+	private RoundedLocalTimeProperty checkOut;
 	
 	/**
 	 * Constructor.
-	 *@param employee The employee of the check.
-	 * @param date The date of the check.
+	 *
+	 * @param employee The employee of the check.
+	 * @param date     The date of the check.
 	 */
 	public EmployeeCheck(Employee employee, LocalDate date)
 	{
 		this.date = new SimpleObjectProperty<>(date);
 		this.employee = new SimpleObjectProperty<>(employee);
+		checkIn = new RoundedLocalTimeProperty(employee);
+		checkOut = new RoundedLocalTimeProperty(employee);
 	}
 	
 	/**
-	 * Constructor that set the day of the check to the one of the checkinout.
+	 * Constructor.
 	 *
-	 * @param employee The employee of the check.
-	 * @param checkInOut The check to take the date from and add.
+	 * @param employee   The employee of the check.
+	 * @param checkInOut A checkinout to initialize the check.
 	 */
 	public EmployeeCheck(Employee employee, CheckInOut checkInOut)
 	{
 		this.employee = new SimpleObjectProperty<>(employee);
 		this.date = new SimpleObjectProperty<>(checkInOut.getDay());
-		setInOut(checkInOut);
+		checkIn = new RoundedLocalTimeProperty(employee);
+		checkOut = new RoundedLocalTimeProperty(employee);
+		if(checkInOut.getCheckType() == CheckInOut.CheckType.IN)
+			setIn(checkInOut.getTime());
+		else
+			setOut(checkInOut.getTime());
 	}
 	
 	/**
@@ -66,7 +76,7 @@ public class EmployeeCheck implements Serializable
 	 *
 	 * @return The checkIn property.
 	 */
-	public SimpleObjectProperty<CheckInOut> checkInProperty()
+	public SimpleObjectProperty<LocalTime> checkInProperty()
 	{
 		return checkIn;
 	}
@@ -76,7 +86,7 @@ public class EmployeeCheck implements Serializable
 	 *
 	 * @return The checkOut property.
 	 */
-	public SimpleObjectProperty<CheckInOut> checkOutProperty()
+	public SimpleObjectProperty<LocalTime> checkOutProperty()
 	{
 		return checkOut;
 	}
@@ -89,6 +99,36 @@ public class EmployeeCheck implements Serializable
 	public SimpleObjectProperty<Employee> employeeProperty()
 	{
 		return employee;
+	}
+	
+	/**
+	 * Tell if the checks are in a valid order.
+	 *
+	 * @return True if valid, false else.
+	 */
+	public boolean isValidState()
+	{
+		return getCheckIn() == null || getCheckOut() == null || getCheckIn().isBefore(getCheckOut());
+	}
+	
+	/**
+	 * Get the check in time.
+	 *
+	 * @return The check in time.
+	 */
+	public LocalTime getCheckIn()
+	{
+		return checkInProperty().get();
+	}
+	
+	/**
+	 * Get the check out time.
+	 *
+	 * @return The check out time.
+	 */
+	public LocalTime getCheckOut()
+	{
+		return checkOutProperty().get();
 	}
 	
 	/**
@@ -120,7 +160,7 @@ public class EmployeeCheck implements Serializable
 	{
 		if(checkIn.get() == null || checkOut.get() == null)
 			return MinutesDuration.ZERO;
-		return MinutesDuration.seconds(checkOut.get().getTime().toSecondOfDay() - checkIn.get().getTime().toSecondOfDay());
+		return MinutesDuration.seconds(checkOut.get().toSecondOfDay() - checkIn.get().toSecondOfDay());
 	}
 	
 	/**
@@ -144,54 +184,22 @@ public class EmployeeCheck implements Serializable
 	}
 	
 	/**
-	 * Set a check in/out to the day.
-	 *
-	 * @param checkInOut The check to set.
-	 *
-	 * @throws IllegalArgumentException If the check isn't the correct type or the date isn't the same.
-	 */
-	public void setInOut(CheckInOut checkInOut) throws IllegalArgumentException
-	{
-		switch(checkInOut.getCheckType())
-		{
-			case IN:
-				setIn(checkInOut);
-				break;
-			case OUT:
-				setOut(checkInOut);
-				break;
-		}
-	}
-	
-	/**
 	 * Set the in check.
 	 *
-	 * @param check The check to set.
-	 *
-	 * @throws IllegalArgumentException If the check isn't the correct type or the date isn't the same.
+	 * @param check The time to set.
 	 */
-	public void setIn(CheckInOut check) throws IllegalArgumentException
+	public void setIn(LocalTime check)
 	{
-		if(check.getCheckType() != CheckInOut.CheckType.IN)
-			throw new IllegalArgumentException("The check must be IN");
-		if(!check.getDay().isEqual(getDate()))
-			throw new IllegalArgumentException("The checks are not from the same day");
 		checkIn.set(check);
 	}
 	
 	/**
 	 * Set the out check.
 	 *
-	 * @param check The check to set.
-	 *
-	 * @throws IllegalArgumentException If the check isn't the correct type or the date isn't the same.
+	 * @param check The time to set.
 	 */
-	public void setOut(CheckInOut check) throws IllegalArgumentException
+	public void setOut(LocalTime check)
 	{
-		if(check.getCheckType() != CheckInOut.CheckType.OUT)
-			throw new IllegalArgumentException("The check must be OUT");
-		if(!check.getDay().isEqual(getDate()))
-			throw new IllegalArgumentException("The checks are not from the same day");
 		checkOut.set(check);
 	}
 	
@@ -227,13 +235,13 @@ public class EmployeeCheck implements Serializable
 		date = new SimpleObjectProperty<>((LocalDate) ois.readObject());
 		int infos = ois.readInt();
 		if((infos & 0x02) == 0x02)
-			checkIn = new SimpleObjectProperty<>((CheckInOut) ois.readObject());
+			checkIn = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
-			checkIn = new SimpleObjectProperty<>(null);
+			checkIn = new RoundedLocalTimeProperty(getEmployee());
 		if((infos & 0x01) == 0x01)
-			checkOut = new SimpleObjectProperty<>((CheckInOut) ois.readObject());
+			checkOut = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
-			checkOut = new SimpleObjectProperty<>(null);
+			checkOut = new RoundedLocalTimeProperty(getEmployee());
 	}
 	
 	@Override

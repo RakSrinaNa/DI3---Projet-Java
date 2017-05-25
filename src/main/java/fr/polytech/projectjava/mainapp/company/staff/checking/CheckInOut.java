@@ -50,12 +50,6 @@ public class CheckInOut implements Serializable
 	public CheckInOut(CheckType checkType, Date date)
 	{
 		this.checkType = checkType;
-		
-		long quarterMillis = date.getTime() % MILLISECONDS_QUARTER;
-		date.setTime(date.getTime() - quarterMillis);
-		if(quarterMillis >= MILLISECONDS_QUARTER / 2)
-			date.setTime(date.getTime() + MILLISECONDS_QUARTER);
-		
 		checkDate = new java.sql.Date(date.getTime()).toLocalDate();
 		checkTime = new java.sql.Time(date.getTime()).toLocalTime();
 	}

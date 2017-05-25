@@ -1,8 +1,12 @@
 package fr.polytech.projectjava.mainapp.jfx.main;
 
+import fr.polytech.projectjava.mainapp.jfx.main.check.CheckTab;
+import fr.polytech.projectjava.mainapp.jfx.main.department.DepartmentTab;
+import fr.polytech.projectjava.mainapp.jfx.main.employee.EmployeeTab;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.ApplicationBase;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import java.net.BindException;
@@ -108,5 +112,11 @@ public class MainApplication extends ApplicationBase
 	public Consumer<Stage> getStageHandler()
 	{
 		return stage -> stage.setOnCloseRequest(controller::close);
+	}
+	
+	@Override
+	public Scene buildScene(Stage stage)
+	{
+		return new Scene(createContent(stage), 800, 400);
 	}
 }

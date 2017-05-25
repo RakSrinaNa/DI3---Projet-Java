@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.utils.socket;
 
+import fr.polytech.projectjava.utils.Log;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -50,7 +51,7 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			Log.warning("Error during client socket", e);
 			error = true;
 		}
 		finally
@@ -61,7 +62,7 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 			}
 			catch(IOException e)
 			{
-				e.printStackTrace();
+				Log.warning("Error disconnecting client socket", e);
 			}
 		}
 		boolean finalError = error;

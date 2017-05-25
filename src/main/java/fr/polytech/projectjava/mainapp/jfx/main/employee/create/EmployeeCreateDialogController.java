@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.dialogs.employee;
+package fr.polytech.projectjava.mainapp.jfx.main.employee.create;
 
 /**
  * Controller for the employee dialog.
@@ -8,16 +8,16 @@ package fr.polytech.projectjava.mainapp.jfx.dialogs.employee;
  * @author Thomas Couchoud
  * @since 2017-04-27
  */
-public class EmployeeDialogController
+public class EmployeeCreateDialogController
 {
-	private final EmployeeDialog parent;
+	private final EmployeeCreateDialog parent;
 	
 	/**
 	 * Constructor.
 	 *
 	 * @param parent The view.
 	 */
-	public EmployeeDialogController(EmployeeDialog parent)
+	public EmployeeCreateDialogController(EmployeeCreateDialog parent)
 	{
 		this.parent = parent;
 	}

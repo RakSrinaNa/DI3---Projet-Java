@@ -1,11 +1,9 @@
-package fr.polytech.projectjava.mainapp.jfx.dialogs.createcheck;
+package fr.polytech.projectjava.mainapp.jfx.main.check.create;
 
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Log;
 import javafx.event.ActionEvent;
-import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.IN;
-import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.OUT;
+import javafx.scene.control.Alert;
 
 /**
  * Controller for the check dialog.
@@ -37,24 +35,44 @@ public class CheckCreateDialogController
 	 */
 	public void valid(ActionEvent actionEvent)
 	{
-		if(view.getEmployee() != null && view.getDate() != null && (view.getInTime() != null || view.getOutTime() != null))
+		if(view.getEmployee() != null && view.getDate() != null)
 		{
 			if(view.getEmployee().hasCheckForDate(view.getDate()))
+			{
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Check cannot be added");
+				alert.setHeaderText("Check cannot be added");
+				alert.setContentText("This employee already have a check for this date, please edit it instead");
+				alert.showAndWait();
 				return;
+			}
 			try
 			{
 				EmployeeCheck check = new EmployeeCheck(view.getEmployee(), view.getDate());
 				if(view.getInTime() != null)
-					check.setIn(new CheckInOut(IN, view.getDate(), view.getInTime()));
+					check.setIn(view.getInTime());
 				if(view.getOutTime() != null)
-					check.setIn(new CheckInOut(OUT, view.getDate(), view.getOutTime()));
+					check.setOut(view.getOutTime());
 				view.setResult(check);
 				view.close();
 			}
 			catch(IllegalArgumentException e)
 			{
 				Log.warning("Error creating the check", e);
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Check cannot be added");
+				alert.setHeaderText("Check cannot be added");
+				alert.setContentText("This check isn't in a valid state");
+				alert.showAndWait();
 			}
+		}
+		else
+		{
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Check cannot be added");
+			alert.setHeaderText("Check cannot be added");
+			alert.setContentText("You need to at least select an employee and a date");
+			alert.showAndWait();
 		}
 	}
 }

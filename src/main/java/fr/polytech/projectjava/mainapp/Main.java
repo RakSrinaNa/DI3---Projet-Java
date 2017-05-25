@@ -8,6 +8,7 @@ import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.jfx.main.MainApplication;
 import fr.polytech.projectjava.utils.Configuration;
+import fr.polytech.projectjava.utils.Log;
 import javafx.application.Application;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,7 +35,7 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		//buildCompany();
+		buildCompany();
 		Application.launch(MainApplication.class, args);
 	}
 	
@@ -60,17 +61,22 @@ public class Main
 			}
 			catch(ParseException e)
 			{
-				e.printStackTrace();
+				Log.warning("Failed to parse date while building company", e);
 			}
 		});
 		
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(".", Configuration.getString("mainSaveFile")))))
+		File file = new File(".", Configuration.getString("mainSaveFile"));
+		
+		if(file.exists())
+			file.delete();
+		
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
 		{
 			oos.writeObject(comp);
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			Log.warning("Failed to save create company");
 		}
 	}
 }

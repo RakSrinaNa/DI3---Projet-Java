@@ -72,7 +72,7 @@ public class MinutesDuration implements Serializable
 	 *
 	 * @return A new object of the two durations substracted.
 	 */
-	public MinutesDuration subtract(MinutesDuration duration)
+	public MinutesDuration substract(MinutesDuration duration)
 	{
 		return new MinutesDuration(getMinutes() - duration.getMinutes());
 	}

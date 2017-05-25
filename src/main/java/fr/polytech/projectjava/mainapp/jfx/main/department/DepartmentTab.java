@@ -1,5 +1,6 @@
-package fr.polytech.projectjava.mainapp.jfx.main;
+package fr.polytech.projectjava.mainapp.jfx.main.department;
 
+import fr.polytech.projectjava.mainapp.jfx.main.MainController;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;

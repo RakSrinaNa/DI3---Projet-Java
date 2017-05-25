@@ -120,7 +120,7 @@ public class SimulationController
 			}
 			catch(IOException | ClassNotFoundException e)
 			{
-				e.printStackTrace();
+				Log.warning("Failed to load the simulation state", e);
 			}
 		}
 	}
@@ -148,7 +148,7 @@ public class SimulationController
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			Log.error("Failed to save the simulation", e);
 		}
 	}
 	
