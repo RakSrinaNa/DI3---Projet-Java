@@ -1,0 +1,30 @@
+\input{header.tex}
+\title{Rapport1 - Projet Java}
+\fancyhf{}
+\lhead{\leftmark}
+\lfoot{COUCHOUD Thomas}
+\rfoot{Page~\thepage}
+
+\begin{document}
+		La classe centrale du projet est Company. Celle-ci regroupe les informations d'une compagnie tels que:
+		\begin{itemize}
+			\item Son nom
+			\item Ses départements standards
+			\item Son département de management
+		\end{itemize}
+		La liste de ses employés sera calculée a partir des différents départements.
+		
+		Les départements comportent:
+		\begin{itemize}
+			\item Son nom
+			\item Une liste d'employée
+		\end{itemize}
+		
+		Cette classe est par la suite héritée par Standard département et Management qui permettent de définir le dirigeant du département comme étant un Manager ou un Boss.
+		
+		Un employée est affecté a un seul département. Le manager héritant de Employee, il aura un attribut supplémentaire représentant s'il est en charge du département dans lequel il travaille.
+		
+		Un employée détient une liste de CheckInOut représentant ses différents pointages qu'il aura effectué.
+		\newpage
+		\img{../../ClassDiagram.png}{Diagramme de classes}{0.37}{90}
+\end{document}

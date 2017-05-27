@@ -1,0 +1,100 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{diagbox}
+\usepackage[a4paper, total={6.5in, 10in}]{geometry}
+\usepackage{wrapfig}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{array}
+\usepackage[bb=boondox]{mathalfa}
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+\usepackage{pict2e}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{calrsfs}
+\usepackage{stmaryrd}
+\usepackage{amsthm}
+\usepackage{csquotes}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{mathtools}
+\usepackage{scrextend}
+\usepackage{pdfpages}
+\usepackage[parfill]{parskip}
+\usepackage[colorlinks]{hyperref}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\leftmark}
+\lfoot{COUCHOUD Thomas}
+\rfoot{Page~\thepage}
+\restylefloat{table}
+\renewcommand{\footrulewidth}{0.4pt}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+\everymath{\displaystyle}
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.3em}
+\title{Probabilités}
+\author{COUCHOUD Thomas\and COLEAU Victor}
+\newcommand{\pdf}[1]{\includepdf[pages=#1]{pdf.pdf}}
+\newcommand{\ssi}{si et seulement si}
+\newcommand{\va}{variable aléatoire~}
+\newcommand{\vas}{variables aléatoires~}
+\newcommand{\smallo}[1]{\overline{o}(#1)}
+\newcommand{\bigo}[1]{\underline{O}(#1)}
+\newcommand{\cqfd}{CQFD\\}
+\newcommand{\tq}{\text{ tq }}
+\newcommand{\rr}{\mathbb{R}}
+\newcommand{\kk}{\mathbb{K}}
+\newcommand{\cc}{\mathbb{C}}
+\newcommand{\nn}{\mathbb{N}}
+\newcommand{\zz}{\mathbb{Z}}
+\newcommand{\erange}[2]{\llbracket #1 ; #2 \rrbracket}
+\newcommand{\e}[1]{e^{#1}}
+\newcommand{\dl}[2]{DL_{#1}(#2)}
+\newcommand{\nl}{\newline\newline}
+\newcommand{\PP}[1]{P\left( #1 \right)}
+\newcommand{\PS}[2]{P_{#1}\left( #2 \right)}
+\makeatletter
+\def\thm@space@setup{
+  \thm@preskip=0.5cm
+  \thm@postskip=\thm@preskip
+}
+\makeatother
+\newtheorem{theoreme}{Theorème}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollaire}{Corollaire}[section]
+\theoremstyle{definition}
+\newtheorem{definition}{Définition}[section]
+\newtheorem*{remarque}{Remarque}
+\newtheorem*{propriete}{Propriété}
+\newtheorem*{exemple}{Exemple}
+\newtheorem*{cexemple}{Contre-exemple}
+\newtheorem*{casparticulier}{Cas particulier}
+\newtheorem*{exercice}{Exercice}
+\newtheorem*{consequence}{Conséquence}
+\newtheorem*{demonstration}{Démonstration}
+\newcommand{\tend}[1]{\underset{#1}{\longrightarrow}}
+\newcommand{\prive}[1]{\setminus\left\lbrace #1\right\rbrace}
+\newcommand{\parmi}[2]{\binom{#2}{#1}}
+\newcommand{\img}[4]{
+\begin{figure}[H]
+	\centering
+   	\includegraphics[angle=#4,scale=#3]{Images/#1}
+   	\caption{#2}
+\end{figure}
+}
+\AtBeginDocument{\thispagestyle{plain}}
