@@ -6,12 +6,12 @@ import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.mainapp.jfx.main.MainController;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.function.Predicate;
@@ -29,9 +29,13 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 	/**
 	 * Constructor.
 	 *
-	 * @param controller The main controller.
+	 * @param controller               The main controller.
+	 * @param departmentFilterProperty The selection of the department.
+	 * @param employeeFilterProperty   The selection of the employee.
+	 * @param startDateProperty        The selection of the starting date.
+	 * @param endDateProperty          The selection of the ending date.
 	 */
-	public CheckList(MainController controller, ReadOnlyObjectProperty<StandardDepartment> departmentFilterProperty, ReadOnlyObjectProperty<Employee> employeeFilterProperty)
+	public CheckList(MainController controller, ReadOnlyObjectProperty<StandardDepartment> departmentFilterProperty, ReadOnlyObjectProperty<Employee> employeeFilterProperty, ObjectProperty<LocalDate> startDateProperty, ObjectProperty<LocalDate> endDateProperty)
 	{
 		super();
 		
@@ -61,6 +65,20 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 				employeeFilter.set(check -> check.getEmployee().equals(newValue));
 		}));
 		
+		startDateProperty.addListener(((observable, oldValue, newValue) -> {
+			if(newValue == null)
+				startDateFilter.set(check -> true);
+			else
+				startDateFilter.set(check -> check.getDate().isAfter(newValue));
+		}));
+		
+		endDateProperty.addListener(((observable, oldValue, newValue) -> {
+			if(newValue == null)
+				endDateFilter.set(check -> true);
+			else
+				endDateFilter.set(check -> check.getDate().isBefore(newValue));
+		}));
+		
 		int colCount = 4;
 		int padding = 2;
 		
@@ -88,12 +106,6 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 		
 		//noinspection unchecked
 		getColumns().addAll(columnEmployee, columnDate, columnArrival, columnDeparture);
-		
-		this.setRowFactory(tv -> {
-			TableRow<EmployeeCheck> row = new TableRow<>();
-			row.setOnMouseClicked(controller::checkClick);
-			return row;
-		});
 	}
 	
 	/**

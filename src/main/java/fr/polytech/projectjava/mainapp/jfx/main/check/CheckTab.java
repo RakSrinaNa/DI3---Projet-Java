@@ -96,6 +96,12 @@ public class CheckTab extends Tab
 		employeeFilter.setCellFactory(employeeCellFactory);
 		employeeFilter.setMaxWidth(Double.MAX_VALUE);
 		
+		DatePicker startDate = new DatePicker();
+		startDate.setMaxWidth(Double.MAX_VALUE);
+		
+		DatePicker endDate = new DatePicker();
+		endDate.setMaxWidth(Double.MAX_VALUE);
+		
 		Button addCheckButton = new Button("Add check");
 		addCheckButton.setOnAction(controller::addCheck);
 		addCheckButton.setMaxWidth(Double.MAX_VALUE);
@@ -104,13 +110,15 @@ public class CheckTab extends Tab
 		removeCheckButton.setOnAction(evt -> controller.removeCheck(evt, checksList));
 		removeCheckButton.setMaxWidth(Double.MAX_VALUE);
 		
-		controls.getChildren().addAll(employeeFilter, departmentFilter, addCheckButton, removeCheckButton);
+		controls.getChildren().addAll(employeeFilter, startDate, endDate, departmentFilter, addCheckButton, removeCheckButton);
 		HBox.setHgrow(employeeFilter, Priority.SOMETIMES);
+		HBox.setHgrow(startDate, Priority.SOMETIMES);
+		HBox.setHgrow(endDate, Priority.SOMETIMES);
 		HBox.setHgrow(departmentFilter, Priority.SOMETIMES);
 		HBox.setHgrow(addCheckButton, Priority.ALWAYS);
 		HBox.setHgrow(removeCheckButton, Priority.ALWAYS);
 		
-		checksList = new CheckList(controller, departmentFilter.getSelectionModel().selectedItemProperty(), employeeFilter.getSelectionModel().selectedItemProperty());
+		checksList = new CheckList(controller, departmentFilter.getSelectionModel().selectedItemProperty(), employeeFilter.getSelectionModel().selectedItemProperty(), startDate.valueProperty(), endDate.valueProperty());
 		checksList.setMaxHeight(Double.MAX_VALUE);
 		
 		root.getChildren().addAll(checksList, controls);

@@ -3,6 +3,7 @@ package fr.polytech.projectjava.mainapp.jfx.main;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.mainapp.jfx.main.check.CheckList;
@@ -19,6 +20,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
@@ -271,31 +273,6 @@ public class MainController
 	}
 	
 	/**
-	 * Handle a click on a department in the list.
-	 *
-	 * @param event The click event.
-	 */
-	public void departmentClick(MouseEvent event)
-	{
-		/*if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
-		{
-			TableRow source = (TableRow) event.getSource();
-			if(source.getItem() instanceof StandardDepartment)
-			{
-				StandardDepartment department = (StandardDepartment) source.getItem();
-				if(event.getButton() == MouseButton.PRIMARY)
-				{
-					((TableRow) event.getSource()).getScene();
-					DepartmentDialog dialog = new DepartmentDialog(department);
-					dialog.initOwner(((TableRow) event.getSource()).getScene().getWindow());
-					dialog.initModality(Modality.APPLICATION_MODAL);
-					dialog.showAndWait();
-				}
-			}
-		}*///TODO
-	}
-	
-	/**
 	 * Bring the popup when a check want to be added.
 	 *
 	 * @param event The click event.
@@ -314,7 +291,7 @@ public class MainController
 	/**
 	 * Remove a check from the list.
 	 *
-	 * @param evt             The click event.
+	 * @param evt       The click event.
 	 * @param checkList The check list.
 	 */
 	public void removeCheck(ActionEvent evt, CheckList checkList)
@@ -328,13 +305,13 @@ public class MainController
 	}
 	
 	/**
-	 * Handle a click on a check in the list.
+	 * Called when the manager of a department is modified.
 	 *
-	 * @param event The click event.
+	 * @param event The change event.
 	 */
-	public void checkClick(MouseEvent event)
+	public void managerChanged(TableColumn.CellEditEvent<StandardDepartment, Manager> event)
 	{
-		//TODO
+		event.getRowValue().setLeader(event.getNewValue());
 	}
 	
 	/**

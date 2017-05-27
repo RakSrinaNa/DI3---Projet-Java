@@ -5,7 +5,6 @@ import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.jfx.main.MainController;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 24/05/2017.
@@ -27,23 +26,22 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 		int colCount = 2;
 		int padding = 2;
 		
-		setEditable(false);
+		setEditable(true);
 		
 		TableColumn<StandardDepartment, String> columnName = new TableColumn<>("Name");
 		columnName.setCellValueFactory(value -> value.getValue().nameProperty());
 		columnName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		columnName.setCellFactory(list -> new NameTextFieldTableCell());
+		columnName.setEditable(true);
 		
 		TableColumn<StandardDepartment, Manager> columnManager = new TableColumn<>("Manager");
 		columnManager.setCellValueFactory(value -> value.getValue().leaderProperty());
 		columnManager.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		columnManager.setCellFactory(list -> new ManagerComboBoxTableCell(controller.getCompany().getManagers()));
+		columnManager.setEditable(true);
+		columnManager.setOnEditCommit(controller::managerChanged);
 		
 		//noinspection unchecked
 		getColumns().addAll(columnName, columnManager);
-		
-		this.setRowFactory(tv -> {
-			TableRow<StandardDepartment> row = new TableRow<>();
-			row.setOnMouseClicked(controller::departmentClick);
-			return row;
-		});
 	}
 }

@@ -10,6 +10,7 @@ import fr.polytech.projectjava.utils.Log;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +34,7 @@ public class Company implements Serializable
 	private SimpleObjectProperty<Boss> boss;
 	private ManagementDepartment managementDepartment;
 	private ObservableList<EmployeeCheck> checks;
+	private ObservableList<Manager> managers = FXCollections.observableArrayList();
 	
 	/**
 	 * Construct a company with its name and boss.
@@ -46,6 +48,28 @@ public class Company implements Serializable
 		this.boss = new SimpleObjectProperty<>(boss);
 		this.managementDepartment = new ManagementDepartment(this, boss);
 		this.checks = FXCollections.observableArrayList();
+		employees.addListener(new ListChangeListener<Employee>()
+		{
+			@Override
+			public void onChanged(Change<? extends Employee> c)
+			{
+				while(c.next())
+				{
+					if(c.wasAdded() || c.wasReplaced())
+					{
+						for(Employee emp : c.getAddedSubList())
+							if(emp instanceof Manager)
+								managers.add((Manager) emp);
+					}
+					else if(c.wasRemoved() || c.wasReplaced())
+					{
+						for(Employee emp : c.getRemoved())
+							if(emp instanceof Manager)
+								managers.remove(emp);
+					}
+				}
+			}
+		});
 	}
 	
 	/**
@@ -169,6 +193,16 @@ public class Company implements Serializable
 	public void unregisterCheck(EmployeeCheck check)
 	{
 		checks.remove(check);
+	}
+	
+	/**
+	 * Get the managers of the company.
+	 *
+	 * @return The managers.
+	 */
+	public ObservableList<Manager> getManagers()
+	{
+		return managers;
 	}
 	
 	/**
@@ -314,15 +348,41 @@ public class Company implements Serializable
 			departments.add((StandardDepartment) ois.readObject());
 		
 		employees = FXCollections.observableArrayList();
+		managers = FXCollections.observableArrayList();
 		int empSize = ois.readInt();
 		for(int i = 0; i < empSize; i++)
 		{
 			Object emp = ois.readObject();
 			if(emp instanceof Manager)
+			{
 				employees.add((Manager) emp);
+				managers.add((Manager) emp);
+			}
 			else
 				employees.add((Employee) emp);
 		}
+		employees.addListener(new ListChangeListener<Employee>()
+		{
+			@Override
+			public void onChanged(Change<? extends Employee> c)
+			{
+				while(c.next())
+				{
+					if(c.wasAdded() || c.wasReplaced())
+					{
+						for(Employee emp : c.getAddedSubList())
+							if(emp instanceof Manager)
+								managers.add((Manager) emp);
+					}
+					else if(c.wasRemoved() || c.wasReplaced())
+					{
+						for(Employee emp : c.getRemoved())
+							if(emp instanceof Manager)
+								managers.remove(emp);
+					}
+				}
+			}
+		});
 		
 		checks = FXCollections.observableArrayList();
 		int chkSize = ois.readInt();

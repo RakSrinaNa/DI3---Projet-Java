@@ -3,6 +3,7 @@ package fr.polytech.projectjava.mainapp.company.departments;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
+import fr.polytech.projectjava.utils.Log;
 import java.io.Serializable;
 
 /**
@@ -43,15 +44,18 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	 */
 	public void setLeader(Manager manager)
 	{
-		if(manager.getWorkingDepartment() == this)
-		{
-			if(getLeader() != null)
-				company.removeFromManagementTeam(getLeader());
+		if(getLeader() != null)
+			company.removeFromManagementTeam(getLeader());
 			
-			super.setLeader(manager);
+		if(manager != null)
+		{
+			if(manager.getWorkingDepartment() != null)
+				manager.getWorkingDepartment().removeEmployee(manager);
 			manager.setWorkingDepartment(this);
 			company.addToManagementTeam(manager);
 		}
+		
+		super.setLeader(manager);
 	}
 	
 	@Override
@@ -69,6 +73,12 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	@Override
 	public void removeEmployee(Employee employee)
 	{
+		if(employee instanceof Manager)
+			if(employee == getLeader())
+			{
+				Log.warning(this + "\tManager left the department");
+				setLeader(null);
+			}
 		employee.setWorkingDepartment(null);
 		super.removeEmployee(employee);
 	}

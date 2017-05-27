@@ -68,7 +68,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	@Override
 	public String toString()
 	{
-		return "[Department " + getName() + "\nLeader: " + getLeader() + "\nWorkers: \t" + getEmployees() + "]";
+		return getID() + ": " + getName();
 	}
 	
 	/**
@@ -79,7 +79,6 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	public void removeEmployee(E employee)
 	{
 		this.employees.remove(employee);
-		company.removeEmployee(employee);
 	}
 	
 	/**

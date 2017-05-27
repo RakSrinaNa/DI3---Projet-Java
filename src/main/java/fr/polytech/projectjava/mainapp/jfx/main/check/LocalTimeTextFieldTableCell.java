@@ -50,7 +50,7 @@ public class LocalTimeTextFieldTableCell extends TextFieldTableCell<EmployeeChec
 	{
 		item = RoundedLocalTimeProperty.roundTime(item);
 		super.updateItem(item, empty);
-		if(getTableRow().getItem() != null && !((EmployeeCheck)getTableRow().getItem()).isValidState())
+		if(!empty && getTableRow().getItem() != null && !((EmployeeCheck)getTableRow().getItem()).isValidState())
 			getTableRow().setStyle("-fx-background-color: #FF0000;");
 		else
 			getTableRow().setStyle(null);
