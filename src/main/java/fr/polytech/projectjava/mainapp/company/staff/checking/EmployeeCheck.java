@@ -60,6 +60,26 @@ public class EmployeeCheck implements Serializable
 	}
 	
 	/**
+	 * Set the in check.
+	 *
+	 * @param check The time to set.
+	 */
+	public void setIn(LocalTime check)
+	{
+		checkIn.set(check);
+	}
+	
+	/**
+	 * Set the out check.
+	 *
+	 * @param check The time to set.
+	 */
+	public void setOut(LocalTime check)
+	{
+		checkOut.set(check);
+	}
+	
+	/**
 	 * Tell if the check in out is part of this day check.
 	 *
 	 * @param checkInOut The checkinout to test.
@@ -72,23 +92,51 @@ public class EmployeeCheck implements Serializable
 	}
 	
 	/**
-	 * Get the checkIn property.
+	 * Get the date of the check.
 	 *
-	 * @return The checkIn property.
+	 * @return The date.
 	 */
-	public SimpleObjectProperty<LocalTime> checkInProperty()
+	public LocalDate getDate()
 	{
-		return checkIn;
+		return dateProperty().get();
 	}
 	
 	/**
-	 * Get the checkOut property.
+	 * Get the dat property.
 	 *
-	 * @return The checkOut property.
+	 * @return The day property.
 	 */
-	public SimpleObjectProperty<LocalTime> checkOutProperty()
+	public SimpleObjectProperty<LocalDate> dateProperty()
 	{
-		return checkOut;
+		return date;
+	}
+	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeObject(getEmployee());
+		oos.writeObject(getDate());
+		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0));
+		if(checkIn.get() != null)
+			oos.writeObject(checkIn.get());
+		if(checkOut.get() != null)
+			oos.writeObject(checkOut.get());
+	}
+	
+	/**
+	 * Get the employee.
+	 *
+	 * @return The employee.
+	 */
+	public Employee getEmployee()
+	{
+		return employeeProperty().get();
 	}
 	
 	/**
@@ -99,6 +147,63 @@ public class EmployeeCheck implements Serializable
 	public SimpleObjectProperty<Employee> employeeProperty()
 	{
 		return employee;
+	}
+	
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		employee = new SimpleObjectProperty<>((Employee) ois.readObject());
+		date = new SimpleObjectProperty<>((LocalDate) ois.readObject());
+		int infos = ois.readInt();
+		if((infos & 0x02) == 0x02)
+			checkIn = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
+		else
+			checkIn = new RoundedLocalTimeProperty(getEmployee());
+		if((infos & 0x01) == 0x01)
+			checkOut = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
+		else
+			checkOut = new RoundedLocalTimeProperty(getEmployee());
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return obj instanceof EmployeeCheck && getEmployee().equals(((EmployeeCheck) obj).getEmployee()) && getDate().equals(((EmployeeCheck) obj).getDate());
+	}
+	
+	@Override
+	public String toString()
+	{
+		return employee + " " + date + " IN: " + (checkIn == null ? "?" : checkIn) + " / OUT: " + (checkOut == null ? "?" : checkOut);
+	}
+	
+	/**
+	 * Get the time worked for this day.
+	 *
+	 * @return The time worked.
+	 */
+	public MinutesDuration getWorkedTime()
+	{
+		if(checkIn.get() == null || checkOut.get() == null)
+			return MinutesDuration.ZERO;
+		return MinutesDuration.seconds(checkOut.get().toSecondOfDay() - checkIn.get().toSecondOfDay());
+	}
+	
+	/**
+	 * Tells if a day is in progress (one check is present).
+	 *
+	 * @return True if one check is present, false else.
+	 */
+	public boolean isInProgress()
+	{
+		return (checkIn.get() != null) ^ (checkOut.get() != null);
 	}
 	
 	/**
@@ -132,127 +237,22 @@ public class EmployeeCheck implements Serializable
 	}
 	
 	/**
-	 * Get the employee.
+	 * Get the checkIn property.
 	 *
-	 * @return The employee.
+	 * @return The checkIn property.
 	 */
-	public Employee getEmployee()
+	public SimpleObjectProperty<LocalTime> checkInProperty()
 	{
-		return employeeProperty().get();
+		return checkIn;
 	}
 	
 	/**
-	 * Tells if a day is in progress (one check is present).
+	 * Get the checkOut property.
 	 *
-	 * @return True if one check is present, false else.
+	 * @return The checkOut property.
 	 */
-	public boolean isInProgress()
+	public SimpleObjectProperty<LocalTime> checkOutProperty()
 	{
-		return (checkIn.get() != null) ^ (checkOut.get() != null);
-	}
-	
-	/**
-	 * Get the time worked for this day.
-	 *
-	 * @return The time worked.
-	 */
-	public MinutesDuration getWorkedTime()
-	{
-		if(checkIn.get() == null || checkOut.get() == null)
-			return MinutesDuration.ZERO;
-		return MinutesDuration.seconds(checkOut.get().toSecondOfDay() - checkIn.get().toSecondOfDay());
-	}
-	
-	/**
-	 * Get the date of the check.
-	 *
-	 * @return The date.
-	 */
-	public LocalDate getDate()
-	{
-		return dateProperty().get();
-	}
-	
-	/**
-	 * Get the dat property.
-	 *
-	 * @return The day property.
-	 */
-	public SimpleObjectProperty<LocalDate> dateProperty()
-	{
-		return date;
-	}
-	
-	/**
-	 * Set the in check.
-	 *
-	 * @param check The time to set.
-	 */
-	public void setIn(LocalTime check)
-	{
-		checkIn.set(check);
-	}
-	
-	/**
-	 * Set the out check.
-	 *
-	 * @param check The time to set.
-	 */
-	public void setOut(LocalTime check)
-	{
-		checkOut.set(check);
-	}
-	
-	/**
-	 * Serialize the object.
-	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
-	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
-	{
-		oos.writeObject(getEmployee());
-		oos.writeObject(getDate());
-		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0));
-		if(checkIn.get() != null)
-			oos.writeObject(checkIn.get());
-		if(checkOut.get() != null)
-			oos.writeObject(checkOut.get());
-	}
-	
-	/**
-	 * Deserialize an object.
-	 *
-	 * @param ois The object stream.
-	 *
-	 * @throws IOException            If the deserialization failed.
-	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
-	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
-	{
-		employee = new SimpleObjectProperty<>((Employee) ois.readObject());
-		date = new SimpleObjectProperty<>((LocalDate) ois.readObject());
-		int infos = ois.readInt();
-		if((infos & 0x02) == 0x02)
-			checkIn = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
-		else
-			checkIn = new RoundedLocalTimeProperty(getEmployee());
-		if((infos & 0x01) == 0x01)
-			checkOut = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
-		else
-			checkOut = new RoundedLocalTimeProperty(getEmployee());
-	}
-	
-	@Override
-	public String toString()
-	{
-		return employee + " " + date + " IN: " + (checkIn == null ? "?" : checkIn) + " / OUT: " + (checkOut == null ? "?" : checkOut);
-	}
-	
-	@Override
-	public boolean equals(Object obj)
-	{
-		return obj instanceof EmployeeCheck && getEmployee().equals(((EmployeeCheck) obj).getEmployee()) && getDate().equals(((EmployeeCheck) obj).getDate());
+		return checkOut;
 	}
 }

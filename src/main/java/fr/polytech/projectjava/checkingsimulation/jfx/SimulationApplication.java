@@ -36,9 +36,9 @@ import java.util.function.Consumer;
 public class SimulationApplication extends ApplicationBase
 {
 	private final static int MILLISECONDS_QUARTER = 900000;
-	private SimulationController controller;
 	private final SimpleStringProperty currentTime = new SimpleStringProperty("");
 	private final SimpleStringProperty roundedTimeString = new SimpleStringProperty("");
+	private SimulationController controller;
 	private LocalTime roundedTime = LocalTime.now();
 	private Timeline currentTimeTimeline;
 	private ComboBox<Employee> employeeField;
@@ -49,6 +49,31 @@ public class SimulationApplication extends ApplicationBase
 	{
 		super.preInit();
 		controller = new SimulationController(this);
+	}
+	
+	@Override
+	public String getFrameTitle()
+	{
+		return "CheckingSimulation";
+	}
+	
+	@Override
+	public Consumer<Stage> getStageHandler()
+	{
+		return stage -> {
+			stage.setOnCloseRequest(event -> {
+				if(controller.close(event))
+					currentTimeTimeline.stop();
+			});
+			controller.loadDatas();
+			controller.refreshEmployees(null);
+		};
+	}
+	
+	@Override
+	public Consumer<Stage> getOnStageDisplayed() throws Exception
+	{
+		return stage -> startTimeUpdated();
 	}
 	
 	@Override
@@ -113,43 +138,10 @@ public class SimulationApplication extends ApplicationBase
 		HBox.setHgrow(employeeField, Priority.SOMETIMES);
 		HBox.setHgrow(sendButton, Priority.ALWAYS);
 		
-		
 		root.getChildren().addAll(times, checkList, employeeBox, refreshButton, sendPendingButton);
 		
 		VBox.setVgrow(checkList, Priority.ALWAYS);
 		return root;
-	}
-	
-	/**
-	 * Get the checkings to be sent.
-	 *
-	 * @return The checkings.
-	 */
-	public ObservableList<CheckInfos> getCheckings()
-	{
-		return checkList.getItems();
-	}
-	
-	/**
-	 * Get the employee list.
-	 *
-	 * @return The employee list.
-	 */
-	public ObservableList<Employee> getEmployees()
-	{
-		return employeeField.getItems();
-	}
-	
-	@Override
-	public Consumer<Stage> getOnStageDisplayed() throws Exception
-	{
-		return stage -> startTimeUpdated();
-	}
-	
-	@Override
-	public String getFrameTitle()
-	{
-		return "CheckingSimulation";
 	}
 	
 	/**
@@ -183,16 +175,23 @@ public class SimulationApplication extends ApplicationBase
 		}
 	}
 	
-	@Override
-	public Consumer<Stage> getStageHandler()
+	/**
+	 * Get the checkings to be sent.
+	 *
+	 * @return The checkings.
+	 */
+	public ObservableList<CheckInfos> getCheckings()
 	{
-		return stage -> {
-			stage.setOnCloseRequest(event -> {
-				if(controller.close(event))
-					currentTimeTimeline.stop();
-			});
-			controller.loadDatas();
-			controller.refreshEmployees(null);
-		};
+		return checkList.getItems();
+	}
+	
+	/**
+	 * Get the employee list.
+	 *
+	 * @return The employee list.
+	 */
+	public ObservableList<Employee> getEmployees()
+	{
+		return employeeField.getItems();
 	}
 }

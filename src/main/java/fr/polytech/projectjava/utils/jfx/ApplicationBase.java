@@ -63,15 +63,6 @@ public abstract class ApplicationBase extends Application
 	}
 	
 	/**
-	 * Create the content to put in the scene.
-	 *
-	 * @param stage The stage of the scene.
-	 *
-	 * @return The root element of the scene.
-	 */
-	public abstract Parent createContent(Stage stage);
-	
-	/**
 	 * Get the title of the window.
 	 *
 	 * @return The window title.
@@ -101,6 +92,13 @@ public abstract class ApplicationBase extends Application
 	}
 	
 	/**
+	 * Method called before displaying the frame.
+	 *
+	 * @return The consumer to call.
+	 */
+	public abstract Consumer<Stage> getStageHandler();
+	
+	/**
 	 * Method called when the stage has been displayed.
 	 *
 	 * @return The consumer to call.
@@ -111,6 +109,15 @@ public abstract class ApplicationBase extends Application
 	public abstract Consumer<Stage> getOnStageDisplayed() throws Exception;
 	
 	/**
+	 * Create the content to put in the scene.
+	 *
+	 * @param stage The stage of the scene.
+	 *
+	 * @return The root element of the scene.
+	 */
+	public abstract Parent createContent(Stage stage);
+	
+	/**
 	 * Get the stage of this application.
 	 *
 	 * @return The stage.
@@ -119,11 +126,4 @@ public abstract class ApplicationBase extends Application
 	{
 		return stage;
 	}
-	
-	/**
-	 * Method called before displaying the frame.
-	 *
-	 * @return The consumer to call.
-	 */
-	public abstract Consumer<Stage> getStageHandler();
 }

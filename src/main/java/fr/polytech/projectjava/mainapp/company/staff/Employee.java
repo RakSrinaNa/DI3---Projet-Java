@@ -39,13 +39,13 @@ public class Employee extends Person implements Serializable
 	protected final static LocalTime DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00").toLocalTime();
 	protected final static LocalTime DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00").toLocalTime();
 	private static final long serialVersionUID = -8611138931676775765L;
+	protected static int NEXT_ID = 0;
 	private int ID;
 	private Company company;
 	private ObservableList<EmployeeCheck> checks = FXCollections.observableArrayList();
 	private ObservableList<DayOfWeek> workingDays = FXCollections.observableArrayList();
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
-	protected static int NEXT_ID = 0;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
 	private SimpleObjectProperty<LocalTime> arrivalTime;
 	private SimpleObjectProperty<LocalTime> departureTime;
@@ -97,6 +97,16 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
+	 * Get the ID of the employee.
+	 *
+	 * @return Its ID.
+	 */
+	public int getID()
+	{
+		return ID;
+	}
+	
+	/**
 	 * Add a checking to this employee.
 	 *
 	 * @param checkInOut The checking to add.
@@ -111,7 +121,7 @@ public class Employee extends Person implements Serializable
 					check.setIn(checkInOut.getTime());
 				else
 					check.setOut(checkInOut.getTime());
-					
+				
 				found = true;
 				break;
 			}
@@ -122,27 +132,17 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
-	 * Update the presence of the employee based on the checks.
-	 */
-	public void updatePresence()
-	{
-		EmployeeCheck lastCheck = null;
-		for(EmployeeCheck check : checks)
-			if(lastCheck == null || lastCheck.getDate().isBefore(check.getDate()))
-				lastCheck = check;
-		if(lastCheck != null)
-			isPresent.set(lastCheck.isInProgress());
-	}
-	
-	/**
-	 * Add a working day for this employee.
+	 * Add a check to the employee.
 	 *
-	 * @param day The day to add.
+	 * @param check he check to add.
 	 */
-	public void addWorkingDay(DayOfWeek day)
+	public void addCheck(EmployeeCheck check)
 	{
-		if(!workingDays.contains(day))
-			workingDays.add(day);
+		if(!checks.contains(check))
+		{
+			checks.add(check);
+			company.registerCheck(check);
+		}
 	}
 	
 	/**
@@ -178,6 +178,19 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
+	 * Update the presence of the employee based on the checks.
+	 */
+	public void updatePresence()
+	{
+		EmployeeCheck lastCheck = null;
+		for(EmployeeCheck check : checks)
+			if(lastCheck == null || lastCheck.getDate().isBefore(check.getDate()))
+				lastCheck = check;
+		if(lastCheck != null)
+			isPresent.set(lastCheck.isInProgress());
+	}
+	
+	/**
 	 * Get the duration the employee should work for this day.
 	 *
 	 * @param dayOfWeek The day of the week concerned.
@@ -189,6 +202,85 @@ public class Employee extends Person implements Serializable
 		if(workingDays.contains(dayOfWeek))
 			return MinutesDuration.seconds(getDepartureTime().toSecondOfDay() - getArrivalTime().toSecondOfDay());
 		return MinutesDuration.ZERO;
+	}
+	
+	/**
+	 * Get the departure time of this employee.
+	 *
+	 * @return The departure time.
+	 */
+	public LocalTime getDepartureTime()
+	{
+		return departureTimeProperty().get();
+	}
+	
+	/**
+	 * Get the arrival time of this employee.
+	 *
+	 * @return The arrival time.
+	 */
+	public LocalTime getArrivalTime()
+	{
+		return arrivalTimeProperty().get();
+	}
+	
+	/**
+	 * Set the arrival time for this employee.
+	 *
+	 * @param arrivalTime The arrival time to set.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public void setArrivalTime(LocalTime arrivalTime) throws IllegalArgumentException
+	{
+		if(arrivalTime.isAfter(getDepartureTime()))
+			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
+		this.arrivalTime.set(arrivalTime);
+	}
+	
+	/**
+	 * Get the departure time property.
+	 *
+	 * @return The departure time property.
+	 */
+	private SimpleObjectProperty<LocalTime> departureTimeProperty()
+	{
+		return departureTime;
+	}
+	
+	/**
+	 * Get the arrival time property.
+	 *
+	 * @return The arrival time property.
+	 */
+	private SimpleObjectProperty<LocalTime> arrivalTimeProperty()
+	{
+		return arrivalTime;
+	}
+	
+	/**
+	 * Set the departure time for this employee.
+	 *
+	 * @param departureTime The departure time to set.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public void setDepartureTime(LocalTime departureTime) throws IllegalArgumentException
+	{
+		if(getArrivalTime().isAfter(departureTime))
+			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
+		this.departureTime.set(departureTime);
+	}
+	
+	/**
+	 * Add a working day for this employee.
+	 *
+	 * @param day The day to add.
+	 */
+	public void addWorkingDay(DayOfWeek day)
+	{
+		if(!workingDays.contains(day))
+			workingDays.add(day);
 	}
 	
 	/**
@@ -213,20 +305,6 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
-	 * Add a check to the employee.
-	 *
-	 * @param check he check to add.
-	 */
-	public void addCheck(EmployeeCheck check)
-	{
-		if(!checks.contains(check))
-		{
-			checks.add(check);
-			company.registerCheck(check);
-		}
-	}
-	
-	/**
 	 * Tell if this employee have a check for a date.
 	 *
 	 * @param date The date to look for.
@@ -242,91 +320,25 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
-	 * Get the arrival time of this employee.
+	 * Serialize the object.
 	 *
-	 * @return The arrival time.
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
 	 */
-	public LocalTime getArrivalTime()
+	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
-		return arrivalTimeProperty().get();
-	}
-	
-	/**
-	 * Get the arrival time property.
-	 *
-	 * @return The arrival time property.
-	 */
-	private SimpleObjectProperty<LocalTime> arrivalTimeProperty()
-	{
-		return arrivalTime;
-	}
-	
-	/**
-	 * Set the arrival time for this employee.
-	 *
-	 * @param arrivalTime The arrival time to set.
-	 *
-	 * @throws IllegalArgumentException If the arrival time is after the departure time.
-	 */
-	public void setArrivalTime(LocalTime arrivalTime) throws IllegalArgumentException
-	{
-		if(arrivalTime.isAfter(getDepartureTime()))
-			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
-		this.arrivalTime.set(arrivalTime);
-	}
-	
-	/**
-	 * Get the list of checking the employee did.
-	 *
-	 * @return A list of the checking.
-	 */
-	public ObservableList<EmployeeCheck> getChecks()
-	{
-		return checks;
-	}
-	
-	/**
-	 * Get the departure time of this employee.
-	 *
-	 * @return The departure time.
-	 */
-	public LocalTime getDepartureTime()
-	{
-		return departureTimeProperty().get();
-	}
-	
-	/**
-	 * Get the departure time property.
-	 *
-	 * @return The departure time property.
-	 */
-	private SimpleObjectProperty<LocalTime> departureTimeProperty()
-	{
-		return departureTime;
-	}
-	
-	/**
-	 * Set the departure time for this employee.
-	 *
-	 * @param departureTime The departure time to set.
-	 *
-	 * @throws IllegalArgumentException If the arrival time is after the departure time.
-	 */
-	public void setDepartureTime(LocalTime departureTime) throws IllegalArgumentException
-	{
-		if(getArrivalTime().isAfter(departureTime))
-			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
-		this.departureTime.set(departureTime);
-	}
-	
-	/**
-	 * Get the ID of the employee.
-	 *
-	 * @return Its ID.
-	 */
-	public int getID()
-	{
-		return ID;
+		oos.writeObject(company);
+		oos.writeInt(getID());
+		oos.writeObject(getWorkingDepartment());
+		oos.writeObject(getArrivalTime());
+		oos.writeObject(getDepartureTime());
+		oos.writeInt(workingDays.size());
+		for(DayOfWeek workingDay : workingDays)
+			oos.writeObject(workingDay);
+		oos.writeInt(checks.size());
+		for(EmployeeCheck check : checks)
+			oos.writeObject(check);
 	}
 	
 	/**
@@ -357,28 +369,6 @@ public class Employee extends Person implements Serializable
 	public void setWorkingDepartment(StandardDepartment workingDepartment)
 	{
 		this.workingDepartment.set(workingDepartment);
-	}
-	
-	/**
-	 * Serialize the object.
-	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
-	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
-	{
-		oos.writeObject(company);
-		oos.writeInt(getID());
-		oos.writeObject(getWorkingDepartment());
-		oos.writeObject(getArrivalTime());
-		oos.writeObject(getDepartureTime());
-		oos.writeInt(workingDays.size());
-		for(DayOfWeek workingDay : workingDays)
-			oos.writeObject(workingDay);
-		oos.writeInt(checks.size());
-		for(EmployeeCheck check : checks)
-			oos.writeObject(check);
 	}
 	
 	/**
@@ -423,5 +413,15 @@ public class Employee extends Person implements Serializable
 	public SimpleBooleanProperty isPresentProperty()
 	{
 		return isPresent;
+	}
+	
+	/**
+	 * Get the list of checking the employee did.
+	 *
+	 * @return A list of the checking.
+	 */
+	public ObservableList<EmployeeCheck> getChecks()
+	{
+		return checks;
 	}
 }

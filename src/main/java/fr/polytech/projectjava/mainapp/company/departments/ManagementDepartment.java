@@ -22,7 +22,7 @@ public class ManagementDepartment extends Department<Boss, Manager> implements S
 	 * Construct the department with the boss.
 	 *
 	 * @param company The company the department is in.
-	 * @param boss The boss of the company.
+	 * @param boss    The boss of the company.
 	 */
 	public ManagementDepartment(Company company, Boss boss)
 	{

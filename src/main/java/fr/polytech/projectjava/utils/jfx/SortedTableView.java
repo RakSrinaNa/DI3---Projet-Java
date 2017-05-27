@@ -6,13 +6,13 @@ import javafx.scene.control.TableView;
 
 /**
  * A TableView that can be sorted.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 24/05/2017.
  *
  * @author Thomas Couchoud
  * @since 2017-05-24
  */
-public class SortedTableView <T> extends TableView<T>
+public class SortedTableView<T> extends TableView<T>
 {
 	/**
 	 * Constructor.

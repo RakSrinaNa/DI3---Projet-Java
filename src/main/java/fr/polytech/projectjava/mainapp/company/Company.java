@@ -88,6 +88,16 @@ public class Company implements Serializable
 	}
 	
 	/**
+	 * Get all the employees of the company.
+	 *
+	 * @return A list of the employees.
+	 */
+	public ObservableList<Employee> getEmployees()
+	{
+		return employees;
+	}
+	
+	/**
 	 * Get a department by its ID.
 	 *
 	 * @param ID The ID of the department to look for.
@@ -106,6 +116,36 @@ public class Company implements Serializable
 	public String toString()
 	{
 		return "Company: \t" + getName() + "\nManagement department: \t[" + getManagementDepartment() + "]\nDepartments: \t" + departments + "\nEmployees: \t" + getEmployees();
+	}
+	
+	/**
+	 * Get the name of the company.
+	 *
+	 * @return The company's name.
+	 */
+	public String getName()
+	{
+		return nameProperty().get();
+	}
+	
+	/**
+	 * Get the management department of the company.
+	 *
+	 * @return The management department.
+	 */
+	public ManagementDepartment getManagementDepartment()
+	{
+		return managementDepartment;
+	}
+	
+	/**
+	 * Get the name property.
+	 *
+	 * @return The name porperty.
+	 */
+	public SimpleStringProperty nameProperty()
+	{
+		return name;
 	}
 	
 	/**
@@ -196,116 +236,6 @@ public class Company implements Serializable
 	}
 	
 	/**
-	 * Get the managers of the company.
-	 *
-	 * @return The managers.
-	 */
-	public ObservableList<Manager> getManagers()
-	{
-		return managers;
-	}
-	
-	/**
-	 * Get all the checks of the company.
-	 *
-	 * @return The check list.
-	 */
-	public ObservableList<EmployeeCheck> getChecks()
-	{
-		return checks;
-	}
-	
-	/**
-	 * Get the boss of the company.
-	 *
-	 * @return The boss.
-	 */
-	public Boss getBoss()
-	{
-		return bossProperty().get();
-	}
-	
-	/**
-	 * Get the boss property.
-	 *
-	 * @return The boss property.
-	 */
-	private SimpleObjectProperty<Boss> bossProperty()
-	{
-		return boss;
-	}
-	
-	/**
-	 * Get the departments.
-	 *
-	 * @return The departments.
-	 */
-	public ObservableList<StandardDepartment> getDepartements()
-	{
-		return departments;
-	}
-	
-	/**
-	 * Get the number of departments in the company.
-	 *
-	 * @return The department count.
-	 */
-	public int getDepartmentCount()
-	{
-		return departments.size();
-	}
-	
-	/**
-	 * Get the number of employees in the company.
-	 *
-	 * @return The employee count.
-	 */
-	public int getEmployeeCount()
-	{
-		return getEmployees().size();
-	}
-	
-	/**
-	 * Get all the employees of the company.
-	 *
-	 * @return A list of the employees.
-	 */
-	public ObservableList<Employee> getEmployees()
-	{
-		return employees;
-	}
-	
-	/**
-	 * Get the management department of the company.
-	 *
-	 * @return The management department.
-	 */
-	public ManagementDepartment getManagementDepartment()
-	{
-		return managementDepartment;
-	}
-	
-	/**
-	 * Get the name of the company.
-	 *
-	 * @return The company's name.
-	 */
-	public String getName()
-	{
-		return nameProperty().get();
-	}
-	
-	/**
-	 * Get the name property.
-	 *
-	 * @return The name porperty.
-	 */
-	public SimpleStringProperty nameProperty()
-	{
-		return name;
-	}
-	
-	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
@@ -326,6 +256,26 @@ public class Company implements Serializable
 		oos.writeInt(checks.size());
 		for(int i = 0; i < checks.size(); i++)
 			oos.writeObject(checks.get(i));
+	}
+	
+	/**
+	 * Get the boss of the company.
+	 *
+	 * @return The boss.
+	 */
+	public Boss getBoss()
+	{
+		return bossProperty().get();
+	}
+	
+	/**
+	 * Get the boss property.
+	 *
+	 * @return The boss property.
+	 */
+	private SimpleObjectProperty<Boss> bossProperty()
+	{
+		return boss;
 	}
 	
 	/**
@@ -388,5 +338,55 @@ public class Company implements Serializable
 		int chkSize = ois.readInt();
 		for(int i = 0; i < chkSize; i++)
 			checks.add((EmployeeCheck) ois.readObject());
+	}
+	
+	/**
+	 * Get all the checks of the company.
+	 *
+	 * @return The check list.
+	 */
+	public ObservableList<EmployeeCheck> getChecks()
+	{
+		return checks;
+	}
+	
+	/**
+	 * Get the departments.
+	 *
+	 * @return The departments.
+	 */
+	public ObservableList<StandardDepartment> getDepartements()
+	{
+		return departments;
+	}
+	
+	/**
+	 * Get the number of departments in the company.
+	 *
+	 * @return The department count.
+	 */
+	public int getDepartmentCount()
+	{
+		return departments.size();
+	}
+	
+	/**
+	 * Get the number of employees in the company.
+	 *
+	 * @return The employee count.
+	 */
+	public int getEmployeeCount()
+	{
+		return getEmployees().size();
+	}
+	
+	/**
+	 * Get the managers of the company.
+	 *
+	 * @return The managers.
+	 */
+	public ObservableList<Manager> getManagers()
+	{
+		return managers;
 	}
 }

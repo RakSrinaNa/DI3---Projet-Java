@@ -97,16 +97,6 @@ public class MainTab extends Tab
 	}
 	
 	/**
-	 * Get the employee count property.
-	 *
-	 * @return The employee count property.
-	 */
-	public StringProperty getEmployeeCountTextProperty()
-	{
-		return employeeCountArea.textProperty();
-	}
-	
-	/**
 	 * Get the department count property.
 	 *
 	 * @return The department count property.
@@ -114,5 +104,15 @@ public class MainTab extends Tab
 	public StringProperty getDepartmentCountTextProperty()
 	{
 		return departmentCountArea.textProperty();
+	}
+	
+	/**
+	 * Get the employee count property.
+	 *
+	 * @return The employee count property.
+	 */
+	public StringProperty getEmployeeCountTextProperty()
+	{
+		return employeeCountArea.textProperty();
 	}
 }

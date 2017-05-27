@@ -23,12 +23,12 @@ import java.io.Serializable;
 public abstract class Department<B extends Person & Serializable, E extends Employee & Serializable> implements Serializable
 {
 	private static final long serialVersionUID = 3644405617796041285L;
-	private SimpleObjectProperty<B> leader;
+	protected static int NEXT_ID = 0;
 	protected Company company;
+	private SimpleObjectProperty<B> leader;
 	private int ID;
 	private SimpleStringProperty name;
 	private ObservableList<E> employees = FXCollections.observableArrayList();
-	protected static int NEXT_ID = 0;
 	
 	/**
 	 * Construct a department of a company with its name.
@@ -72,6 +72,36 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	}
 	
 	/**
+	 * Get the name of the department.
+	 *
+	 * @return Its name.
+	 */
+	public String getName()
+	{
+		return nameProperty().get();
+	}
+	
+	/**
+	 * Get the name property.
+	 *
+	 * @return The name property.
+	 */
+	public SimpleStringProperty nameProperty()
+	{
+		return name;
+	}
+	
+	/**
+	 * Get the unique ID of the department.
+	 *
+	 * @return Its ID.
+	 */
+	public int getID()
+	{
+		return ID;
+	}
+	
+	/**
 	 * Remove an employee from the department.
 	 *
 	 * @param employee The employee to remove.
@@ -104,46 +134,6 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	}
 	
 	/**
-	 * Get the unique ID of the department.
-	 *
-	 * @return Its ID.
-	 */
-	public int getID()
-	{
-		return ID;
-	}
-	
-	/**
-	 * Get the name of the department.
-	 *
-	 * @return Its name.
-	 */
-	public String getName()
-	{
-		return nameProperty().get();
-	}
-	
-	/**
-	 * Get the name property.
-	 *
-	 * @return The name property.
-	 */
-	public SimpleStringProperty nameProperty()
-	{
-		return name;
-	}
-	
-	/**
-	 * Get the leader property.
-	 *
-	 * @return The leader property.
-	 */
-	public SimpleObjectProperty<B> leaderProperty()
-	{
-		return leader;
-	}
-	
-	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
@@ -159,6 +149,36 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		oos.writeInt(getEmployees().size());
 		for(Employee employee : getEmployees())
 			oos.writeObject(employee);
+	}
+	
+	/**
+	 * Get the leader.
+	 *
+	 * @return The leader.
+	 */
+	public B getLeader()
+	{
+		return leaderProperty().get();
+	}
+	
+	/**
+	 * Get the leader property.
+	 *
+	 * @return The leader property.
+	 */
+	public SimpleObjectProperty<B> leaderProperty()
+	{
+		return leader;
+	}
+	
+	/**
+	 * Set the leaser.
+	 *
+	 * @param leader The leader to set.
+	 */
+	protected void setLeader(B leader)
+	{
+		this.leader.set(leader);
 	}
 	
 	/**
@@ -184,25 +204,5 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		for(int i = 0; i < empCount; i++)
 			//noinspection unchecked
 			employees.add((E) ois.readObject());
-	}
-	
-	/**
-	 * Get the leader.
-	 *
-	 * @return The leader.
-	 */
-	public B getLeader()
-	{
-		return leaderProperty().get();
-	}
-	
-	/**
-	 * Set the leaser.
-	 *
-	 * @param leader The leader to set.
-	 */
-	protected void setLeader(B leader)
-	{
-		this.leader.set(leader);
 	}
 }

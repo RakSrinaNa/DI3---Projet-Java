@@ -21,11 +21,11 @@ import javafx.stage.Stage;
  */
 public class CompanyCreateDialog extends Stage
 {
+	private final CompanyCreateDialogController controller;
 	private Company result;
 	private TextField companyNameInput;
 	private TextField bossFirstNameInput;
 	private TextField bossLastNameInput;
-	private final CompanyCreateDialogController controller;
 	
 	/**
 	 * Constructor.

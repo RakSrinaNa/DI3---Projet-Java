@@ -17,8 +17,8 @@ import java.util.Iterator;
  */
 public class CheckingSender extends SocketBase
 {
-	private final Iterator<CheckInfos> datas;
 	private final static Object LOCK = new Object();
+	private final Iterator<CheckInfos> datas;
 	
 	/**
 	 * Constructor.

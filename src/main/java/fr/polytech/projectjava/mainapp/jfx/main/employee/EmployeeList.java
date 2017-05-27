@@ -29,7 +29,7 @@ public class EmployeeList extends SortedTableView<Employee>
 	/**
 	 * Constructor.
 	 *
-	 * @param controller The main controller.
+	 * @param controller               The main controller.
 	 * @param departmentFilterProperty The standard department to filter.
 	 */
 	public EmployeeList(MainController controller, ReadOnlyObjectProperty<StandardDepartment> departmentFilterProperty)

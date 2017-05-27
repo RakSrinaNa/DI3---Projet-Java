@@ -77,18 +77,6 @@ public abstract class ServerSocketBase implements Runnable
 	protected abstract void buildClient(Socket socket);
 	
 	/**
-	 * Set the server timeout.
-	 *
-	 * @param duration The timeout.
-	 *
-	 * @throws SocketException If there is an error in the underlying protocol, such as a TCP error.
-	 */
-	protected void setTimeout(int duration) throws SocketException
-	{
-		socket.setSoTimeout(duration);
-	}
-	
-	/**
 	 * Stop the runnable.
 	 */
 	public void stop()
@@ -102,5 +90,17 @@ public abstract class ServerSocketBase implements Runnable
 			Log.error("", e);
 		}
 		stop = true;
+	}
+	
+	/**
+	 * Set the server timeout.
+	 *
+	 * @param duration The timeout.
+	 *
+	 * @throws SocketException If there is an error in the underlying protocol, such as a TCP error.
+	 */
+	protected void setTimeout(int duration) throws SocketException
+	{
+		socket.setSoTimeout(duration);
 	}
 }

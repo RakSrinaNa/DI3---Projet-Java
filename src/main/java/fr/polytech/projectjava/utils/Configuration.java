@@ -5,7 +5,7 @@ import java.util.Properties;
 
 /**
  * Class to attach a configuration file.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 03/05/2017.
  *
  * @author Thomas Couchoud
@@ -31,6 +31,7 @@ public class Configuration
 	 * Get a string from the config.
 	 *
 	 * @param key The key of the value to retrieve.
+	 *
 	 * @return The string.
 	 */
 	public static String getString(String key)

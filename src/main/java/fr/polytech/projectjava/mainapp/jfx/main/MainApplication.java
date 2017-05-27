@@ -41,6 +41,30 @@ public class MainApplication extends ApplicationBase
 	}
 	
 	@Override
+	public Scene buildScene(Stage stage)
+	{
+		return new Scene(createContent(stage), 800, 400);
+	}
+	
+	@Override
+	public String getFrameTitle()
+	{
+		return "CompanyManagement";
+	}
+	
+	@Override
+	public Consumer<Stage> getStageHandler()
+	{
+		return stage -> stage.setOnCloseRequest(controller::close);
+	}
+	
+	@Override
+	public Consumer<Stage> getOnStageDisplayed() throws Exception
+	{
+		return stage -> controller.loadCompany();
+	}
+	
+	@Override
 	public Parent createContent(Stage stage)
 	{
 		TabPane tabPane = new TabPane();
@@ -56,36 +80,14 @@ public class MainApplication extends ApplicationBase
 		return tabPane;
 	}
 	
-	@Override
-	public String getFrameTitle()
-	{
-		return "CompanyManagement";
-	}
-	
 	/**
-	 * Get the main tab.
+	 * Get the check tab.
 	 *
-	 * @return The main tab.
+	 * @return The check tab.
 	 */
-	public MainTab getMainTab()
+	public CheckTab getCheckTab()
 	{
-		return mainTab;
-	}
-	
-	/**
-	 * Get the employee tab.
-	 *
-	 * @return The employee tab.
-	 */
-	public EmployeeTab getEmployeeTab()
-	{
-		return employeeTab;
-	}
-	
-	@Override
-	public Consumer<Stage> getOnStageDisplayed() throws Exception
-	{
-		return stage -> controller.loadCompany();
+		return checkTab;
 	}
 	
 	/**
@@ -99,24 +101,22 @@ public class MainApplication extends ApplicationBase
 	}
 	
 	/**
-	 * Get the check tab.
+	 * Get the employee tab.
 	 *
-	 * @return The check tab.
+	 * @return The employee tab.
 	 */
-	public CheckTab getCheckTab()
+	public EmployeeTab getEmployeeTab()
 	{
-		return checkTab;
+		return employeeTab;
 	}
 	
-	@Override
-	public Consumer<Stage> getStageHandler()
+	/**
+	 * Get the main tab.
+	 *
+	 * @return The main tab.
+	 */
+	public MainTab getMainTab()
 	{
-		return stage -> stage.setOnCloseRequest(controller::close);
-	}
-	
-	@Override
-	public Scene buildScene(Stage stage)
-	{
-		return new Scene(createContent(stage), 800, 400);
+		return mainTab;
 	}
 }

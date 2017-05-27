@@ -39,6 +39,7 @@ public class MainController
 {
 	private final MainApplication parent;
 	private final CheckingServer socketReceiver;
+	private Company company;
 	
 	/**
 	 * Constructor.
@@ -66,6 +67,24 @@ public class MainController
 	}
 	
 	/**
+	 * Save the current company.
+	 */
+	public void saveDatas()
+	{
+		if(company != null)
+		{
+			try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("mainSaveFile")))))
+			{
+				oos.writeObject(company);
+			}
+			catch(IOException e)
+			{
+				Log.error("Failed to save company", e);
+			}
+		}
+	}
+	
+	/**
 	 * List the employees of the company.
 	 *
 	 * @return The employees.
@@ -73,6 +92,16 @@ public class MainController
 	public ObservableList<Employee> listEmployees()
 	{
 		return getCompany().getEmployees();
+	}
+	
+	/**
+	 * Get the current loaded company.
+	 *
+	 * @return The loaded company.
+	 */
+	public Company getCompany()
+	{
+		return company;
 	}
 	
 	/**
@@ -131,8 +160,6 @@ public class MainController
 		return getCompany().getEmployee(ID);
 	}
 	
-	private Company company;
-	
 	/**
 	 * Builds a new company.
 	 *
@@ -145,48 +172,6 @@ public class MainController
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.showAndWait();
 		return dialog.getResult();
-	}
-	
-	/**
-	 * Load the last company.
-	 *
-	 * @return The loaded company.
-	 */
-	private Optional<Company> loadLastCompany()
-	{
-		File f = new File(Configuration.getString("mainSaveFile"));
-		if(f.exists() && f.isFile())
-		{
-			Company company = null;
-			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f)))
-			{
-				company = (Company) ois.readObject();
-			}
-			catch(IOException | ClassNotFoundException | ClassCastException e)
-			{
-				Log.warning("Failed to load last company", e);
-			}
-			return Optional.ofNullable(company);
-		}
-		return Optional.empty();
-	}
-	
-	/**
-	 * Save the current company.
-	 */
-	public void saveDatas()
-	{
-		if(company != null)
-		{
-			try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("mainSaveFile")))))
-			{
-				oos.writeObject(company);
-			}
-			catch(IOException e)
-			{
-				Log.error("Failed to save company", e);
-			}
-		}
 	}
 	
 	/**
@@ -225,6 +210,30 @@ public class MainController
 		parent.getCheckTab().getDepartmentFilter().setItems(company.getDepartements());
 		parent.getCheckTab().getEmployeeFilter().setItems(company.getEmployees());
 		return true;
+	}
+	
+	/**
+	 * Load the last company.
+	 *
+	 * @return The loaded company.
+	 */
+	private Optional<Company> loadLastCompany()
+	{
+		File f = new File(Configuration.getString("mainSaveFile"));
+		if(f.exists() && f.isFile())
+		{
+			Company company = null;
+			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f)))
+			{
+				company = (Company) ois.readObject();
+			}
+			catch(IOException | ClassNotFoundException | ClassCastException e)
+			{
+				Log.warning("Failed to load last company", e);
+			}
+			return Optional.ofNullable(company);
+		}
+		return Optional.empty();
 	}
 	
 	/**
@@ -312,15 +321,5 @@ public class MainController
 	public void managerChanged(TableColumn.CellEditEvent<StandardDepartment, Manager> event)
 	{
 		event.getRowValue().setLeader(event.getNewValue());
-	}
-	
-	/**
-	 * Get the current loaded company.
-	 *
-	 * @return The loaded company.
-	 */
-	public Company getCompany()
-	{
-		return company;
 	}
 }

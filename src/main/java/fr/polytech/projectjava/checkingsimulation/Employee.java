@@ -61,6 +61,50 @@ public class Employee implements Serializable
 	}
 	
 	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeInt(getID());
+		oos.writeObject(getFirst());
+		oos.writeObject(getLast());
+	}
+	
+	/**
+	 * Get the ID.
+	 *
+	 * @return The ID.
+	 */
+	public int getID()
+	{
+		return IDProperty().get();
+	}
+	
+	/**
+	 * Get the first name.
+	 *
+	 * @return The first name.
+	 */
+	public String getFirst()
+	{
+		return firstnameProperty().get();
+	}
+	
+	/**
+	 * Get the last name.
+	 *
+	 * @return The last name.
+	 */
+	public String getLast()
+	{
+		return lastnameProperty().get();
+	}
+	
+	/**
 	 * Get the ID property.
 	 *
 	 * @return The ID property.
@@ -91,20 +135,6 @@ public class Employee implements Serializable
 	}
 	
 	/**
-	 * Serialize the object.
-	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
-	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
-	{
-		oos.writeInt(getID());
-		oos.writeObject(getFirst());
-		oos.writeObject(getLast());
-	}
-	
-	/**
 	 * Deserialize an object.
 	 *
 	 * @param ois The object stream.
@@ -119,14 +149,10 @@ public class Employee implements Serializable
 		last = new SimpleStringProperty((String) ois.readObject());
 	}
 	
-	/**
-	 * Get the first name.
-	 *
-	 * @return The first name.
-	 */
-	public String getFirst()
+	@Override
+	public boolean equals(Object obj)
 	{
-		return firstnameProperty().get();
+		return obj instanceof Employee && getID() == ((Employee) obj).getID();
 	}
 	
 	/**
@@ -137,26 +163,6 @@ public class Employee implements Serializable
 	public String getFullName()
 	{
 		return getFirst() + " " + getLast();
-	}
-	
-	/**
-	 * Get the ID.
-	 *
-	 * @return The ID.
-	 */
-	public int getID()
-	{
-		return IDProperty().get();
-	}
-	
-	/**
-	 * Get the last name.
-	 *
-	 * @return The last name.
-	 */
-	public String getLast()
-	{
-		return lastnameProperty().get();
 	}
 	
 	/**
@@ -177,11 +183,5 @@ public class Employee implements Serializable
 	public void setInside(boolean inside)
 	{
 		this.inside = inside;
-	}
-	
-	@Override
-	public boolean equals(Object obj)
-	{
-		return obj instanceof Employee && getID() == ((Employee) obj).getID();
 	}
 }

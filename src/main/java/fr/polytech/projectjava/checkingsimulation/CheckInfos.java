@@ -44,13 +44,47 @@ public class CheckInfos implements Serializable
 	}
 	
 	/**
-	 * Get the date property.
+	 * Serialize the object.
 	 *
-	 * @return The date property.
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
 	 */
-	public SimpleLocalDateTimeProperty dateProperty()
+	private void writeObject(ObjectOutputStream oos) throws IOException
 	{
-		return date;
+		oos.writeObject(getEmployee());
+		oos.writeObject(getCheckType());
+		oos.writeObject(getCheckDate());
+	}
+	
+	/**
+	 * Get the employee.
+	 *
+	 * @return The employee.
+	 */
+	public Employee getEmployee()
+	{
+		return employee;
+	}
+	
+	/**
+	 * Get the checking type.
+	 *
+	 * @return The type.
+	 */
+	public CheckInOut.CheckType getCheckType()
+	{
+		return checkTypeProperty().get();
+	}
+	
+	/**
+	 * Get the checking date.
+	 *
+	 * @return The date.
+	 */
+	public LocalDateTime getCheckDate()
+	{
+		return dateProperty().getDate();
 	}
 	
 	/**
@@ -64,17 +98,13 @@ public class CheckInfos implements Serializable
 	}
 	
 	/**
-	 * Serialize the object.
+	 * Get the date property.
 	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
+	 * @return The date property.
 	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
+	public SimpleLocalDateTimeProperty dateProperty()
 	{
-		oos.writeObject(getEmployee());
-		oos.writeObject(getCheckType());
-		oos.writeObject(getCheckDate());
+		return date;
 	}
 	
 	/**
@@ -90,36 +120,6 @@ public class CheckInfos implements Serializable
 		employee = (Employee) ois.readObject();
 		checkType = new SimpleObjectProperty<>((CheckInOut.CheckType) ois.readObject());
 		date = new SimpleLocalDateTimeProperty((LocalDateTime) ois.readObject(), dateFormat);
-	}
-	
-	/**
-	 * Get the checking date.
-	 *
-	 * @return The date.
-	 */
-	public LocalDateTime getCheckDate()
-	{
-		return dateProperty().getDate();
-	}
-	
-	/**
-	 * Get the checking type.
-	 *
-	 * @return The type.
-	 */
-	public CheckInOut.CheckType getCheckType()
-	{
-		return checkTypeProperty().get();
-	}
-	
-	/**
-	 * Get the employee.
-	 *
-	 * @return The employee.
-	 */
-	public Employee getEmployee()
-	{
-		return employee;
 	}
 	
 	/**

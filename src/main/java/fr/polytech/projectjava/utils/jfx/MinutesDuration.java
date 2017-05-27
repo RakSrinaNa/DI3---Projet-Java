@@ -12,8 +12,8 @@ import java.io.Serializable;
  */
 public class MinutesDuration implements Serializable
 {
-	private static final long serialVersionUID = 5819372112167246368L;
 	public final static MinutesDuration ZERO = new MinutesDuration(0);
+	private static final long serialVersionUID = 5819372112167246368L;
 	private final long minutes;
 	
 	/**
@@ -35,12 +35,6 @@ public class MinutesDuration implements Serializable
 		this.minutes = minutes;
 	}
 	
-	@Override
-	public String toString()
-	{
-		return getMinutes() + "m";
-	}
-	
 	/**
 	 * Create a new MinutesDuration with a number of seconds. The minutes will be rounded down.
 	 *
@@ -51,6 +45,22 @@ public class MinutesDuration implements Serializable
 	public static MinutesDuration seconds(long seconds)
 	{
 		return new MinutesDuration(seconds / 60);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getMinutes() + "m";
+	}
+	
+	/**
+	 * Get the minutes.
+	 *
+	 * @return The duration in minutes.
+	 */
+	public long getMinutes()
+	{
+		return minutes;
 	}
 	
 	/**
@@ -75,15 +85,5 @@ public class MinutesDuration implements Serializable
 	public MinutesDuration substract(MinutesDuration duration)
 	{
 		return new MinutesDuration(getMinutes() - duration.getMinutes());
-	}
-	
-	/**
-	 * Get the minutes.
-	 *
-	 * @return The duration in minutes.
-	 */
-	public long getMinutes()
-	{
-		return minutes;
 	}
 }

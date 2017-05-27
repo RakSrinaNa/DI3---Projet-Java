@@ -15,10 +15,9 @@ import java.time.LocalTime;
  */
 public class TimePicker extends HBox
 {
-	private  boolean changed = false;
 	private final NumberField hoursField;
 	private final NumberField minutesField;
-	
+	private boolean changed = false;
 	
 	/**
 	 * Constructor.
@@ -45,8 +44,6 @@ public class TimePicker extends HBox
 		HBox.setHgrow(hoursField, Priority.SOMETIMES);
 		HBox.setHgrow(minutesField, Priority.SOMETIMES);
 	}
-	
-	
 	
 	/**
 	 * Get the time value.

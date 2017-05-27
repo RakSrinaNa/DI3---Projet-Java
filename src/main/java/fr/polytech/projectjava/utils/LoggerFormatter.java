@@ -7,7 +7,7 @@ import java.util.logging.LogRecord;
 
 /**
  * Formatter for the logger.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 21/05/2017.
  *
  * @author Thomas Couchoud

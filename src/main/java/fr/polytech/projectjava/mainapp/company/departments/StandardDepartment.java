@@ -37,27 +37,6 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 		company.addDepartment(this);
 	}
 	
-	/**
-	 * Set the manager of the department.
-	 *
-	 * @param manager The manager to set, null allows to reset the manager.
-	 */
-	public void setLeader(Manager manager)
-	{
-		if(getLeader() != null)
-			company.removeFromManagementTeam(getLeader());
-			
-		if(manager != null)
-		{
-			if(manager.getWorkingDepartment() != null)
-				manager.getWorkingDepartment().removeEmployee(manager);
-			manager.setWorkingDepartment(this);
-			company.addToManagementTeam(manager);
-		}
-		
-		super.setLeader(manager);
-	}
-	
 	@Override
 	public void addEmployee(Employee employee)
 	{
@@ -81,5 +60,26 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 			}
 		employee.setWorkingDepartment(null);
 		super.removeEmployee(employee);
+	}
+	
+	/**
+	 * Set the manager of the department.
+	 *
+	 * @param manager The manager to set, null allows to reset the manager.
+	 */
+	public void setLeader(Manager manager)
+	{
+		if(getLeader() != null)
+			company.removeFromManagementTeam(getLeader());
+		
+		if(manager != null)
+		{
+			if(manager.getWorkingDepartment() != null)
+				manager.getWorkingDepartment().removeEmployee(manager);
+			manager.setWorkingDepartment(this);
+			company.addToManagementTeam(manager);
+		}
+		
+		super.setLeader(manager);
 	}
 }

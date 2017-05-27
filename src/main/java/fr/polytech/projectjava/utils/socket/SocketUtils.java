@@ -30,16 +30,6 @@ public abstract class SocketUtils
 	}
 	
 	/**
-	 * Defines if these methods should log what happens.
-	 *
-	 * @param log The state of the logging.
-	 */
-	protected void setLog(boolean log)
-	{
-		this.log = log;
-	}
-	
-	/**
 	 * Receive a packet of a size of maximum 256.
 	 *
 	 * @return The read packet, null if failed.
@@ -101,18 +91,6 @@ public abstract class SocketUtils
 	}
 	
 	/**
-	 * Set the socket timeout.
-	 *
-	 * @param duration The timeout.
-	 *
-	 * @throws SocketException If there is an error in the underlying protocol, such as a TCP error.
-	 */
-	protected void setTimeout(int duration) throws SocketException
-	{
-		socket.setSoTimeout(duration);
-	}
-	
-	/**
 	 * Disconnect the socket.
 	 *
 	 * @throws IOException If an I/O error occurs when closing this socket.
@@ -122,5 +100,27 @@ public abstract class SocketUtils
 		Log.info("Closing socket");
 		if(!socket.isClosed())
 			socket.close();
+	}
+	
+	/**
+	 * Defines if these methods should log what happens.
+	 *
+	 * @param log The state of the logging.
+	 */
+	protected void setLog(boolean log)
+	{
+		this.log = log;
+	}
+	
+	/**
+	 * Set the socket timeout.
+	 *
+	 * @param duration The timeout.
+	 *
+	 * @throws SocketException If there is an error in the underlying protocol, such as a TCP error.
+	 */
+	protected void setTimeout(int duration) throws SocketException
+	{
+		socket.setSoTimeout(duration);
 	}
 }

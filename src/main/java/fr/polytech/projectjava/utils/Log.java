@@ -52,6 +52,40 @@ public class Log
 	}
 	
 	/**
+	 * Send a warning message.
+	 *
+	 * @param message The message to send.
+	 */
+	public static void warning(String message)
+	{
+		log(Level.WARNING, message);
+	}
+	
+	/**
+	 * Send a message with a custom level and a throwable.
+	 *
+	 * @param level   The level to log at.
+	 * @param message The message to send.
+	 */
+	public static void log(Level level, String message)
+	{
+		getInstance().log(level, message);
+		listeners.forEach(logListener -> logListener.onLogMessage(level, message));
+	}
+	
+	/**
+	 * Get the instance of the logger.
+	 *
+	 * @return The logger object.
+	 *
+	 * @see Logger
+	 */
+	public static Logger getInstance()
+	{
+		return logger != null ? logger : setAppName("JavaProject");
+	}
+	
+	/**
 	 * Initialize the current logger with the given name.
 	 *
 	 * @param name The name of the logger.
@@ -69,16 +103,6 @@ public class Log
 	}
 	
 	/**
-	 * Send a warning message.
-	 *
-	 * @param message The message to send.
-	 */
-	public static void warning(String message)
-	{
-		log(Level.WARNING, message);
-	}
-	
-	/**
 	 * Send a warning message with a throwable.
 	 *
 	 * @param message   The message to send.
@@ -87,6 +111,19 @@ public class Log
 	public static void warning(String message, Throwable throwable)
 	{
 		log(Level.WARNING, message, throwable);
+	}
+	
+	/**
+	 * Send a message with a custom level and a throwable.
+	 *
+	 * @param level     The level to log at.
+	 * @param message   The message to send.
+	 * @param throwable The throwable to send with.
+	 */
+	public static void log(Level level, String message, Throwable throwable)
+	{
+		getInstance().log(level, message, throwable);
+		listeners.forEach(logListener -> logListener.onLogMessage(level, message, throwable));
 	}
 	
 	/**
@@ -118,42 +155,5 @@ public class Log
 	public static void error(String message, Throwable throwable)
 	{
 		log(Level.SEVERE, message, throwable);
-	}
-	
-	/**
-	 * Send a message with a custom level and a throwable.
-	 *
-	 * @param level   The level to log at.
-	 * @param message The message to send.
-	 */
-	public static void log(Level level, String message)
-	{
-		getInstance().log(level, message);
-		listeners.forEach(logListener -> logListener.onLogMessage(level, message));
-	}
-	
-	/**
-	 * Send a message with a custom level and a throwable.
-	 *
-	 * @param level     The level to log at.
-	 * @param message   The message to send.
-	 * @param throwable The throwable to send with.
-	 */
-	public static void log(Level level, String message, Throwable throwable)
-	{
-		getInstance().log(level, message, throwable);
-		listeners.forEach(logListener -> logListener.onLogMessage(level, message, throwable));
-	}
-	
-	/**
-	 * Get the instance of the logger.
-	 *
-	 * @return The logger object.
-	 *
-	 * @see Logger
-	 */
-	public static Logger getInstance()
-	{
-		return logger != null ? logger : setAppName("JavaProject");
 	}
 }

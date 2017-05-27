@@ -25,8 +25,8 @@ import java.time.LocalTime;
  */
 public class CheckCreateDialog extends Stage
 {
-	private EmployeeCheck result;
 	private final CheckCreateDialogController controller;
+	private EmployeeCheck result;
 	private ComboBox<Employee> employeeField;
 	private TimePicker arrivalTime;
 	private TimePicker departureTime;
@@ -107,26 +107,6 @@ public class CheckCreateDialog extends Stage
 	}
 	
 	/**
-	 * Get the selected departure time.
-	 *
-	 * @return The selected departure time.
-	 */
-	public LocalTime getOutTime()
-	{
-		return departureTime.getTime();
-	}
-	
-	/**
-	 * Get the selected arrival time.
-	 *
-	 * @return The selected arrival time.
-	 */
-	public LocalTime getInTime()
-	{
-		return arrivalTime.getTime();
-	}
-	
-	/**
 	 * Get the selected date.
 	 *
 	 * @return The selected date.
@@ -144,6 +124,26 @@ public class CheckCreateDialog extends Stage
 	public Employee getEmployee()
 	{
 		return employeeField.getSelectionModel().getSelectedItem();
+	}
+	
+	/**
+	 * Get the selected arrival time.
+	 *
+	 * @return The selected arrival time.
+	 */
+	public LocalTime getInTime()
+	{
+		return arrivalTime.getTime();
+	}
+	
+	/**
+	 * Get the selected departure time.
+	 *
+	 * @return The selected departure time.
+	 */
+	public LocalTime getOutTime()
+	{
+		return departureTime.getTime();
 	}
 	
 	/**

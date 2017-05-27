@@ -55,6 +55,18 @@ public class Manager extends Employee implements Serializable
 	}
 	
 	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeBoolean(isManaging());
+	}
+	
+	/**
 	 * Return the managing status of the manager.
 	 *
 	 * @return True he/she is managing a department, false otherwise.
@@ -82,18 +94,6 @@ public class Manager extends Employee implements Serializable
 	public void setManaging(boolean managing)
 	{
 		this.managing.set(managing);
-	}
-	
-	/**
-	 * Serialize the object.
-	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
-	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
-	{
-		oos.writeBoolean(isManaging());
 	}
 	
 	/**

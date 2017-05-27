@@ -1,7 +1,7 @@
 package fr.polytech.projectjava.mainapp.socket;
 
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.socket.SocketBase;
@@ -38,14 +38,6 @@ public class CheckingClient extends SocketBase
 		super(socket);
 		parent = checkingServer;
 		setTimeout(10000);
-	}
-	
-	/**
-	 * Stop the client.
-	 */
-	public void stop()
-	{
-		stop = true;
 	}
 	
 	@Override
@@ -85,11 +77,20 @@ public class CheckingClient extends SocketBase
 	}
 	
 	/**
+	 * Stop the client.
+	 */
+	public void stop()
+	{
+		stop = true;
+	}
+	
+	/**
 	 * Handle the reception of new datas.
 	 *
 	 * @param message The data received.
-	 * @throws IOException If the ACK couldn't be sent.
-	 * @throws ParseException If the date couldn't be read.
+	 *
+	 * @throws IOException              If the ACK couldn't be sent.
+	 * @throws ParseException           If the date couldn't be read.
 	 * @throws IllegalArgumentException If the message is null.
 	 */
 	private void processCheck(byte[] message) throws IOException, ParseException, IllegalArgumentException
@@ -122,6 +123,7 @@ public class CheckingClient extends SocketBase
 	 * Transform an employee to a string ready to be sent.
 	 *
 	 * @param employee The employee to stringify.
+	 *
 	 * @return The string to send corresponding to the employee.
 	 */
 	private String employeeToString(Employee employee)

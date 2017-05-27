@@ -65,6 +65,34 @@ public class SimulationController
 	}
 	
 	/**
+	 * Get the list of the checkings.
+	 *
+	 * @return The checking list.
+	 */
+	public ObservableList<CheckInfos> getCheckings()
+	{
+		return parent.getCheckings();
+	}
+	
+	/**
+	 * Send pending checks to the main application.
+	 *
+	 * @param actionEvent The click event.
+	 */
+	public void sendPending(ActionEvent actionEvent)
+	{
+		try
+		{
+			if(getCheckings().size() > 0)
+				new Thread(new CheckingSender(getCheckings().iterator())).start();
+		}
+		catch(IOException e)
+		{
+			Log.warning("Error sending checks", e);
+		}
+	}
+	
+	/**
 	 * Refresh the employee list with the server.
 	 *
 	 * @param evt The click event.
@@ -90,6 +118,16 @@ public class SimulationController
 	}
 	
 	/**
+	 * Get the list of the employees.
+	 *
+	 * @return The employee list.
+	 */
+	public ObservableList<Employee> getEmployeeList()
+	{
+		return parent.getEmployees();
+	}
+	
+	/**
 	 * Called when the window have to close.
 	 * Save the model.
 	 *
@@ -102,6 +140,23 @@ public class SimulationController
 	{
 		saveDatas();
 		return true;
+	}
+	
+	/**
+	 * Save the model into a file.
+	 */
+	public void saveDatas()
+	{
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("simulationSaveFile")))))
+		{
+			oos.writeInt(getCheckings().size());
+			for(CheckInfos infos : getCheckings())
+				oos.writeObject(infos);
+		}
+		catch(IOException e)
+		{
+			Log.error("Failed to save the simulation", e);
+		}
 	}
 	
 	/**
@@ -133,60 +188,5 @@ public class SimulationController
 	public void addChecking(CheckInfos checkInfos)
 	{
 		getCheckings().add(checkInfos);
-	}
-	
-	/**
-	 * Save the model into a file.
-	 */
-	public void saveDatas()
-	{
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("simulationSaveFile")))))
-		{
-			oos.writeInt(getCheckings().size());
-			for(CheckInfos infos : getCheckings())
-				oos.writeObject(infos);
-		}
-		catch(IOException e)
-		{
-			Log.error("Failed to save the simulation", e);
-		}
-	}
-	
-	/**
-	 * Send pending checks to the main application.
-	 *
-	 * @param actionEvent The click event.
-	 */
-	public void sendPending(ActionEvent actionEvent)
-	{
-		try
-		{
-			if(getCheckings().size() > 0)
-				new Thread(new CheckingSender(getCheckings().iterator())).start();
-		}
-		catch(IOException e)
-		{
-			Log.warning("Error sending checks", e);
-		}
-	}
-	
-	/**
-	 * Get the list of the checkings.
-	 *
-	 * @return The checking list.
-	 */
-	public ObservableList<CheckInfos> getCheckings()
-	{
-		return parent.getCheckings();
-	}
-	
-	/**
-	 * Get the list of the employees.
-	 *
-	 * @return The employee list.
-	 */
-	public ObservableList<Employee> getEmployeeList()
-	{
-		return parent.getEmployees();
 	}
 }

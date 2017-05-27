@@ -40,6 +40,16 @@ public abstract class Person implements Serializable
 	}
 	
 	/**
+	 * Get the full name of the person.
+	 *
+	 * @return The full name.
+	 */
+	public String getFullName()
+	{
+		return fullNameProperty().get();
+	}
+	
+	/**
 	 * Get the full name string expression.
 	 *
 	 * @return The full name expression.
@@ -47,16 +57,6 @@ public abstract class Person implements Serializable
 	public StringExpression fullNameProperty()
 	{
 		return firstNameProperty().concat(" ").concat(lastNameProperty());
-	}
-	
-	/**
-	 * Get the first name of the person.
-	 *
-	 * @return His/her first name.
-	 */
-	public String getFirstName()
-	{
-		return firstNameProperty().get();
 	}
 	
 	/**
@@ -80,19 +80,10 @@ public abstract class Person implements Serializable
 	}
 	
 	/**
-	 * Get the last name of the person.
-	 *
-	 * @return His/her last name.
-	 */
-	public String getLastName()
-	{
-		return lastNameProperty().get();
-	}
-	
-	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
+	 *
 	 * @throws IOException If the serialization failed.
 	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
@@ -116,12 +107,22 @@ public abstract class Person implements Serializable
 	}
 	
 	/**
-	 * Get the full name of the person.
+	 * Get the first name of the person.
 	 *
-	 * @return The full name.
+	 * @return His/her first name.
 	 */
-	public String getFullName()
+	public String getFirstName()
 	{
-		return fullNameProperty().get();
+		return firstNameProperty().get();
+	}
+	
+	/**
+	 * Get the last name of the person.
+	 *
+	 * @return His/her last name.
+	 */
+	public String getLastName()
+	{
+		return lastNameProperty().get();
 	}
 }

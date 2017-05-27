@@ -64,7 +64,6 @@ public class DepartmentTab extends Tab
 		return root;
 	}
 	
-	
 	/**
 	 * Get the department list.
 	 *

@@ -11,16 +11,6 @@ public class DisconnectedEvent
 	private final boolean result;
 	
 	/**
-	 * Get the result of the disconnect.
-	 *
-	 * @return True if everything went fine, false else.
-	 */
-	public boolean isResult()
-	{
-		return result;
-	}
-	
-	/**
 	 * Constructor.
 	 *
 	 * @param result The result of the processData function.
@@ -28,5 +18,15 @@ public class DisconnectedEvent
 	public DisconnectedEvent(boolean result)
 	{
 		this.result = result;
+	}
+	
+	/**
+	 * Get the result of the disconnect.
+	 *
+	 * @return True if everything went fine, false else.
+	 */
+	public boolean isResult()
+	{
+		return result;
 	}
 }
