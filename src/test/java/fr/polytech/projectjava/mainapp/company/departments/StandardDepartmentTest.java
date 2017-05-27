@@ -45,7 +45,8 @@ public class StandardDepartmentTest
 		assertEquals(manager2, department2.getLeader());
 		
 		department1.setLeader(manager3);
-		assertFalse(manager3.isManaging());
+		assertTrue(manager3.isManaging());
+		assertEquals(department1, manager3.getWorkingDepartment());
 		
 		department2.setLeader(manager3);
 		assertFalse(manager2.isManaging());
@@ -64,13 +65,12 @@ public class StandardDepartmentTest
 		StandardDepartment department1 = new StandardDepartment(company, "StandardDepartment1", manager1);
 		
 		Manager manager2 = new Manager(company, "A", "B");
-		StandardDepartment dpt = new StandardDepartment(company, "StandardDepartment2", manager2);
 		
 		department1.setLeader(manager2);
 		assertTrue(manager2.isManaging());
-		assertEquals(dpt, manager2.getWorkingDepartment());
-		assertEquals(manager2, dpt.getLeader());
-		assertEquals(manager1, department1.getLeader());
+		assertFalse(manager1.isManaging());
+		assertEquals(department1, manager2.getWorkingDepartment());
+		assertEquals(manager2, department1.getLeader());
 		
 		new StandardDepartment(company, "StandardDepartment2", manager2);
 	}
