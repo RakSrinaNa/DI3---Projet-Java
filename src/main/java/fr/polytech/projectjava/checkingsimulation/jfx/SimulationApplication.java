@@ -3,6 +3,7 @@ package fr.polytech.projectjava.checkingsimulation.jfx;
 import fr.polytech.projectjava.checkingsimulation.CheckInfos;
 import fr.polytech.projectjava.checkingsimulation.Employee;
 import fr.polytech.projectjava.checkingsimulation.jfx.components.CheckList;
+import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.ApplicationBase;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -62,6 +63,7 @@ public class SimulationApplication extends ApplicationBase
 	{
 		return stage -> {
 			stage.setOnCloseRequest(event -> {
+				Log.info("Closing simulation...");
 				if(controller.close(event))
 					currentTimeTimeline.stop();
 			});
@@ -73,7 +75,10 @@ public class SimulationApplication extends ApplicationBase
 	@Override
 	public Consumer<Stage> getOnStageDisplayed() throws Exception
 	{
-		return stage -> startTimeUpdated();
+		return stage -> {
+			startTimeUpdated(); // Start the timeline to update the clock
+			Log.info("Simulation displayed");
+		};
 	}
 	
 	@Override
@@ -94,7 +99,7 @@ public class SimulationApplication extends ApplicationBase
 		
 		employeeField = new ComboBox<>();
 		employeeField.setItems(FXCollections.observableArrayList());
-		Callback<ListView<Employee>, ListCell<Employee>> employeeCellFactory = new Callback<ListView<Employee>, ListCell<Employee>>()
+		Callback<ListView<Employee>, ListCell<Employee>> employeeCellFactory = new Callback<ListView<Employee>, ListCell<Employee>>() /// Display the employee infos instead of it's hashcode.
 		{
 			@Override
 			public ListCell<Employee> call(ListView<Employee> param)
@@ -152,12 +157,13 @@ public class SimulationApplication extends ApplicationBase
 		if(currentTimeTimeline == null)
 		{
 			currentTimeTimeline = new Timeline(new KeyFrame(Duration.seconds(0), actionEvent -> {
-				Calendar calendar = Calendar.getInstance();
+				Calendar calendar = Calendar.getInstance(); //Get the current time
 				int hours = calendar.get(Calendar.HOUR_OF_DAY);
 				int minutes = calendar.get(Calendar.MINUTE);
 				int seconds = calendar.get(Calendar.SECOND);
-				currentTime.set((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
+				currentTime.set((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds); //Set the clock
 				
+				/* Round time to the closest quarter */
 				Date time = calendar.getTime();
 				long quarterMillis = time.getTime() % MILLISECONDS_QUARTER;
 				time.setTime(time.getTime() - quarterMillis);
@@ -168,10 +174,11 @@ public class SimulationApplication extends ApplicationBase
 				hours = calendar.get(Calendar.HOUR_OF_DAY);
 				minutes = calendar.get(Calendar.MINUTE);
 				roundedTime = LocalTime.of(hours, minutes);
-				roundedTimeString.set((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes);
-			}), new KeyFrame(Duration.seconds(1)));
+				roundedTimeString.set((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes); //Set the rounded clock
+			}), new KeyFrame(Duration.seconds(1))); //Update every second
 			currentTimeTimeline.setCycleCount(Animation.INDEFINITE);
 			currentTimeTimeline.play();
+			Log.info("Clock updater started");
 		}
 	}
 	

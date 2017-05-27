@@ -46,20 +46,20 @@ public class SimulationController
 	 */
 	public void sendInfos(ActionEvent evt, Employee employee, LocalTime roundedTime)
 	{
-		if(!(evt.getSource() instanceof Button))
+		if(!(evt.getSource() instanceof Button)) //If the source is a button
 			return;
 		Button source = (Button) evt.getSource();
-		if(employee == null)
+		if(employee == null) // If no employee is selected, we can't do a check
 		{
 			source.setText("Please select an employee - Check I/O");
 			return;
 		}
-		CheckInfos checkInfos = new CheckInfos(employee, employee.isInside() ? CheckInOut.CheckType.OUT : CheckInOut.CheckType.IN, LocalDate.now(), roundedTime);
-		employee.setInside(!employee.isInside());
+		CheckInfos checkInfos = new CheckInfos(employee, employee.isInside() ? CheckInOut.CheckType.OUT : CheckInOut.CheckType.IN, LocalDate.now(), roundedTime); // Build the check
+		employee.setInside(!employee.isInside()); // Change its state
 		
-		getCheckings().add(checkInfos);
+		getCheckings().add(checkInfos); // Add the check to the list to send
 		
-		sendPending(evt);
+		sendPending(evt); // Send the check (and all the other pending)
 		
 		source.setText("Check I/O");
 	}
@@ -83,7 +83,8 @@ public class SimulationController
 	{
 		try
 		{
-			if(getCheckings().size() > 0)
+			Log.info("Sending pending checks...");
+			if(getCheckings().size() > 0) // If we have checks to send
 				new Thread(new CheckingSender(getCheckings().iterator())).start();
 		}
 		catch(IOException e)
@@ -101,10 +102,11 @@ public class SimulationController
 	{
 		try
 		{
-			getEmployeeList().clear();
-			EmployeeGetter employeeGetter = new EmployeeGetter(getEmployeeList());
+			Log.info("Refreshing employees...");
+			getEmployeeList().clear(); // Clear the list of the employees
+			EmployeeGetter employeeGetter = new EmployeeGetter(getEmployeeList()); // Get the new one
 			new Thread(employeeGetter).start();
-			if(evt != null && evt.getSource() instanceof Button)
+			if(evt != null && evt.getSource() instanceof Button) // If the refresh come from a button, disable it while the server is being reached
 			{
 				Button button = (Button) evt.getSource();
 				button.setDisable(true);
@@ -147,11 +149,13 @@ public class SimulationController
 	 */
 	public void saveDatas()
 	{
+		Log.info("Saving state...");
 		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("simulationSaveFile")))))
 		{
 			oos.writeInt(getCheckings().size());
 			for(CheckInfos infos : getCheckings())
 				oos.writeObject(infos);
+			Log.info("Saved");
 		}
 		catch(IOException e)
 		{
@@ -167,11 +171,13 @@ public class SimulationController
 		File f = new File(Configuration.getString("simulationSaveFile"));
 		if(f.exists() && f.isFile())
 		{
+			Log.info("Loading previous simulation...");
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f)))
 			{
 				int count = ois.readInt();
 				for(int i = 0; i < count; i++)
 					getCheckings().add((CheckInfos) ois.readObject());
+				Log.info("Loaded");
 			}
 			catch(IOException | ClassNotFoundException e)
 			{

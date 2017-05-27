@@ -141,4 +141,19 @@ public class CheckInfos implements Serializable
 	{
 		return getCheckDate().format(dateFormat);
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(!(obj instanceof CheckInfos))
+			return false;
+		CheckInfos infos = (CheckInfos) obj;
+		return infos.getCheckType().equals(getCheckType()) && infos.getEmployee().equals(getEmployee()) && infos.getCheckDate().equals(getCheckDate());
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Check " + getCheckType() + " of " + getEmployee() + " at " + dateFormat.format(getCheckDate());
+	}
 }

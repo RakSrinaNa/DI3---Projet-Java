@@ -2,6 +2,7 @@ package fr.polytech.projectjava.checkingsimulation.socket;
 
 import fr.polytech.projectjava.checkingsimulation.CheckInfos;
 import fr.polytech.projectjava.utils.Configuration;
+import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.socket.SocketBase;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -43,22 +44,24 @@ public class CheckingSender extends SocketBase
 			
 			while(datas.hasNext())
 			{
-				sendPacket("CHECK".getBytes());
+				sendPacket("CHECK".getBytes()); // Tell the server we went to send a check
 				
 				byte[] response = receivePacket(packetSize);
-				if(response == null || !new String(response).equals("OK"))
+				if(response == null || !new String(response).equals("OK")) // If the server didn't agree
 					return false;
 				
-				sendPacket(datas.next().getForSocket().getBytes());
+				CheckInfos check = datas.next();
+				Log.info("Sending " + check);
+				sendPacket(check.getForSocket().getBytes()); // Send the check
 				
 				response = receivePacket(packetSize);
-				if(response == null || !new String(response).equals("OK"))
+				if(response == null || !new String(response).equals("OK")) //Wait acknowledgement
 					return false;
 				
 				datas.remove();
 			}
 			
-			sendPacket("END".getBytes());
+			sendPacket("END".getBytes()); // Tell the server we're done
 		}
 		return true;
 	}

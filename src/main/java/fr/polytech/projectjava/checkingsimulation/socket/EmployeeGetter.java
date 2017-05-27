@@ -2,6 +2,7 @@ package fr.polytech.projectjava.checkingsimulation.socket;
 
 import fr.polytech.projectjava.checkingsimulation.Employee;
 import fr.polytech.projectjava.utils.Configuration;
+import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.socket.SocketBase;
 import javafx.collections.ObservableList;
 import java.io.IOException;
@@ -39,18 +40,20 @@ public class EmployeeGetter extends SocketBase
 	{
 		int packetSize = Configuration.getInt("socketPacketSize");
 		
-		sendPacket("EMPLOYEE".getBytes());
+		Log.info("Requesting employees...");
+		sendPacket("EMPLOYEE".getBytes()); //Tell the server we want the list of the employees
 		
 		byte[] response;
-		while((response = receivePacket(packetSize)) != null && !new String(response).equals("ERROR") && !new String(response).equals("DONE"))
+		while((response = receivePacket(packetSize)) != null && !new String(response).equals("DONE")) //While the server isn't done and haven't failed
 		{
-			Employee employee = Employee.parse(new String(response));
+			Employee employee = Employee.parse(new String(response)); //Parse  the employee
 			if(!datas.contains(employee))
 				datas.add(employee);
-			sendPacket("OK".getBytes());
+			Log.info("Received employee " + employee);
+			sendPacket("OK".getBytes()); // Send acknowledgment
 		}
-		
-		sendPacket("END".getBytes());
+		Log.info("Employees received");
+		sendPacket("END".getBytes()); // Tell the server we're done
 		return true;
 	}
 }

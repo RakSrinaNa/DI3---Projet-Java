@@ -29,7 +29,7 @@ public class Main
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
 	/**
-	 * Temporary main method.
+	 * Main method.
 	 *
 	 * @param args Program's arguments.
 	 */
