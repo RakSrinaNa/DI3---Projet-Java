@@ -1,5 +1,7 @@
 package fr.polytech.projectjava.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -43,7 +45,10 @@ public class Configuration
 	{
 		try
 		{
-			properties.load(Configuration.class.getResourceAsStream("/settings.properties"));
+			if(new File(".", "settings.properties").exists())
+				properties.load(new FileInputStream(new File(".", "settings.properties")));
+			else
+				properties.load(Configuration.class.getResourceAsStream("/settings.properties"));
 		}
 		catch(IOException e)
 		{

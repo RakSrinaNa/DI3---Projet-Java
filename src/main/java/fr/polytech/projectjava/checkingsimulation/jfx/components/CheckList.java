@@ -1,7 +1,6 @@
 package fr.polytech.projectjava.checkingsimulation.jfx.components;
 
 import fr.polytech.projectjava.checkingsimulation.CheckInfos;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
@@ -39,7 +38,7 @@ public class CheckList extends TableView<CheckInfos>
 		columnEmployeeName.setCellValueFactory(value -> value.getValue().getEmployee().firstnameProperty().concat(" ").concat(value.getValue().getEmployee().lastnameProperty()));
 		columnEmployeeName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
-		TableColumn<CheckInfos, CheckInOut.CheckType> columnCheckType = new TableColumn<>("In/Out");
+		TableColumn<CheckInfos, CheckInfos.CheckType> columnCheckType = new TableColumn<>("In/Out");
 		columnCheckType.setCellValueFactory(value -> value.getValue().checkTypeProperty());
 		columnCheckType.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		

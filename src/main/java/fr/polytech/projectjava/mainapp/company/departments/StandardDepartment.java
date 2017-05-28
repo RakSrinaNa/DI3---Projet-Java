@@ -3,7 +3,6 @@ package fr.polytech.projectjava.mainapp.company.departments;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
-import fr.polytech.projectjava.utils.Log;
 import java.io.Serializable;
 
 /**
@@ -24,14 +23,10 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	 * @param company The company the department is in.
 	 * @param name    The department's name.
 	 * @param manager The manager of the department.
-	 *
-	 * @throws IllegalArgumentException If the manager is already working elsewhere.
 	 */
-	public StandardDepartment(Company company, String name, Manager manager) throws IllegalArgumentException
+	public StandardDepartment(Company company, String name, Manager manager)
 	{
 		super(company, name, manager);
-		if(manager.getWorkingDepartment() != null)
-			throw new IllegalArgumentException("The manager is already managing elsewhere.");
 		addEmployee(manager);
 		setLeader(manager);
 		company.addDepartment(this);
@@ -40,7 +35,7 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	@Override
 	public void addEmployee(Employee employee)
 	{
-		if(employee.getWorkingDepartment() != this)
+		if(employee.getWorkingDepartment() != this) // If the employee wasn't in this department
 		{
 			if(employee.getWorkingDepartment() != null)
 				employee.getWorkingDepartment().removeEmployee(employee);
@@ -52,10 +47,10 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	@Override
 	public void removeEmployee(Employee employee)
 	{
-		if(employee instanceof Manager)
+		if(employee instanceof Manager) //Verify if it is the manager leaving
 			if(employee == getLeader())
 			{
-				Log.warning(this + "\tManager left the department");
+				company.removeFromManagementTeam((Manager) employee);
 				setLeader(null);
 			}
 		employee.setWorkingDepartment(null);
@@ -69,7 +64,7 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	 */
 	public void setLeader(Manager manager)
 	{
-		if(getLeader() != null)
+		if(getLeader() != null) //Handle the previous manager
 			company.removeFromManagementTeam(getLeader());
 		
 		if(manager != null)

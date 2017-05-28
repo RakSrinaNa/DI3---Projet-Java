@@ -3,6 +3,7 @@ package fr.polytech.projectjava.mainapp.company.departments;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Person;
+import fr.polytech.projectjava.utils.Log;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
 
 /**
  * Represent a department
@@ -43,6 +45,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		this.company = company;
 		this.name = new SimpleStringProperty(name);
 		this.leader = new SimpleObjectProperty<>(leader);
+		Log.info("Department " + getName() + " created and have ID " + getID());
 	}
 	
 	/**
@@ -52,10 +55,11 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	 */
 	public void addEmployee(E employee)
 	{
-		if(!employees.contains(employee))
+		if(!employees.contains(employee)) //Avoid duplicate employees
 		{
 			employees.add(employee);
 			company.addEmployee(employee);
+			Log.info("Employee " + employee + " added to the department " + this);
 		}
 	}
 	
@@ -172,16 +176,6 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	}
 	
 	/**
-	 * Set the leaser.
-	 *
-	 * @param leader The leader to set.
-	 */
-	protected void setLeader(B leader)
-	{
-		this.leader.set(leader);
-	}
-	
-	/**
 	 * Deserialize an object.
 	 *
 	 * @param ois The object stream.
@@ -193,7 +187,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException, ClassCastException
 	{
 		ID = ois.readInt();
-		NEXT_ID = Math.max(ID, NEXT_ID);
+		NEXT_ID = Math.max(ID, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
 		name = new SimpleStringProperty((String) ois.readObject());
 		//noinspection unchecked
 		leader = new SimpleObjectProperty<>((B) ois.readObject());
@@ -204,5 +198,16 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		for(int i = 0; i < empCount; i++)
 			//noinspection unchecked
 			employees.add((E) ois.readObject());
+	}
+	
+	/**
+	 * Set the leaser.
+	 *
+	 * @param leader The leader to set.
+	 */
+	protected void setLeader(B leader)
+	{
+		this.leader.set(leader);
+		Log.log(leader == null ? Level.WARNING : Level.INFO, "Leader of " + this + " is now " + leader);
 	}
 }

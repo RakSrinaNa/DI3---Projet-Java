@@ -4,7 +4,6 @@ import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.mainapp.jfx.main.check.CheckList;
 import fr.polytech.projectjava.mainapp.jfx.main.check.create.CheckCreateDialog;
@@ -25,6 +24,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -108,16 +108,17 @@ public class MainController
 	 * Add a check.
 	 *
 	 * @param employeeID The employee ID.
-	 * @param check      The check to add.
+	 * @param checkType  The check type.
+	 * @param date       The date and time when it happened.
 	 *
 	 * @return True if the check was added, false else.
 	 */
-	public boolean addChecking(int employeeID, CheckInOut check)
+	public boolean addChecking(int employeeID, EmployeeCheck.CheckType checkType, LocalDateTime date)
 	{
 		Optional<Employee> employee = getCompany().getEmployee(employeeID);
 		if(employee.isPresent())
 		{
-			employee.get().addCheckInOut(check);
+			employee.get().addCheckInOut(checkType, date.toLocalDate(), date.toLocalTime());
 			return true;
 		}
 		return false;
@@ -192,6 +193,7 @@ public class MainController
 			alert.showAndWait();
 			parent.getStage().close();
 			Platform.exit();
+			System.exit(2);
 			return false;
 		}
 		SimpleStringProperty employeeCount = new SimpleStringProperty("" + getCompany().getEmployees().size());

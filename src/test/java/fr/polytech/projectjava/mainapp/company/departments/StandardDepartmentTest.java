@@ -6,8 +6,7 @@ import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
@@ -54,9 +53,9 @@ public class StandardDepartmentTest
 		assertEquals(department2, manager2.getWorkingDepartment());
 		assertEquals(department2, manager3.getWorkingDepartment());
 		assertEquals(manager3, department2.getLeader());
+		assertNull(department1.getLeader());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
 	public void conflictManager() throws Exception
 	{
 		Company company = new Company("A", new Boss("A", "B"));
@@ -72,6 +71,9 @@ public class StandardDepartmentTest
 		assertEquals(department1, manager2.getWorkingDepartment());
 		assertEquals(manager2, department1.getLeader());
 		
-		new StandardDepartment(company, "StandardDepartment2", manager2);
+		StandardDepartment department2 = new StandardDepartment(company, "StandardDepartment2", manager2);
+		assertTrue(manager2.isManaging());
+		assertEquals(department2, manager2.getWorkingDepartment());
+		assertEquals(manager2, department2.getLeader());
 	}
 }

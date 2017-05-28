@@ -96,6 +96,7 @@ public class Log
 	{
 		logger = Logger.getLogger(name);
 		logger.setUseParentHandlers(false);
+		logger.setLevel(Level.parse(Configuration.getString("logLevel")));
 		ConsoleHandler handler = new ConsoleHandler();
 		handler.setFormatter(new LoggerFormatter());
 		logger.addHandler(handler);

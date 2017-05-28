@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.checkingsimulation;
 
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.utils.jfx.SimpleLocalDateTimeProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import java.io.IOException;
@@ -25,8 +24,16 @@ public class CheckInfos implements Serializable
 	private transient static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	private static final long serialVersionUID = -3180459411345585955L;
 	private Employee employee;
-	private SimpleObjectProperty<CheckInOut.CheckType> checkType;
+	private SimpleObjectProperty<CheckType> checkType;
 	private SimpleLocalDateTimeProperty date;
+	
+	/**
+	 * Enumeration of the different types of checks possible.
+	 */
+	public enum CheckType
+	{
+		IN, OUT
+	}
 	
 	/**
 	 * Constructor.
@@ -36,7 +43,7 @@ public class CheckInfos implements Serializable
 	 * @param date      The date of the check.
 	 * @param time      The time of the check.
 	 */
-	public CheckInfos(Employee employee, CheckInOut.CheckType checkType, LocalDate date, LocalTime time)
+	public CheckInfos(Employee employee, CheckType checkType, LocalDate date, LocalTime time)
 	{
 		this.employee = employee;
 		this.checkType = new SimpleObjectProperty<>(checkType);
@@ -68,13 +75,18 @@ public class CheckInfos implements Serializable
 	}
 	
 	/**
-	 * Get the checking type.
+	 * Deserialize an object.
 	 *
-	 * @return The type.
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
 	 */
-	public CheckInOut.CheckType getCheckType()
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
-		return checkTypeProperty().get();
+		employee = (Employee) ois.readObject();
+		checkType = new SimpleObjectProperty<>((CheckType) ois.readObject());
+		date = new SimpleLocalDateTimeProperty((LocalDateTime) ois.readObject(), dateFormat);
 	}
 	
 	/**
@@ -88,13 +100,13 @@ public class CheckInfos implements Serializable
 	}
 	
 	/**
-	 * Get the checking property.
+	 * Get the checking type.
 	 *
-	 * @return The checking property.
+	 * @return The type.
 	 */
-	public SimpleObjectProperty<CheckInOut.CheckType> checkTypeProperty()
+	public CheckType getCheckType()
 	{
-		return checkType;
+		return checkTypeProperty().get();
 	}
 	
 	/**
@@ -108,18 +120,13 @@ public class CheckInfos implements Serializable
 	}
 	
 	/**
-	 * Deserialize an object.
+	 * Get the checking property.
 	 *
-	 * @param ois The object stream.
-	 *
-	 * @throws IOException            If the deserialization failed.
-	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 * @return The checking property.
 	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	public SimpleObjectProperty<CheckType> checkTypeProperty()
 	{
-		employee = (Employee) ois.readObject();
-		checkType = new SimpleObjectProperty<>((CheckInOut.CheckType) ois.readObject());
-		date = new SimpleLocalDateTimeProperty((LocalDateTime) ois.readObject(), dateFormat);
+		return checkType;
 	}
 	
 	/**

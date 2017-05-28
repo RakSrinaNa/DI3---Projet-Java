@@ -28,6 +28,14 @@ public class EmployeeCheck implements Serializable
 	private RoundedLocalTimeProperty checkOut;
 	
 	/**
+	 * Enumeration of the different types of checks possible.
+	 */
+	public enum CheckType
+	{
+		IN, OUT
+	}
+	
+	/**
 	 * Constructor.
 	 *
 	 * @param employee The employee of the check.
@@ -42,21 +50,21 @@ public class EmployeeCheck implements Serializable
 	}
 	
 	/**
-	 * Constructor.
+	 * Constructor with an initial check.
 	 *
 	 * @param employee   The employee of the check.
-	 * @param checkInOut A checkinout to initialize the check.
+	 * @param checkType The type of the check.
 	 */
-	public EmployeeCheck(Employee employee, CheckInOut checkInOut)
+	public EmployeeCheck(Employee employee, CheckType checkType, LocalDate date, LocalTime time)
 	{
 		this.employee = new SimpleObjectProperty<>(employee);
-		this.date = new SimpleObjectProperty<>(checkInOut.getDay());
+		this.date = new SimpleObjectProperty<>(date);
 		checkIn = new RoundedLocalTimeProperty(employee);
 		checkOut = new RoundedLocalTimeProperty(employee);
-		if(checkInOut.getCheckType() == CheckInOut.CheckType.IN)
-			setIn(checkInOut.getTime());
+		if(checkType == CheckType.IN)
+			setIn(time);
 		else
-			setOut(checkInOut.getTime());
+			setOut(time);
 	}
 	
 	/**
@@ -77,18 +85,6 @@ public class EmployeeCheck implements Serializable
 	public void setOut(LocalTime check)
 	{
 		checkOut.set(check);
-	}
-	
-	/**
-	 * Tell if the check in out is part of this day check.
-	 *
-	 * @param checkInOut The checkinout to test.
-	 *
-	 * @return True if same day, false else.
-	 */
-	public boolean isDateOf(CheckInOut checkInOut)
-	{
-		return getDate().isEqual(checkInOut.getDay());
 	}
 	
 	/**

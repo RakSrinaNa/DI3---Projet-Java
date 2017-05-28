@@ -2,7 +2,6 @@ package fr.polytech.projectjava.mainapp.company.staff;
 
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
@@ -23,7 +22,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.IN;
+import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
 
 /**
  * Represent an employee in the company.
@@ -109,24 +108,26 @@ public class Employee extends Person implements Serializable
 	/**
 	 * Add a checking to this employee.
 	 *
-	 * @param checkInOut The checking to add.
+	 * @param checkType The type of the check.
+	 * @param date      The date of the check.
+	 * @param time      The time of the check.
 	 */
-	public void addCheckInOut(CheckInOut checkInOut)
+	public void addCheckInOut(EmployeeCheck.CheckType checkType, LocalDate date, LocalTime time)
 	{
 		boolean found = false;
 		for(EmployeeCheck check : checks)
-			if(check.isDateOf(checkInOut))
+			if(check.getDate().equals(date))
 			{
-				if(checkInOut.getCheckType() == IN)
-					check.setIn(checkInOut.getTime());
+				if(checkType == IN)
+					check.setIn(time);
 				else
-					check.setOut(checkInOut.getTime());
+					check.setOut(time);
 				
 				found = true;
 				break;
 			}
 		if(!found)
-			addCheck(new EmployeeCheck(this, checkInOut));
+			addCheck(new EmployeeCheck(this, checkType, date, time));
 		updateOvertime(null);
 		updatePresence();
 	}

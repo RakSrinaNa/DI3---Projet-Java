@@ -1,7 +1,7 @@
 package fr.polytech.projectjava.mainapp.socket;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
+import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.socket.SocketBase;
@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * Represent a connection opened by a client.
@@ -98,8 +101,20 @@ public class CheckingClient extends SocketBase
 		if(message == null)
 			throw new IllegalArgumentException("The response is null");
 		String response[] = new String(message).split(";");
-		if(parent.getController().addChecking(Integer.parseInt(response[0]), new CheckInOut(CheckInOut.CheckType.valueOf(response[1]), dateFormat.parse(response[2]))))
+		if(parent.getController().addChecking(Integer.parseInt(response[0]), EmployeeCheck.CheckType.valueOf(response[1]), toLocalDateTime(dateFormat.parse(response[2]))))
 			sendPacket("OK".getBytes());
+	}
+	
+	/**
+	 * Convert a Date to a LocalDateTime.
+	 *
+	 * @param date The date to convert.
+	 *
+	 * @return The LocalDateTime.
+	 */
+	private LocalDateTime toLocalDateTime(Date date)
+	{
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
 	
 	/**
