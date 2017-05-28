@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.department;
+package fr.polytech.projectjava.mainapp.jfx.department;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import javafx.scene.control.cell.TextFieldTableCell;

@@ -1,8 +1,8 @@
-package fr.polytech.projectjava.mainapp.jfx.main.check;
+package fr.polytech.projectjava.mainapp.jfx.check;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
-import fr.polytech.projectjava.mainapp.jfx.main.MainController;
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -49,7 +49,7 @@ public class CheckTab extends Tab
 		HBox controls = new HBox();
 		
 		departmentFilter = new ComboBox<>();
-		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = new Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>>()
+		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = new Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>>() //Display departments as string instead of their hashcode
 		{
 			@Override
 			public ListCell<StandardDepartment> call(ListView<StandardDepartment> param)
@@ -63,7 +63,7 @@ public class CheckTab extends Tab
 						if(item == null || empty)
 							setText(null);
 						else
-							setText(item.getID() + ": " + item.getName());
+							setText(item.toString());
 					}
 				};
 			}
@@ -73,7 +73,7 @@ public class CheckTab extends Tab
 		departmentFilter.setMaxWidth(Double.MAX_VALUE);
 		
 		employeeFilter = new ComboBox<>();
-		Callback<ListView<Employee>, ListCell<Employee>> employeeCellFactory = new Callback<ListView<Employee>, ListCell<Employee>>()
+		Callback<ListView<Employee>, ListCell<Employee>> employeeCellFactory = new Callback<ListView<Employee>, ListCell<Employee>>() //Display employees as string instead of their hashcode
 		{
 			@Override
 			public ListCell<Employee> call(ListView<Employee> param)
@@ -87,7 +87,7 @@ public class CheckTab extends Tab
 						if(item == null || empty)
 							setText(null);
 						else
-							setText(item.getID() + ": " + item.getFullName());
+							setText(item.toString());
 					}
 				};
 			}

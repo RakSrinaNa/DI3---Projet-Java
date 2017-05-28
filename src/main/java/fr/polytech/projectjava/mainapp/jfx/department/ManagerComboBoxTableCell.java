@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.department;
+package fr.polytech.projectjava.mainapp.jfx.department;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
@@ -14,6 +14,8 @@ public class ManagerComboBoxTableCell extends javafx.scene.control.cell.ComboBox
 {
 	/**
 	 * Constructor.
+	 *
+	 * @param items The managers of the company.
 	 */
 	public ManagerComboBoxTableCell(ObservableList<Manager> items)
 	{

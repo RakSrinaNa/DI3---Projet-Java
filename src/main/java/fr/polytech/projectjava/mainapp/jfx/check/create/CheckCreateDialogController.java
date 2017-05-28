@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.check.create;
+package fr.polytech.projectjava.mainapp.jfx.check.create;
 
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Log;
@@ -35,7 +35,7 @@ public class CheckCreateDialogController
 	 */
 	public void valid(ActionEvent actionEvent)
 	{
-		if(view.getEmployee() != null && view.getDate() != null)
+		if(view.getEmployee() != null && view.getDate() != null) //If all the mandatory elements are given
 		{
 			if(view.getEmployee().hasCheckForDate(view.getDate()))
 			{

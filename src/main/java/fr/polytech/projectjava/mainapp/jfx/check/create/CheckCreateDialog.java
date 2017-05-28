@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.check.create;
+package fr.polytech.projectjava.mainapp.jfx.check.create;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;

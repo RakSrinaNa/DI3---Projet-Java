@@ -1,9 +1,9 @@
-package fr.polytech.projectjava.mainapp.jfx.main.check;
+package fr.polytech.projectjava.mainapp.jfx.check;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
-import fr.polytech.projectjava.mainapp.jfx.main.MainController;
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
@@ -45,7 +45,7 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 		final SimpleObjectProperty<Predicate<EmployeeCheck>> departmentFilter = new SimpleObjectProperty<>(check -> true);
 		final SimpleObjectProperty<Predicate<EmployeeCheck>> employeeFilter = new SimpleObjectProperty<>(check -> true);
 		
-		InvalidationListener refreshFilters = observable -> filterRule.set(startDateFilter.get().and(endDateFilter.get()).and(departmentFilter.get()).and(employeeFilter.get()));
+		InvalidationListener refreshFilters = observable -> filterRule.set(startDateFilter.get().and(endDateFilter.get()).and(departmentFilter.get()).and(employeeFilter.get())); //Refresh the global filter when one of the sub rules change
 		startDateFilter.addListener(refreshFilters);
 		endDateFilter.addListener(refreshFilters);
 		departmentFilter.addListener(refreshFilters);

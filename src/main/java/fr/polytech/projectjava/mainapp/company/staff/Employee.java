@@ -87,6 +87,7 @@ public class Employee extends Person implements Serializable
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
 		workingDays.addAll(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY);
+		Log.info("New employee created " + this);
 	}
 	
 	@Override
@@ -115,7 +116,7 @@ public class Employee extends Person implements Serializable
 	public void addCheckInOut(EmployeeCheck.CheckType checkType, LocalDate date, LocalTime time)
 	{
 		boolean found = false;
-		for(EmployeeCheck check : checks)
+		for(EmployeeCheck check : checks) // Find if there's already a check for this date.
 			if(check.getDate().equals(date))
 			{
 				if(checkType == IN)
@@ -126,7 +127,7 @@ public class Employee extends Person implements Serializable
 				found = true;
 				break;
 			}
-		if(!found)
+		if(!found) //Else create it.
 			addCheck(new EmployeeCheck(this, checkType, date, time));
 		updateOvertime(null);
 		updatePresence();
@@ -157,22 +158,21 @@ public class Employee extends Person implements Serializable
 	 */
 	public double updateOvertime(LocalDate maxDate) throws IllegalStateException
 	{
-		if(maxDate == null)
+		if(maxDate == null) //If no max date provided, use the current one.
 			maxDate = new Date(System.currentTimeMillis()).toLocalDate();
 		
-		Map<LocalDate, EmployeeCheck> checksByDate = checks.stream().collect(Collectors.toMap(EmployeeCheck::getDate, Function.identity()));
-		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate());
+		Map<LocalDate, EmployeeCheck> checksByDate = checks.stream().collect(Collectors.toMap(EmployeeCheck::getDate, Function.identity())); //Map every check to its date
+		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate()); //Get the oldest day
 		MinutesDuration overtime = MinutesDuration.ZERO;
-		while(currentDate.compareTo(maxDate) <= 0)
+		while(currentDate.compareTo(maxDate) <= 0) //For each day up to the maximum one
 		{
-			if(checksByDate.containsKey(currentDate))
-				overtime = overtime.add(checksByDate.get(currentDate).getWorkedTime()).substract(getWorkTimeForDay(currentDate.getDayOfWeek()));
-			else
-				overtime = overtime.substract(getWorkTimeForDay(currentDate.getDayOfWeek()));
+			if(checksByDate.containsKey(currentDate)) //If we have a record for this day, add it to the time worked
+				overtime = overtime.add(checksByDate.get(currentDate).getWorkedTime());
+			overtime = overtime.substract(getWorkTimeForDay(currentDate.getDayOfWeek())); //Remove the time the employee should have worked
 			currentDate = currentDate.plusDays(1);
 		}
 		
-		Log.info("New overtime for " + getFullName() + ": " + overtime);
+		Log.info("New overtime for " + this + ": " + overtime);
 		
 		lateDuration.set(overtime);
 		return overtime.getMinutes();
@@ -184,7 +184,7 @@ public class Employee extends Person implements Serializable
 	public void updatePresence()
 	{
 		EmployeeCheck lastCheck = null;
-		for(EmployeeCheck check : checks)
+		for(EmployeeCheck check : checks) //Get the last check
 			if(lastCheck == null || lastCheck.getDate().isBefore(check.getDate()))
 				lastCheck = check;
 		if(lastCheck != null)
@@ -237,6 +237,7 @@ public class Employee extends Person implements Serializable
 		if(arrivalTime.isAfter(getDepartureTime()))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.arrivalTime.set(arrivalTime);
+		Log.info("Employee " + this + " now starts at " + arrivalTime);
 	}
 	
 	/**
@@ -271,6 +272,7 @@ public class Employee extends Person implements Serializable
 		if(getArrivalTime().isAfter(departureTime))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.departureTime.set(departureTime);
+		Log.info("Employee " + this + " now ends at " + departureTime);
 	}
 	
 	/**
@@ -281,7 +283,21 @@ public class Employee extends Person implements Serializable
 	public void addWorkingDay(DayOfWeek day)
 	{
 		if(!workingDays.contains(day))
+		{
 			workingDays.add(day);
+			Log.info(this + " now works on " + day);
+		}
+	}
+	
+	/**
+	 * Remove a working day for this employee.
+	 *
+	 * @param day The day to remove.
+	 */
+	public void removeWorkingDay(DayOfWeek day)
+	{
+		workingDays.remove(day);
+		Log.info(this + " doesn't work on " + day + " anymore");
 	}
 	
 	/**
@@ -370,6 +386,7 @@ public class Employee extends Person implements Serializable
 	public void setWorkingDepartment(StandardDepartment workingDepartment)
 	{
 		this.workingDepartment.set(workingDepartment);
+		Log.info(this + " now works in " + workingDepartment);
 	}
 	
 	/**
@@ -384,7 +401,7 @@ public class Employee extends Person implements Serializable
 	{
 		company = (Company) ois.readObject();
 		ID = ois.readInt();
-		NEXT_ID = Math.max(ID, NEXT_ID);
+		NEXT_ID = Math.max(ID, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
 		workingDepartment = new SimpleObjectProperty<>((StandardDepartment) ois.readObject());
 		arrivalTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());
 		departureTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());

@@ -1,7 +1,7 @@
-package fr.polytech.projectjava.mainapp.jfx.main.employee;
+package fr.polytech.projectjava.mainapp.jfx.employee;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
-import fr.polytech.projectjava.mainapp.jfx.main.MainController;
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;

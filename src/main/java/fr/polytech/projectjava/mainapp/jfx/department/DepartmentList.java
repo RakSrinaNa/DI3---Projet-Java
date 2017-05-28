@@ -1,8 +1,8 @@
-package fr.polytech.projectjava.mainapp.jfx.main.department;
+package fr.polytech.projectjava.mainapp.jfx.department;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
-import fr.polytech.projectjava.mainapp.jfx.main.MainController;
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
 import javafx.scene.control.TableColumn;
 

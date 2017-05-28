@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.check;
+package fr.polytech.projectjava.mainapp.jfx.check;
 
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Log;

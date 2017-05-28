@@ -48,7 +48,7 @@ public class Company implements Serializable
 		this.boss = new SimpleObjectProperty<>(boss);
 		this.managementDepartment = new ManagementDepartment(this, boss);
 		this.checks = FXCollections.observableArrayList();
-		employees.addListener(new ListChangeListener<Employee>()
+		employees.addListener(new ListChangeListener<Employee>() //Keep track the what happens to the employee list in order to update the manager list
 		{
 			@Override
 			public void onChanged(Change<? extends Employee> c)
@@ -115,7 +115,7 @@ public class Company implements Serializable
 	@Override
 	public String toString()
 	{
-		return "Company: \t" + getName() + "\nManagement department: \t[" + getManagementDepartment() + "]\nDepartments: \t" + departments + "\nEmployees: \t" + getEmployees();
+		return getName();
 	}
 	
 	/**
@@ -178,7 +178,10 @@ public class Company implements Serializable
 	public void addDepartment(StandardDepartment department)
 	{
 		if(!departments.contains(department))
+		{
 			departments.add(department);
+			Log.info("Department " + department + " added to the company " + this);
+		}
 	}
 	
 	/**
@@ -189,7 +192,10 @@ public class Company implements Serializable
 	public void addEmployee(Employee employee)
 	{
 		if(!employees.contains(employee))
+		{
 			employees.add(employee);
+			Log.info("Employee " + employee + " added to the company " + this);
+		}
 	}
 	
 	/**
@@ -201,18 +207,21 @@ public class Company implements Serializable
 	public void removeEmployee(Employee employee)
 	{
 		if(employee.getWorkingDepartment() == null)
+		{
 			employees.remove(employee);
+			Log.info("Employee " + employee + " removed from the company " + this);
+		}
 	}
 	
 	public void removeDepartment(StandardDepartment department)
 	{
-		Log.info("Removing department");
 		if(department.getEmployees().size() > 0)
 		{
-			Log.warning("Department is not empty, aborting");
+			Log.warning("Department " + department + "is not empty so can't be removed from the company " + this);
 			return;
 		}
 		departments.remove(department);
+		Log.info("Department" + department + " removed from the company " + this);
 	}
 	
 	/**

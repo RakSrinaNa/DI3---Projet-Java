@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.company.create;
+package fr.polytech.projectjava.mainapp.jfx.company.create;
 
 import fr.polytech.projectjava.mainapp.company.Company;
 import javafx.scene.Parent;

@@ -1,8 +1,8 @@
-package fr.polytech.projectjava.mainapp.jfx.main.employee;
+package fr.polytech.projectjava.mainapp.jfx.employee;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
-import fr.polytech.projectjava.mainapp.jfx.main.MainController;
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
 import javafx.beans.property.ReadOnlyObjectProperty;

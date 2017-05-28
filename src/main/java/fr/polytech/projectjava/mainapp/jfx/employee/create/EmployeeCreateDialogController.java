@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main.employee.create;
+package fr.polytech.projectjava.mainapp.jfx.employee.create;
 
 /**
  * Controller for the employee dialog.

@@ -1,6 +1,7 @@
 package fr.polytech.projectjava.mainapp.company.staff;
 
 import fr.polytech.projectjava.mainapp.company.Company;
+import fr.polytech.projectjava.utils.Log;
 import javafx.beans.property.SimpleBooleanProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -94,6 +95,7 @@ public class Manager extends Employee implements Serializable
 	public void setManaging(boolean managing)
 	{
 		this.managing.set(managing);
+		Log.info("Manager " + this + " is " + (managing ? "now managing" : " no longer managing"));
 	}
 	
 	/**

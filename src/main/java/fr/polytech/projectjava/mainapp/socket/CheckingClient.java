@@ -40,7 +40,7 @@ public class CheckingClient extends SocketBase
 	{
 		super(socket);
 		parent = checkingServer;
-		setTimeout(10000);
+		setTimeout(Configuration.getInt("mainClientTimeout"));
 	}
 	
 	@Override

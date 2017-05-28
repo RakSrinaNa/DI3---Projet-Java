@@ -1,8 +1,8 @@
-package fr.polytech.projectjava.mainapp.jfx.main;
+package fr.polytech.projectjava.mainapp.jfx;
 
-import fr.polytech.projectjava.mainapp.jfx.main.check.CheckTab;
-import fr.polytech.projectjava.mainapp.jfx.main.department.DepartmentTab;
-import fr.polytech.projectjava.mainapp.jfx.main.employee.EmployeeTab;
+import fr.polytech.projectjava.mainapp.jfx.employee.EmployeeTab;
+import fr.polytech.projectjava.mainapp.jfx.check.CheckTab;
+import fr.polytech.projectjava.mainapp.jfx.department.DepartmentTab;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.ApplicationBase;
 import javafx.scene.Parent;

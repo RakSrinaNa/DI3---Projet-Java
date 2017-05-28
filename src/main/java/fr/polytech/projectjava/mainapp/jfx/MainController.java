@@ -1,14 +1,14 @@
-package fr.polytech.projectjava.mainapp.jfx.main;
+package fr.polytech.projectjava.mainapp.jfx;
 
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
-import fr.polytech.projectjava.mainapp.jfx.main.check.CheckList;
-import fr.polytech.projectjava.mainapp.jfx.main.check.create.CheckCreateDialog;
-import fr.polytech.projectjava.mainapp.jfx.main.company.create.CompanyCreateDialog;
-import fr.polytech.projectjava.mainapp.jfx.main.department.DepartmentList;
+import fr.polytech.projectjava.mainapp.jfx.check.CheckList;
+import fr.polytech.projectjava.mainapp.jfx.check.create.CheckCreateDialog;
+import fr.polytech.projectjava.mainapp.jfx.company.create.CompanyCreateDialog;
+import fr.polytech.projectjava.mainapp.jfx.department.DepartmentList;
 import fr.polytech.projectjava.mainapp.socket.CheckingServer;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;

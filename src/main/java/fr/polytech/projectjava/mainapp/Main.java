@@ -5,7 +5,7 @@ import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Boss;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
-import fr.polytech.projectjava.mainapp.jfx.main.MainApplication;
+import fr.polytech.projectjava.mainapp.jfx.MainApplication;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import javafx.application.Application;
@@ -61,15 +61,14 @@ public class Main
 		File file = new File(".", Configuration.getString("mainSaveFile"));
 		
 		if(file.exists())
-			file.delete();
-		
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
-		{
-			oos.writeObject(comp);
-		}
-		catch(Exception e)
-		{
-			Log.warning("Failed to save create company");
-		}
+			if(file.delete())
+				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
+				{
+					oos.writeObject(comp);
+				}
+				catch(Exception e)
+				{
+					Log.warning("Failed to save create company");
+				}
 	}
 }

@@ -1,4 +1,4 @@
-package fr.polytech.projectjava.mainapp.jfx.main;
+package fr.polytech.projectjava.mainapp.jfx;
 
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;

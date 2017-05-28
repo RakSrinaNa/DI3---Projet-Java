@@ -1,6 +1,7 @@
 package fr.polytech.projectjava.mainapp.company.staff.checking;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
 import fr.polytech.projectjava.utils.jfx.RoundedLocalTimeProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -47,20 +48,20 @@ public class EmployeeCheck implements Serializable
 		this.employee = new SimpleObjectProperty<>(employee);
 		checkIn = new RoundedLocalTimeProperty(employee);
 		checkOut = new RoundedLocalTimeProperty(employee);
+		Log.info("New check added for " + employee + " on " + date);
 	}
 	
 	/**
 	 * Constructor with an initial check.
 	 *
-	 * @param employee   The employee of the check.
+	 * @param employee  The employee of the check.
 	 * @param checkType The type of the check.
+	 * @param date      The date of the check.
+	 * @param time      The time of the check.
 	 */
 	public EmployeeCheck(Employee employee, CheckType checkType, LocalDate date, LocalTime time)
 	{
-		this.employee = new SimpleObjectProperty<>(employee);
-		this.date = new SimpleObjectProperty<>(date);
-		checkIn = new RoundedLocalTimeProperty(employee);
-		checkOut = new RoundedLocalTimeProperty(employee);
+		this(employee, date);
 		if(checkType == CheckType.IN)
 			setIn(time);
 		else
@@ -75,6 +76,7 @@ public class EmployeeCheck implements Serializable
 	public void setIn(LocalTime check)
 	{
 		checkIn.set(check);
+		Log.info(employee + " checked in on " + getDate() + " at " + check);
 	}
 	
 	/**
@@ -85,6 +87,7 @@ public class EmployeeCheck implements Serializable
 	public void setOut(LocalTime check)
 	{
 		checkOut.set(check);
+		Log.info(employee + " checked out on " + getDate() + " at " + check);
 	}
 	
 	/**
@@ -118,7 +121,7 @@ public class EmployeeCheck implements Serializable
 	{
 		oos.writeObject(getEmployee());
 		oos.writeObject(getDate());
-		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0));
+		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0)); // Write in binary what will be writer: 01 - Only out / 10 - Only in / 11 - Both
 		if(checkIn.get() != null)
 			oos.writeObject(checkIn.get());
 		if(checkOut.get() != null)
