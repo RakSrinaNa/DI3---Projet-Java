@@ -1,9 +1,9 @@
 package fr.polytech.projectjava.mainapp.company.staff.checking;
 
+import fr.polytech.projectjava.mainapp.company.staff.EmployeeRoundedLocalTimeProperty;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
-import fr.polytech.projectjava.utils.jfx.RoundedLocalTimeProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,8 +25,8 @@ public class EmployeeCheck implements Serializable
 	private static final long serialVersionUID = 2289845323375640933L;
 	private SimpleObjectProperty<Employee> employee;
 	private SimpleObjectProperty<LocalDate> date;
-	private RoundedLocalTimeProperty checkIn;
-	private RoundedLocalTimeProperty checkOut;
+	private EmployeeRoundedLocalTimeProperty checkIn;
+	private EmployeeRoundedLocalTimeProperty checkOut;
 	
 	/**
 	 * Enumeration of the different types of checks possible.
@@ -46,8 +46,8 @@ public class EmployeeCheck implements Serializable
 	{
 		this.date = new SimpleObjectProperty<>(date);
 		this.employee = new SimpleObjectProperty<>(employee);
-		checkIn = new RoundedLocalTimeProperty(employee);
-		checkOut = new RoundedLocalTimeProperty(employee);
+		checkIn = new EmployeeRoundedLocalTimeProperty(employee);
+		checkOut = new EmployeeRoundedLocalTimeProperty(employee);
 		Log.info("New check added for " + employee + " on " + date);
 	}
 	
@@ -162,13 +162,13 @@ public class EmployeeCheck implements Serializable
 		date = new SimpleObjectProperty<>((LocalDate) ois.readObject());
 		int infos = ois.readInt();
 		if((infos & 0x02) == 0x02)
-			checkIn = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
+			checkIn = new EmployeeRoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
-			checkIn = new RoundedLocalTimeProperty(getEmployee());
+			checkIn = new EmployeeRoundedLocalTimeProperty(getEmployee());
 		if((infos & 0x01) == 0x01)
-			checkOut = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
+			checkOut = new EmployeeRoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
-			checkOut = new RoundedLocalTimeProperty(getEmployee());
+			checkOut = new EmployeeRoundedLocalTimeProperty(getEmployee());
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ public class CompanyCreateDialogController
 	 */
 	public void valid(ActionEvent actionEvent)
 	{
-		if(!view.getCompanyName().equals("") && !view.getBossLastName().equals("") && !view.getBossFirstName().equals(""))
+		if(!view.getCompanyName().equals("") && !view.getBossLastName().equals("") && !view.getBossFirstName().equals("")) //If all the mandatory fields are present
 		{
 			view.setResult(new Company(view.getCompanyName(), new Boss(view.getBossLastName(), view.getBossFirstName())));
 			view.close();

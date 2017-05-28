@@ -1,8 +1,6 @@
-package fr.polytech.projectjava.mainapp.jfx.check;
+package fr.polytech.projectjava.utils.jfx;
 
-import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Log;
-import fr.polytech.projectjava.utils.jfx.RoundedLocalTimeProperty;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.StringConverter;
 import java.time.LocalTime;
@@ -13,7 +11,7 @@ import java.time.LocalTime;
  * @author Thomas Couchoud
  * @since 2017-05-25
  */
-public class LocalTimeTextFieldTableCell extends TextFieldTableCell<EmployeeCheck, LocalTime>
+public class LocalTimeTextFieldTableCell<T> extends TextFieldTableCell<T, LocalTime>
 {
 	/**
 	 * Constructor.
@@ -50,9 +48,5 @@ public class LocalTimeTextFieldTableCell extends TextFieldTableCell<EmployeeChec
 	{
 		item = RoundedLocalTimeProperty.roundTime(item);
 		super.updateItem(item, empty);
-		if(!empty && getTableRow().getItem() != null && !((EmployeeCheck) getTableRow().getItem()).isValidState())
-			getTableRow().setStyle("-fx-background-color: #FF0000;");
-		else
-			getTableRow().setStyle(null);
 	}
 }

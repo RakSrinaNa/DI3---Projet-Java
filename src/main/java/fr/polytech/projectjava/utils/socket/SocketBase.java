@@ -17,33 +17,38 @@ import java.util.ArrayList;
 public abstract class SocketBase extends SocketUtils implements Runnable
 {
 	private final ArrayList<SocketDisconnectedListener> disconnectListeners;
+	private final String name;
 	
 	/**
 	 * Constructor.
 	 *
+	 * @param name    The name of the socket.
 	 * @param address The address to connect to.
 	 *
 	 * @throws IOException If an I/O error occurs when creating the socket.
 	 */
-	public SocketBase(InetSocketAddress address) throws IOException
+	public SocketBase(String name, InetSocketAddress address) throws IOException
 	{
-		this(new Socket(address.getAddress(), address.getPort()));
+		this(name, new Socket(address.getAddress(), address.getPort()));
 	}
 	
 	/**
 	 * Constructor.
 	 *
+	 * @param name   The name of the socket.
 	 * @param socket TThe socket.
 	 */
-	protected SocketBase(Socket socket)
+	protected SocketBase(String name, Socket socket)
 	{
 		super(socket);
+		this.name = name;
 		disconnectListeners = new ArrayList<>();
 	}
 	
 	@Override
 	public void run()
 	{
+		Log.info("Starting client " + getName());
 		boolean error;
 		try
 		{
@@ -51,7 +56,7 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 		}
 		catch(Exception e)
 		{
-			Log.warning("Error during client socket", e);
+			Log.warning("Error during client " + getName(), e);
 			error = true;
 		}
 		finally
@@ -62,11 +67,23 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 			}
 			catch(IOException e)
 			{
-				Log.warning("Error disconnecting client socket", e);
+				Log.warning("Error disconnecting client " + getName(), e);
 			}
 		}
 		boolean finalError = error;
 		disconnectListeners.forEach(listener -> listener.onSocketDisconnected(new DisconnectedEvent(finalError)));
+	}
+	
+	/**
+	 * Disconnect the socket.
+	 *
+	 * @throws IOException If an I/O error occurs when closing this socket.
+	 */
+	void disconnect() throws IOException
+	{
+		Log.info("Closing client " + getName());
+		if(!socket.isClosed())
+			socket.close();
 	}
 	
 	/**
@@ -87,5 +104,15 @@ public abstract class SocketBase extends SocketUtils implements Runnable
 	public void addFinishedListener(SocketDisconnectedListener listener)
 	{
 		disconnectListeners.add(listener);
+	}
+	
+	/**
+	 * Get the name of the socket.
+	 *
+	 * @return The socket name.
+	 */
+	public String getName()
+	{
+		return name;
 	}
 }

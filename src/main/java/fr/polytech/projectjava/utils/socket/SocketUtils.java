@@ -57,10 +57,10 @@ public abstract class SocketUtils
 		byte buffer[] = new byte[size];
 		try
 		{
-			int read = socket.getInputStream().read(buffer);
+			int read = socket.getInputStream().read(buffer); //Read into the buffer
 			if(read <= 0)
 				return null;
-			buffer = Arrays.copyOf(buffer, read);
+			buffer = Arrays.copyOf(buffer, read); //Cut the buffer to what have been read
 			if(log)
 				Log.info("Received data: " + Arrays.toString(buffer));
 			return buffer;
@@ -88,18 +88,6 @@ public abstract class SocketUtils
 		socket.getOutputStream().flush();
 		if(log)
 			Log.info("Sent data: " + Arrays.toString(data));
-	}
-	
-	/**
-	 * Disconnect the socket.
-	 *
-	 * @throws IOException If an I/O error occurs when closing this socket.
-	 */
-	void disconnect() throws IOException
-	{
-		Log.info("Closing socket");
-		if(!socket.isClosed())
-			socket.close();
 	}
 	
 	/**

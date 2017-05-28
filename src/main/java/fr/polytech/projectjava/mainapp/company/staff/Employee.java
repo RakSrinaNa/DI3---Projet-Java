@@ -46,8 +46,8 @@ public class Employee extends Person implements Serializable
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
-	private SimpleObjectProperty<LocalTime> arrivalTime;
-	private SimpleObjectProperty<LocalTime> departureTime;
+	private EmployeeRoundedLocalTimeProperty arrivalTime;
+	private EmployeeRoundedLocalTimeProperty departureTime;
 	
 	/**
 	 * Create an employee with his/her name.
@@ -81,8 +81,8 @@ public class Employee extends Person implements Serializable
 		if(arrivalTime.isAfter(departureTIme))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.ID = NEXT_ID++;
-		this.arrivalTime = new SimpleObjectProperty<>(arrivalTime);
-		this.departureTime = new SimpleObjectProperty<>(departureTIme);
+		this.arrivalTime = new EmployeeRoundedLocalTimeProperty(this, arrivalTime);
+		this.departureTime = new EmployeeRoundedLocalTimeProperty(this, departureTIme);
 		this.lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
@@ -94,6 +94,16 @@ public class Employee extends Person implements Serializable
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Employee && ID == ((Employee) obj).getID();
+	}
+	
+	/**
+	 * Tel if the employee is present or not.
+	 *
+	 * @return True if present, false if not.
+	 */
+	public boolean isPresent()
+	{
+		return isPresentProperty().get();
 	}
 	
 	/**
@@ -245,7 +255,7 @@ public class Employee extends Person implements Serializable
 	 *
 	 * @return The departure time property.
 	 */
-	private SimpleObjectProperty<LocalTime> departureTimeProperty()
+	public SimpleObjectProperty<LocalTime> departureTimeProperty()
 	{
 		return departureTime;
 	}
@@ -255,7 +265,7 @@ public class Employee extends Person implements Serializable
 	 *
 	 * @return The arrival time property.
 	 */
-	private SimpleObjectProperty<LocalTime> arrivalTimeProperty()
+	public SimpleObjectProperty<LocalTime> arrivalTimeProperty()
 	{
 		return arrivalTime;
 	}
@@ -403,8 +413,8 @@ public class Employee extends Person implements Serializable
 		ID = ois.readInt();
 		NEXT_ID = Math.max(ID, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
 		workingDepartment = new SimpleObjectProperty<>((StandardDepartment) ois.readObject());
-		arrivalTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());
-		departureTime = new SimpleObjectProperty<>((LocalTime) ois.readObject());
+		arrivalTime = new EmployeeRoundedLocalTimeProperty(this, (LocalTime) ois.readObject());
+		departureTime = new EmployeeRoundedLocalTimeProperty(this, (LocalTime) ois.readObject());
 		
 		workingDays = FXCollections.observableArrayList();
 		int wkdCount = ois.readInt();

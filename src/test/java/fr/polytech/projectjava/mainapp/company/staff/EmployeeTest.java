@@ -4,7 +4,6 @@ import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -96,9 +95,9 @@ public class EmployeeTest
 		assertEquals(Employee.DEFAULT_ARRIVAL_TIME, employee1.getArrivalTime());
 		assertEquals(Employee.DEFAULT_DEPARTURE_TIME, employee1.getDepartureTime());
 		
-		Employee employee2 = new Employee(company, "A", "B", Time.valueOf("01:02:03").toLocalTime(), Time.valueOf("02:03:04").toLocalTime());
-		assertEquals(Time.valueOf("01:02:03").toLocalTime(), employee2.getArrivalTime());
-		assertEquals(Time.valueOf("02:03:04").toLocalTime(), employee2.getDepartureTime());
+		Employee employee2 = new Employee(company, "A", "B", LocalTime.of(1, 2, 3), LocalTime.of(2, 3, 4));
+		assertEquals(LocalTime.of(1, 0), employee2.getArrivalTime());
+		assertEquals(LocalTime.of(2, 0), employee2.getDepartureTime());
 	}
 	
 	@Test
@@ -112,10 +111,13 @@ public class EmployeeTest
 		assertEquals(time, employee1.getArrivalTime());
 		assertEquals(time, employee1.getDepartureTime());
 		
-		time = LocalTime.of(15, 34);
+		time = LocalTime.of(15, 42);
 		employee1.setDepartureTime(time);
+		time = LocalTime.of(15, 34);
 		employee1.setArrivalTime(time);
+		time = LocalTime.of(15, 30);
 		assertEquals(time, employee1.getArrivalTime());
+		time = LocalTime.of(15, 45);
 		assertEquals(time, employee1.getDepartureTime());
 	}
 	

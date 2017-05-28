@@ -62,8 +62,10 @@ public class MainController
 	 */
 	public void close(WindowEvent windowEvent)
 	{
+		Log.info("Closing main app");
 		socketReceiver.stop();
 		saveDatas();
+		Log.info("Main app closed");
 	}
 	
 	/**
@@ -73,9 +75,11 @@ public class MainController
 	{
 		if(company != null)
 		{
+			Log.info("Saving loaded company");
 			try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(Configuration.getString("mainSaveFile")))))
 			{
 				oos.writeObject(company);
+				Log.info("Company saved");
 			}
 			catch(IOException e)
 			{
@@ -184,7 +188,7 @@ public class MainController
 	{
 		Optional<Company> companyOptional = loadLastCompany();
 		company = companyOptional.orElseGet(this::buildNewCompany);
-		if(company == null)
+		if(company == null) // If no companies could be loaded
 		{
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("No company loaded");
@@ -201,6 +205,7 @@ public class MainController
 		company.getEmployees().addListener((InvalidationListener) observable -> employeeCount.set("" + company.getEmployees().size()));
 		company.getDepartements().addListener((InvalidationListener) observable -> departmentCount.set("" + company.getDepartements().size()));
 		
+		/* Bind values to the UI */
 		parent.getMainTab().getCompanyNameTextProperty().bind(company.nameProperty());
 		parent.getMainTab().getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
 		parent.getMainTab().getEmployeeCountTextProperty().bind(employeeCount);
@@ -224,10 +229,12 @@ public class MainController
 		File f = new File(Configuration.getString("mainSaveFile"));
 		if(f.exists() && f.isFile())
 		{
+			Log.info("Loading last company...");
 			Company company = null;
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f)))
 			{
 				company = (Company) ois.readObject();
+				Log.info("Company loaded");
 			}
 			catch(IOException | ClassNotFoundException | ClassCastException e)
 			{
@@ -267,7 +274,7 @@ public class MainController
 	 */
 	public void removeDepartment(ActionEvent evt, DepartmentList departmentsList)
 	{
-		if(departmentsList.getSelectionModel().getSelectedItem() != null)
+		if(departmentsList.getSelectionModel().getSelectedItem() != null) //If a department is selected
 		{
 			StandardDepartment dpt = departmentsList.getSelectionModel().getSelectedItem();
 			if(dpt.getEmployees().size() == 0)
@@ -295,7 +302,7 @@ public class MainController
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.showAndWait();
 		EmployeeCheck result = dialog.getResult();
-		if(result != null)
+		if(result != null) //If a check was created
 			result.getEmployee().addCheck(result);
 	}
 	
@@ -307,7 +314,7 @@ public class MainController
 	 */
 	public void removeCheck(ActionEvent evt, CheckList checkList)
 	{
-		if(checkList.getSelectionModel().getSelectedItem() != null)
+		if(checkList.getSelectionModel().getSelectedItem() != null) //If a check is selected
 		{
 			EmployeeCheck check = checkList.getSelectionModel().getSelectedItem();
 			Log.info("Removing check " + check);
@@ -322,6 +329,6 @@ public class MainController
 	 */
 	public void managerChanged(TableColumn.CellEditEvent<StandardDepartment, Manager> event)
 	{
-		event.getRowValue().setLeader(event.getNewValue());
+		event.getRowValue().setLeader(event.getNewValue()); //Update the manager of the company
 	}
 }

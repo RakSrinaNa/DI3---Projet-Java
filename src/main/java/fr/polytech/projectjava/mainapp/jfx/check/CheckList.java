@@ -46,7 +46,7 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 		final SimpleObjectProperty<Predicate<EmployeeCheck>> employeeFilter = new SimpleObjectProperty<>(check -> true);
 		
 		InvalidationListener refreshFilters = observable -> filterRule.set(startDateFilter.get().and(endDateFilter.get()).and(departmentFilter.get()).and(employeeFilter.get())); //Refresh the global filter when one of the sub rules change
-		startDateFilter.addListener(refreshFilters);
+				startDateFilter.addListener(refreshFilters);
 		endDateFilter.addListener(refreshFilters);
 		departmentFilter.addListener(refreshFilters);
 		employeeFilter.addListener(refreshFilters);
@@ -94,13 +94,13 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 		
 		TableColumn<EmployeeCheck, LocalTime> columnArrival = new TableColumn<>("Arrival");
 		columnArrival.setEditable(true);
-		columnArrival.setCellFactory(list -> new LocalTimeTextFieldTableCell());
+		columnArrival.setCellFactory(list -> new CheckLocalTimeTextFieldTableCell());
 		columnArrival.setCellValueFactory(value -> value.getValue().checkInProperty());
 		columnArrival.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<EmployeeCheck, LocalTime> columnDeparture = new TableColumn<>("Departure");
 		columnDeparture.setEditable(true);
-		columnDeparture.setCellFactory(list -> new LocalTimeTextFieldTableCell());
+		columnDeparture.setCellFactory(list -> new CheckLocalTimeTextFieldTableCell());
 		columnDeparture.setCellValueFactory(value -> value.getValue().checkOutProperty());
 		columnDeparture.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		

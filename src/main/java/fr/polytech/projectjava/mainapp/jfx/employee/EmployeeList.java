@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
+import java.time.LocalTime;
 import java.util.function.Predicate;
 
 /**
@@ -36,7 +37,7 @@ public class EmployeeList extends SortedTableView<Employee>
 	{
 		super();
 		
-		int colCount = 5;
+		int colCount = 7;
 		int padding = 2;
 		
 		filterRule = new SimpleObjectProperty<>(employee -> true);
@@ -46,7 +47,7 @@ public class EmployeeList extends SortedTableView<Employee>
 			else
 				filterRule.set(employee -> employee.getWorkingDepartment().equals(newValue));
 		}));
-		setEditable(false);
+		setEditable(true);
 		
 		TableColumn<Employee, Number> columnEmployeeID = new TableColumn<>("ID");
 		columnEmployeeID.setCellValueFactory(value -> new SimpleIntegerProperty(value.getValue().getID()));
@@ -67,6 +68,14 @@ public class EmployeeList extends SortedTableView<Employee>
 		TableColumn<Employee, Boolean> columnPresence = new TableColumn<>("Presence");
 		columnPresence.setCellValueFactory(value -> value.getValue().isPresentProperty());
 		columnPresence.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		
+		TableColumn<Employee, LocalTime> columnArrival = new TableColumn<>("Arrival");
+		columnArrival.setCellValueFactory(value -> value.getValue().arrivalTimeProperty());
+		columnArrival.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		
+		TableColumn<Employee, LocalTime> columnDeparture = new TableColumn<>("Departure");
+		columnDeparture.setCellValueFactory(value -> value.getValue().departureTimeProperty());
+		columnDeparture.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		//noinspection unchecked
 		getColumns().addAll(columnEmployeeID, columnEmployeeName, columnEmployeeDepartment, columnTime, columnPresence);

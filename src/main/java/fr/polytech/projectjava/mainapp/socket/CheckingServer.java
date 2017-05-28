@@ -30,7 +30,7 @@ public class CheckingServer extends ServerSocketBase
 	 */
 	public CheckingServer(MainController controller) throws IOException
 	{
-		super(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
+		super("Main Server", new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
 		this.controller = controller;
 		setTimeout(Configuration.getInt("mainServerTimeout"));
 	}

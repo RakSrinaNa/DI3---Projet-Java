@@ -46,7 +46,7 @@ public class EmployeeTab extends Tab
 		
 		HBox controls = new HBox();
 		departmentFilter = new ComboBox<>();
-		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = new Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>>()
+		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = new Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>>() //Display departments as a string and not hashcode
 		{
 			@Override
 			public ListCell<StandardDepartment> call(ListView<StandardDepartment> param)
@@ -60,7 +60,7 @@ public class EmployeeTab extends Tab
 						if(item == null || empty)
 							setText(null);
 						else
-							setText(item.getID() + ": " + item.getName());
+							setText(item.toString());
 					}
 				};
 			}

@@ -30,7 +30,7 @@ public class CheckingSender extends SocketBase
 	 */
 	public CheckingSender(Iterator<CheckInfos> datas) throws IOException
 	{
-		super(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
+		super("Checking client", new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
 		setTimeout(Configuration.getInt("simulationCheckTimeout"));
 		this.datas = datas;
 	}

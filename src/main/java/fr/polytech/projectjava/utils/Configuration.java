@@ -45,7 +45,7 @@ public class Configuration
 	{
 		try
 		{
-			if(new File(".", "settings.properties").exists())
+			if(new File(".", "settings.properties").exists()) //Load external file if exists
 				properties.load(new FileInputStream(new File(".", "settings.properties")));
 			else
 				properties.load(Configuration.class.getResourceAsStream("/settings.properties"));

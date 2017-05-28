@@ -61,7 +61,10 @@ public class MainApplication extends ApplicationBase
 	@Override
 	public Consumer<Stage> getOnStageDisplayed() throws Exception
 	{
-		return stage -> controller.loadCompany();
+		return stage -> {
+			controller.loadCompany();
+			Log.info("Main application displayed");
+		};
 	}
 	
 	@Override

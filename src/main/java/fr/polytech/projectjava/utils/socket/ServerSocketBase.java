@@ -15,57 +15,64 @@ import java.net.*;
 public abstract class ServerSocketBase implements Runnable
 {
 	private final ServerSocket socket;
+	private final String name;
 	private boolean stop = false;
 	
 	/**
 	 * Constructor.
 	 *
+	 * @param name    The name of the socket.
 	 * @param address The address to listen to.
 	 *
 	 * @throws IOException If an I/O error occurs when opening the socket.
 	 */
-	public ServerSocketBase(InetSocketAddress address) throws IOException
+	public ServerSocketBase(String name, InetSocketAddress address) throws IOException
 	{
+		this.name = name;
 		socket = new ServerSocket(address.getPort(), 0, address.getAddress());
 	}
 	
 	/**
 	 * Constructor.
 	 *
+	 * @param name The name of the socket.
 	 * @param port The port to listen to.
 	 *
 	 * @throws IOException If an I/O error occurs when opening the socket.
 	 */
-	public ServerSocketBase(int port) throws IOException
+	public ServerSocketBase(String name, int port) throws IOException
 	{
+		this.name = name;
 		socket = new ServerSocket(port);
 	}
 	
 	@Override
 	public void run()
 	{
+		Log.info("Starting server " + getName());
 		while(!stop)
 		{
 			try
 			{
 				buildClient(this.socket.accept());
-				Log.info("Server accepted client");
+				Log.info("Server " +getName() + " accepted client");
 			}
 			catch(SocketTimeoutException ignored)
 			{
 			}
 			catch(Exception e)
 			{
-				Log.warning("Error in server socket", e);
+				Log.warning("Error in server " + getName(), e);
 			}
 		}
 		try
 		{
+			Log.info("Closing server " + getName());
 			socket.close();
 		}
 		catch(IOException e)
 		{
-			Log.warning("Error closing server socket", e);
+			Log.warning("Error closing server " + getName(), e);
 		}
 	}
 	
@@ -83,13 +90,23 @@ public abstract class ServerSocketBase implements Runnable
 	{
 		try
 		{
-			Log.info("Stopping server... This may take up to " + (socket.getSoTimeout() / 1000) + "s");
+			Log.info("Stopping server " + getName() + "... This may take up to " + (socket.getSoTimeout() / 1000) + "s");
 		}
 		catch(IOException e)
 		{
 			Log.error("", e);
 		}
 		stop = true;
+	}
+	
+	/**
+	 * Get the name of the socket.
+	 *
+	 * @return The socket name.
+	 */
+	public String getName()
+	{
+		return name;
 	}
 	
 	/**

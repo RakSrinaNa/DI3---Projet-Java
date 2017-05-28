@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.utils;
 
-import java.util.ArrayList;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,41 +14,7 @@ import java.util.logging.Logger;
  */
 public class Log
 {
-	private static final ArrayList<LogListener> listeners = new ArrayList<>();
 	private static Logger logger;
-	
-	/**
-	 * Interface to listen new messages.
-	 */
-	public interface LogListener
-	{
-		/**
-		 * Used when a new message is logged.
-		 *
-		 * @param level   The level of the logging.
-		 * @param message The message sent.
-		 */
-		void onLogMessage(Level level, String message);
-		
-		/**
-		 * Used when a new message with a throwable is logged.
-		 *
-		 * @param level     The level of the logging.
-		 * @param message   The message sent.
-		 * @param throwable The throwable sent.
-		 */
-		void onLogMessage(Level level, String message, Throwable throwable);
-	}
-	
-	/**
-	 * Add a listener to the logger.
-	 *
-	 * @param listener The listener to add.
-	 */
-	public static void addListener(LogListener listener)
-	{
-		listeners.add(listener);
-	}
 	
 	/**
 	 * Send a warning message.
@@ -70,7 +35,6 @@ public class Log
 	public static void log(Level level, String message)
 	{
 		getInstance().log(level, message);
-		listeners.forEach(logListener -> logListener.onLogMessage(level, message));
 	}
 	
 	/**
@@ -124,7 +88,6 @@ public class Log
 	public static void log(Level level, String message, Throwable throwable)
 	{
 		getInstance().log(level, message, throwable);
-		listeners.forEach(logListener -> logListener.onLogMessage(level, message, throwable));
 	}
 	
 	/**
