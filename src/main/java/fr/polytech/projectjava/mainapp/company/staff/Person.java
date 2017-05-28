@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.mainapp.company.staff;
 
-import javafx.beans.binding.StringExpression;
 import javafx.beans.property.SimpleStringProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,6 +19,7 @@ public abstract class Person implements Serializable
 	private static final long serialVersionUID = -451843709154049172L;
 	private SimpleStringProperty lastName;
 	private SimpleStringProperty firstName;
+	private SimpleStringProperty fullName;
 	
 	/**
 	 * Construct a person with his/her name.
@@ -30,7 +30,10 @@ public abstract class Person implements Serializable
 	public Person(String lastName, String firstName)
 	{
 		this.lastName = new SimpleStringProperty(lastName);
+		this.lastName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
 		this.firstName = new SimpleStringProperty(firstName);
+		this.firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
+		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
 	}
 	
 	@Override
@@ -54,9 +57,9 @@ public abstract class Person implements Serializable
 	 *
 	 * @return The full name expression.
 	 */
-	public StringExpression fullNameProperty()
+	public SimpleStringProperty fullNameProperty()
 	{
-		return firstNameProperty().concat(" ").concat(lastNameProperty());
+		return fullName;
 	}
 	
 	/**
@@ -103,7 +106,10 @@ public abstract class Person implements Serializable
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		lastName = new SimpleStringProperty((String) ois.readObject());
+		lastName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
 		firstName = new SimpleStringProperty((String) ois.readObject());
+		firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
+		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
 	}
 	
 	/**

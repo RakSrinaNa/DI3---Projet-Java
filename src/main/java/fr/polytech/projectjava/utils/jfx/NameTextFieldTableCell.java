@@ -1,6 +1,5 @@
-package fr.polytech.projectjava.mainapp.jfx.department;
+package fr.polytech.projectjava.utils.jfx;
 
-import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DefaultStringConverter;
 
@@ -10,7 +9,7 @@ import javafx.util.converter.DefaultStringConverter;
  * @author Thomas Couchoud
  * @since 2017-05-25
  */
-public class NameTextFieldTableCell extends TextFieldTableCell<StandardDepartment, String>
+public class NameTextFieldTableCell<T> extends TextFieldTableCell<T, String>
 {
 	/**
 	 * Constructor.

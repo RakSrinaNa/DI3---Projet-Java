@@ -236,16 +236,22 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
+	 * tell if the employee schedule is valid.
+	 *
+	 * @return True if valid, false else.
+	 */
+	public boolean isValidSchedule()
+	{
+		return getDepartureTime() != null && getArrivalTime() != null && getArrivalTime().isBefore(getDepartureTime());
+	}
+	
+	/**
 	 * Set the arrival time for this employee.
 	 *
 	 * @param arrivalTime The arrival time to set.
-	 *
-	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public void setArrivalTime(LocalTime arrivalTime) throws IllegalArgumentException
+	public void setArrivalTime(LocalTime arrivalTime)
 	{
-		if(arrivalTime.isAfter(getDepartureTime()))
-			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.arrivalTime.set(arrivalTime);
 		Log.info("Employee " + this + " now starts at " + arrivalTime);
 	}
@@ -274,13 +280,9 @@ public class Employee extends Person implements Serializable
 	 * Set the departure time for this employee.
 	 *
 	 * @param departureTime The departure time to set.
-	 *
-	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
-	public void setDepartureTime(LocalTime departureTime) throws IllegalArgumentException
+	public void setDepartureTime(LocalTime departureTime)
 	{
-		if(getArrivalTime().isAfter(departureTime))
-			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.departureTime.set(departureTime);
 		Log.info("Employee " + this + " now ends at " + departureTime);
 	}

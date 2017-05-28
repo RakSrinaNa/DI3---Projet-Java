@@ -120,16 +120,4 @@ public class EmployeeTest
 		time = LocalTime.of(15, 45);
 		assertEquals(time, employee1.getDepartureTime());
 	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void setArrivalDepartureTimeFail()
-	{
-		Employee employee1 = new Employee(company, "A", "B");
-		
-		LocalTime time = LocalTime.of(0, 0);
-		employee1.setDepartureTime(time);
-		
-		time = LocalTime.of(23, 59);
-		employee1.setArrivalTime(time);
-	}
 }

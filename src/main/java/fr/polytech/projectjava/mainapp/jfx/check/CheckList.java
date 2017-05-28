@@ -86,6 +86,7 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 		
 		TableColumn<EmployeeCheck, Employee> columnEmployee = new TableColumn<>("Employee");
 		columnEmployee.setCellValueFactory(value -> value.getValue().employeeProperty());
+		columnEmployee.setCellFactory(list -> new EmployeeTableCell());
 		columnEmployee.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<EmployeeCheck, LocalDate> columnDate = new TableColumn<>("Date");

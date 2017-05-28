@@ -35,7 +35,7 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		buildCompany();
+		//buildCompany();
 		Application.launch(MainApplication.class, args);
 	}
 	

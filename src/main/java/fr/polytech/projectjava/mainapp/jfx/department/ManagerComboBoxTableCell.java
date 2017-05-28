@@ -2,6 +2,9 @@ package fr.polytech.projectjava.mainapp.jfx.department;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
+import fr.polytech.projectjava.mainapp.company.staff.Person;
+import fr.polytech.projectjava.utils.jfx.ObjectComboBoxTableCell;
+import javafx.beans.InvalidationListener;
 import javafx.collections.ObservableList;
 
 /**
@@ -10,7 +13,7 @@ import javafx.collections.ObservableList;
  * @author Thomas Couchoud
  * @since 2017-05-25
  */
-public class ManagerComboBoxTableCell extends javafx.scene.control.cell.ComboBoxTableCell<StandardDepartment, Manager>
+public class ManagerComboBoxTableCell extends ObjectComboBoxTableCell<StandardDepartment, Manager>
 {
 	/**
 	 * Constructor.
@@ -19,7 +22,14 @@ public class ManagerComboBoxTableCell extends javafx.scene.control.cell.ComboBox
 	 */
 	public ManagerComboBoxTableCell(ObservableList<Manager> items)
 	{
-		super(null, items);
+		super(null, items, Person::fullNameProperty);
+		InvalidationListener nameChangedListener = observable -> updateItem(getItem(), isEmpty()); //Used to update the displayed value when the employee name is modified
+		itemProperty().addListener((observable, oldValue, newValue) -> {
+			if(oldValue != null)
+				oldValue.fullNameProperty().removeListener(nameChangedListener);
+			if(newValue != null)
+				newValue.fullNameProperty().addListener(nameChangedListener);
+		});
 	}
 	
 	@Override

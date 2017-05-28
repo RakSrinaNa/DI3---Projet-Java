@@ -4,6 +4,7 @@ import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.jfx.MainController;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
+import fr.polytech.projectjava.utils.jfx.NameTextFieldTableCell;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -37,7 +38,7 @@ public class EmployeeList extends SortedTableView<Employee>
 	{
 		super();
 		
-		int colCount = 7;
+		int colCount = 8;
 		int padding = 2;
 		
 		filterRule = new SimpleObjectProperty<>(employee -> true);
@@ -53,9 +54,17 @@ public class EmployeeList extends SortedTableView<Employee>
 		columnEmployeeID.setCellValueFactory(value -> new SimpleIntegerProperty(value.getValue().getID()));
 		columnEmployeeID.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
-		TableColumn<Employee, String> columnEmployeeName = new TableColumn<>("Name");
-		columnEmployeeName.setCellValueFactory(value -> value.getValue().fullNameProperty());
-		columnEmployeeName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		TableColumn<Employee, String> columnEmployeeFirstName = new TableColumn<>("First Name");
+		columnEmployeeFirstName.setEditable(true);
+		columnEmployeeFirstName.setCellFactory(list -> new NameTextFieldTableCell<>());
+		columnEmployeeFirstName.setCellValueFactory(value -> value.getValue().firstNameProperty());
+		columnEmployeeFirstName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		
+		TableColumn<Employee, String> columnEmployeeLastName = new TableColumn<>("Last Name");
+		columnEmployeeLastName.setEditable(true);
+		columnEmployeeLastName.setCellFactory(list -> new NameTextFieldTableCell<>());
+		columnEmployeeLastName.setCellValueFactory(value -> value.getValue().lastNameProperty());
+		columnEmployeeLastName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<Employee, String> columnEmployeeDepartment = new TableColumn<>("Working department");
 		columnEmployeeDepartment.setCellValueFactory(value -> value.getValue().workingDepartmentProperty().get().nameProperty());
@@ -70,15 +79,19 @@ public class EmployeeList extends SortedTableView<Employee>
 		columnPresence.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<Employee, LocalTime> columnArrival = new TableColumn<>("Arrival");
+		columnArrival.setEditable(true);
+		columnArrival.setCellFactory(list -> new ScheduleLocalTimeTextFieldTableCell());
 		columnArrival.setCellValueFactory(value -> value.getValue().arrivalTimeProperty());
 		columnArrival.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<Employee, LocalTime> columnDeparture = new TableColumn<>("Departure");
+		columnDeparture.setEditable(true);
+		columnDeparture.setCellFactory(list -> new ScheduleLocalTimeTextFieldTableCell());
 		columnDeparture.setCellValueFactory(value -> value.getValue().departureTimeProperty());
 		columnDeparture.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		//noinspection unchecked
-		getColumns().addAll(columnEmployeeID, columnEmployeeName, columnEmployeeDepartment, columnTime, columnPresence);
+		getColumns().addAll(columnEmployeeID, columnEmployeeFirstName, columnEmployeeLastName, columnEmployeeDepartment, columnTime, columnPresence, columnArrival, columnDeparture);
 		
 		this.setRowFactory(tv -> {
 			TableRow<Employee> row = new TableRow<>();
