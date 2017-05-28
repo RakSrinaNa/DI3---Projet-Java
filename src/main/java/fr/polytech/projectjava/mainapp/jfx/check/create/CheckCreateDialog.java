@@ -161,7 +161,7 @@ public class CheckCreateDialog extends Stage
 	 *
 	 * @param check The built check.
 	 */
-	public void setResult(EmployeeCheck check)
+	void setResult(EmployeeCheck check)
 	{
 		result = check;
 	}

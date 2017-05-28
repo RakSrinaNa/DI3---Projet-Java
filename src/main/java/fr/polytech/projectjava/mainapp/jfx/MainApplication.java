@@ -1,10 +1,12 @@
 package fr.polytech.projectjava.mainapp.jfx;
 
-import fr.polytech.projectjava.mainapp.jfx.employee.EmployeeTab;
 import fr.polytech.projectjava.mainapp.jfx.check.CheckTab;
+import fr.polytech.projectjava.mainapp.jfx.company.CompanyTab;
 import fr.polytech.projectjava.mainapp.jfx.department.DepartmentTab;
+import fr.polytech.projectjava.mainapp.jfx.employee.EmployeeTab;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.ApplicationBase;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
@@ -21,7 +23,7 @@ import java.util.function.Consumer;
 public class MainApplication extends ApplicationBase
 {
 	private MainController controller;
-	private MainTab mainTab;
+	private CompanyTab companyTab;
 	private EmployeeTab employeeTab;
 	private DepartmentTab departmentTab;
 	private CheckTab checkTab;
@@ -62,7 +64,12 @@ public class MainApplication extends ApplicationBase
 	public Consumer<Stage> getOnStageDisplayed() throws Exception
 	{
 		return stage -> {
-			controller.loadCompany();
+			if(!controller.loadCompany())
+			{
+				getStage().close();
+				Platform.exit();
+				System.exit(2);
+			}
 			Log.info("Main application displayed");
 		};
 	}
@@ -73,12 +80,12 @@ public class MainApplication extends ApplicationBase
 		TabPane tabPane = new TabPane();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 		
-		mainTab = new MainTab(controller);
+		companyTab = new CompanyTab(controller);
 		employeeTab = new EmployeeTab(controller);
 		departmentTab = new DepartmentTab(controller);
 		checkTab = new CheckTab(controller);
 		
-		tabPane.getTabs().addAll(mainTab, employeeTab, departmentTab, checkTab);
+		tabPane.getTabs().addAll(companyTab, employeeTab, departmentTab, checkTab);
 		
 		return tabPane;
 	}
@@ -118,8 +125,8 @@ public class MainApplication extends ApplicationBase
 	 *
 	 * @return The main tab.
 	 */
-	public MainTab getMainTab()
+	public CompanyTab getCompanyTab()
 	{
-		return mainTab;
+		return companyTab;
 	}
 }

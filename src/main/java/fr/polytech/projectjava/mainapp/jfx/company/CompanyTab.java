@@ -1,5 +1,6 @@
-package fr.polytech.projectjava.mainapp.jfx;
+package fr.polytech.projectjava.mainapp.jfx.company;
 
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -17,7 +18,7 @@ import javafx.scene.text.TextFlow;
  * @author Thomas Couchoud
  * @since 2017-05-12
  */
-public class MainTab extends Tab
+public class CompanyTab extends Tab
 {
 	private Text companyNameArea;
 	private Text bossNameArea;
@@ -29,7 +30,7 @@ public class MainTab extends Tab
 	 *
 	 * @param controller The main controller.
 	 */
-	public MainTab(MainController controller)
+	public CompanyTab(MainController controller)
 	{
 		super();
 		setText("General information");

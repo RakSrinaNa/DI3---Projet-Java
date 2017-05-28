@@ -49,8 +49,8 @@ public class RoundedLocalTimeProperty extends SimpleObjectProperty<LocalTime>
 	{
 		if(time == null)
 			return null;
-		int mins = 15 * (time.getMinute() / 15) + ((time.getMinute() % 15) <= 7 ? 0 : 15); //Compute the rounded minutes
-		return LocalTime.of(time.getHour() + mins / 60, mins % 60);
+		int minutes = 15 * (time.getMinute() / 15) + ((time.getMinute() % 15) <= 7 ? 0 : 15); //Compute the rounded minutes
+		return LocalTime.of(time.getHour() + minutes / 60, minutes % 60);
 	}
 	
 	/**

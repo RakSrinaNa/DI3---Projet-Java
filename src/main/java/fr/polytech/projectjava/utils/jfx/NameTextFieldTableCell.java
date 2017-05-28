@@ -2,6 +2,7 @@ package fr.polytech.projectjava.utils.jfx;
 
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DefaultStringConverter;
+import java.util.function.Function;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 25/05/2017.
@@ -11,19 +12,25 @@ import javafx.util.converter.DefaultStringConverter;
  */
 public class NameTextFieldTableCell<T> extends TextFieldTableCell<T, String>
 {
+	private final Function<T, Boolean> validateFunction;
+
 	/**
 	 * Constructor.
+	 *
+	 * @param validateFunction The function that tell if the item is in a valid state.
 	 */
-	public NameTextFieldTableCell()
+	public NameTextFieldTableCell(Function<T, Boolean> validateFunction)
 	{
 		super(new DefaultStringConverter());
+		this.validateFunction = validateFunction;
 	}
-	
+
 	@Override
 	public void updateItem(String item, boolean empty)
 	{
 		super.updateItem(item, empty);
-		if(!empty && item != null && item.equals(""))
+		//noinspection unchecked
+		if(!empty && getTableRow().getItem() != null && !validateFunction.apply((T) getTableRow().getItem()))
 			getTableRow().setStyle("-fx-background-color: #FF0000;");
 		else
 			getTableRow().setStyle(null);

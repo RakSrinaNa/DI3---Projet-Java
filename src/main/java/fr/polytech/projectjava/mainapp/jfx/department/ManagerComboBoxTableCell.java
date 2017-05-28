@@ -22,7 +22,7 @@ public class ManagerComboBoxTableCell extends ObjectComboBoxTableCell<StandardDe
 	 */
 	public ManagerComboBoxTableCell(ObservableList<Manager> items)
 	{
-		super(null, items, Person::fullNameProperty);
+		super(null, items, Person::lastNameProperty);
 		InvalidationListener nameChangedListener = observable -> updateItem(getItem(), isEmpty()); //Used to update the displayed value when the employee name is modified
 		itemProperty().addListener((observable, oldValue, newValue) -> {
 			if(oldValue != null)

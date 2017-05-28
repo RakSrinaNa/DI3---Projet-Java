@@ -16,26 +16,25 @@ import java.io.Serializable;
 public class StandardDepartment extends Department<Manager, Employee> implements Serializable
 {
 	private static final long serialVersionUID = 5920779023965916148L;
-	
+
 	/**
 	 * Construct a department with its name and the manager.
 	 *
 	 * @param company The company the department is in.
-	 * @param name    The department's name.
+	 * @param name The department's name.
 	 * @param manager The manager of the department.
 	 */
 	public StandardDepartment(Company company, String name, Manager manager)
 	{
 		super(company, name, manager);
-		addEmployee(manager);
 		setLeader(manager);
 		company.addDepartment(this);
 	}
-	
+
 	@Override
 	public void addEmployee(Employee employee)
 	{
-		if(employee.getWorkingDepartment() != this) // If the employee wasn't in this department
+		if(employee != null && employee.getWorkingDepartment() != this) // If the employee wasn't in this department
 		{
 			if(employee.getWorkingDepartment() != null)
 				employee.getWorkingDepartment().removeEmployee(employee);
@@ -43,7 +42,7 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 		}
 		super.addEmployee(employee);
 	}
-	
+
 	@Override
 	public void removeEmployee(Employee employee)
 	{
@@ -56,7 +55,7 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 		employee.setWorkingDepartment(null);
 		super.removeEmployee(employee);
 	}
-	
+
 	/**
 	 * Set the manager of the department.
 	 *
@@ -64,17 +63,27 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	 */
 	public void setLeader(Manager manager)
 	{
-		if(getLeader() != null) //Handle the previous manager
+		if(getLeader() != null && getLeader() != manager) //Handle the previous manager
 			company.removeFromManagementTeam(getLeader());
-		
+
 		if(manager != null)
 		{
-			if(manager.getWorkingDepartment() != null)
+			if(manager.getWorkingDepartment() != null && manager.getWorkingDepartment() != this)
 				manager.getWorkingDepartment().removeEmployee(manager);
 			manager.setWorkingDepartment(this);
 			company.addToManagementTeam(manager);
 		}
-		
+
 		super.setLeader(manager);
+	}
+
+	/**
+	 * Tell if this department is in a valid state.
+	 *
+	 * @return True if the state is valid, false else.
+	 */
+	public boolean isValidState()
+	{
+		return !getName().equals("") && getLeader() != null;
 	}
 }

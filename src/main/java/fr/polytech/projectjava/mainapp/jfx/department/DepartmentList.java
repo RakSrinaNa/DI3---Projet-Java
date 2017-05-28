@@ -32,7 +32,7 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 		TableColumn<StandardDepartment, String> columnName = new TableColumn<>("Name");
 		columnName.setCellValueFactory(value -> value.getValue().nameProperty());
 		columnName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
-		columnName.setCellFactory(list -> new NameTextFieldTableCell<>());
+		columnName.setCellFactory(list -> new NameTextFieldTableCell<>(StandardDepartment::isValidState));
 		columnName.setEditable(true);
 		
 		TableColumn<StandardDepartment, Manager> columnManager = new TableColumn<>("Manager");

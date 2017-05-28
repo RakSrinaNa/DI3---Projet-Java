@@ -16,7 +16,7 @@ public class ScheduleLocalTimeTextFieldTableCell extends LocalTimeTextFieldTable
 	public void updateItem(LocalTime item, boolean empty)
 	{
 		super.updateItem(item, empty);
-		if(!empty && getTableRow().getItem() != null && !((Employee) getTableRow().getItem()).isValidSchedule())
+		if(!empty && getTableRow().getItem() != null && !((Employee) getTableRow().getItem()).isValidState())
 			getTableRow().setStyle("-fx-background-color: #FF0000;");
 		else
 			getTableRow().setStyle(null);

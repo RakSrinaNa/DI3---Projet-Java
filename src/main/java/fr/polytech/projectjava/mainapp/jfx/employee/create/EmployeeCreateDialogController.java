@@ -1,7 +1,12 @@
 package fr.polytech.projectjava.mainapp.jfx.employee.create;
 
+import fr.polytech.projectjava.mainapp.company.Company;
+import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.mainapp.company.staff.Manager;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 /**
- * Controller for the employee dialog.
+ * Controller for the employee creation dialog.
  * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 27/04/2017.
  *
@@ -10,15 +15,45 @@ package fr.polytech.projectjava.mainapp.jfx.employee.create;
  */
 public class EmployeeCreateDialogController
 {
-	private final EmployeeCreateDialog parent;
-	
+	private final EmployeeCreateDialog view;
+	private final Company company;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param parent The view.
+	 * @param view The view.
+	 * @param company The company where to add the employee.
 	 */
-	public EmployeeCreateDialogController(EmployeeCreateDialog parent)
+	public EmployeeCreateDialogController(EmployeeCreateDialog view, Company company)
 	{
-		this.parent = parent;
+		this.view = view;
+		this.company = company;
+	}
+
+	/**
+	 * Called when the employee need to be created.
+	 *
+	 * @param actionEvent The click event.
+	 */
+	public void valid(ActionEvent actionEvent)
+	{
+		if(!view.getFirstName().equals("") && !view.getLastNameText().equals("")) //If all the mandatory elements are given
+		{
+			Employee employee;
+			if(view.getManagerCheck())
+				employee = new Manager(company, view.getLastNameText(), view.getFirstName());
+			else
+				employee = new Employee(company, view.getLastNameText(), view.getFirstName());
+			view.setResult(employee);
+			view.close();
+		}
+		else
+		{
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Employee cannot be created");
+			alert.setHeaderText("Employee cannot be created");
+			alert.setContentText("You need to give a first and last name");
+			alert.showAndWait();
+		}
 	}
 }

@@ -27,7 +27,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	private static final long serialVersionUID = 3644405617796041285L;
 	protected static int NEXT_ID = 0;
 	protected Company company;
-	private SimpleObjectProperty<B> leader;
+	private SimpleObjectProperty<B> leader = new SimpleObjectProperty<>();
 	private int ID;
 	private SimpleStringProperty name;
 	private ObservableList<E> employees = FXCollections.observableArrayList();
@@ -55,7 +55,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	 */
 	public void addEmployee(E employee)
 	{
-		if(!employees.contains(employee)) //Avoid duplicate employees
+		if(employee != null && !employees.contains(employee)) //Avoid duplicate employees
 		{
 			employees.add(employee);
 			company.addEmployee(employee);
@@ -187,7 +187,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException, ClassCastException
 	{
 		ID = ois.readInt();
-		NEXT_ID = Math.max(ID, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
+		NEXT_ID = Math.max(ID + 1, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
 		name = new SimpleStringProperty((String) ois.readObject());
 		//noinspection unchecked
 		leader = new SimpleObjectProperty<>((B) ois.readObject());

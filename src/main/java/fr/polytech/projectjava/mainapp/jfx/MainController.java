@@ -9,10 +9,11 @@ import fr.polytech.projectjava.mainapp.jfx.check.CheckList;
 import fr.polytech.projectjava.mainapp.jfx.check.create.CheckCreateDialog;
 import fr.polytech.projectjava.mainapp.jfx.company.create.CompanyCreateDialog;
 import fr.polytech.projectjava.mainapp.jfx.department.DepartmentList;
+import fr.polytech.projectjava.mainapp.jfx.department.create.StandardDepartmentCreateDialog;
+import fr.polytech.projectjava.mainapp.jfx.employee.create.EmployeeCreateDialog;
 import fr.polytech.projectjava.mainapp.socket.CheckingServer;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -20,7 +21,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
 import java.io.*;
@@ -40,12 +40,11 @@ public class MainController
 	private final MainApplication parent;
 	private final CheckingServer socketReceiver;
 	private Company company;
-	
+
 	/**
 	 * Constructor.
 	 *
 	 * @param mainApplication The main window.
-	 *
 	 * @throws IOException If the socket failed to be opened.
 	 */
 	public MainController(MainApplication mainApplication) throws IOException
@@ -54,7 +53,7 @@ public class MainController
 		socketReceiver = new CheckingServer(this);
 		new Thread(socketReceiver).start();
 	}
-	
+
 	/**
 	 * Used when the application closes. Stop the socket server and save datas.
 	 *
@@ -67,7 +66,7 @@ public class MainController
 		saveDatas();
 		Log.info("Main app closed");
 	}
-	
+
 	/**
 	 * Save the current company.
 	 */
@@ -87,7 +86,7 @@ public class MainController
 			}
 		}
 	}
-	
+
 	/**
 	 * List the employees of the company.
 	 *
@@ -97,7 +96,7 @@ public class MainController
 	{
 		return getCompany().getEmployees();
 	}
-	
+
 	/**
 	 * Get the current loaded company.
 	 *
@@ -107,14 +106,13 @@ public class MainController
 	{
 		return company;
 	}
-	
+
 	/**
 	 * Add a check.
 	 *
 	 * @param employeeID The employee ID.
-	 * @param checkType  The check type.
-	 * @param date       The date and time when it happened.
-	 *
+	 * @param checkType The check type.
+	 * @param date The date and time when it happened.
 	 * @return True if the check was added, false else.
 	 */
 	public boolean addChecking(int employeeID, EmployeeCheck.CheckType checkType, LocalDateTime date)
@@ -127,44 +125,18 @@ public class MainController
 		}
 		return false;
 	}
-	
-	/**
-	 * Handle a click on an employee in the list.
-	 *
-	 * @param event The click event.
-	 */
-	public void employeeClick(MouseEvent event)
-	{
-		/*if(event.getClickCount() >= 2 && event.getSource() instanceof TableRow)
-		{
-			TableRow source = (TableRow) event.getSource();
-			if(source.getItem() instanceof Employee)
-			{
-				Employee employee = (Employee) source.getItem();
-				if(event.getButton() == MouseButton.PRIMARY)
-				{
-					((TableRow) event.getSource()).getScene();
-					EmployeeDialog dialog = new EmployeeDialog(employee);
-					dialog.initOwner(((TableRow) event.getSource()).getScene().getWindow());
-					dialog.initModality(Modality.APPLICATION_MODAL);
-					dialog.showAndWait();
-				}
-			}
-		}*///TODO
-	}
-	
+
 	/**
 	 * Get an employee by its ID.
 	 *
 	 * @param ID The employee ID.
-	 *
 	 * @return An optional of the employee.
 	 */
 	public Optional<Employee> getEmployeeByID(int ID)
 	{
 		return getCompany().getEmployee(ID);
 	}
-	
+
 	/**
 	 * Builds a new company.
 	 *
@@ -178,7 +150,7 @@ public class MainController
 		dialog.showAndWait();
 		return dialog.getResult();
 	}
-	
+
 	/**
 	 * Load a company into the view.
 	 *
@@ -195,9 +167,6 @@ public class MainController
 			alert.setHeaderText("No company loaded");
 			alert.setContentText("A company need to be loaded or created for the application to work.");
 			alert.showAndWait();
-			parent.getStage().close();
-			Platform.exit();
-			System.exit(2);
 			return false;
 		}
 		SimpleStringProperty employeeCount = new SimpleStringProperty("" + getCompany().getEmployees().size());
@@ -206,10 +175,10 @@ public class MainController
 		company.getDepartements().addListener((InvalidationListener) observable -> departmentCount.set("" + company.getDepartements().size()));
 		
 		/* Bind values to the UI */
-		parent.getMainTab().getCompanyNameTextProperty().bind(company.nameProperty());
-		parent.getMainTab().getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
-		parent.getMainTab().getEmployeeCountTextProperty().bind(employeeCount);
-		parent.getMainTab().getDepartmentCountTextProperty().bind(departmentCount);
+		parent.getCompanyTab().getCompanyNameTextProperty().bind(company.nameProperty());
+		parent.getCompanyTab().getBossNameTextProperty().bind(company.getBoss().fullNameProperty());
+		parent.getCompanyTab().getEmployeeCountTextProperty().bind(employeeCount);
+		parent.getCompanyTab().getDepartmentCountTextProperty().bind(departmentCount);
 		parent.getEmployeeTab().getList().setList(company.getEmployees());
 		parent.getEmployeeTab().getDepartmentFilter().setItems(company.getDepartements());
 		parent.getDepartmentTab().getList().setList(company.getDepartements());
@@ -218,7 +187,7 @@ public class MainController
 		parent.getCheckTab().getEmployeeFilter().setItems(company.getEmployees());
 		return true;
 	}
-	
+
 	/**
 	 * Load the last company.
 	 *
@@ -244,7 +213,7 @@ public class MainController
 		}
 		return Optional.empty();
 	}
-	
+
 	/**
 	 * Bring the popup when an employee want to be added.
 	 *
@@ -252,9 +221,15 @@ public class MainController
 	 */
 	public void addEmployee(ActionEvent event)
 	{
-		//TODO
+		EmployeeCreateDialog dialog = new EmployeeCreateDialog(getCompany());
+		dialog.initOwner(((Button) event.getSource()).getScene().getWindow());
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		dialog.showAndWait();
+		Employee result = dialog.getResult();
+		if(result != null) //If an employee was created
+			getCompany().addEmployee(result);
 	}
-	
+
 	/**
 	 * Bring the popup when a company want to be added.
 	 *
@@ -262,14 +237,20 @@ public class MainController
 	 */
 	public void addDepartment(ActionEvent event)
 	{
-		//TODO
+		StandardDepartmentCreateDialog dialog = new StandardDepartmentCreateDialog(getCompany());
+		dialog.initOwner(((Button) event.getSource()).getScene().getWindow());
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		dialog.showAndWait();
+		StandardDepartment result = dialog.getResult();
+		if(result != null) //If a standard department was created
+			getCompany().addDepartment(result);
 	}
-	
+
 	/**
 	 * Remove a department from the list.
 	 * This is done only if the department is empty.
 	 *
-	 * @param evt             The click event.
+	 * @param evt The click event.
 	 * @param departmentsList The department list.
 	 */
 	public void removeDepartment(ActionEvent evt, DepartmentList departmentsList)
@@ -289,7 +270,7 @@ public class MainController
 			}
 		}
 	}
-	
+
 	/**
 	 * Bring the popup when a check want to be added.
 	 *
@@ -305,11 +286,11 @@ public class MainController
 		if(result != null) //If a check was created
 			result.getEmployee().addCheck(result);
 	}
-	
+
 	/**
 	 * Remove a check from the list.
 	 *
-	 * @param evt       The click event.
+	 * @param evt The click event.
 	 * @param checkList The check list.
 	 */
 	public void removeCheck(ActionEvent evt, CheckList checkList)
@@ -321,7 +302,7 @@ public class MainController
 			check.getEmployee().removeCheck(check);
 		}
 	}
-	
+
 	/**
 	 * Called when the manager of a department is modified.
 	 *
@@ -330,5 +311,34 @@ public class MainController
 	public void managerChanged(TableColumn.CellEditEvent<StandardDepartment, Manager> event)
 	{
 		event.getRowValue().setLeader(event.getNewValue()); //Update the manager of the company
+	}
+
+	/**
+	 * Called when an employee change its department.
+	 *
+	 * @param event The change event.
+	 */
+	public void employeeDepartmentChanged(TableColumn.CellEditEvent<Employee, StandardDepartment> event)
+	{
+		if(event.getOldValue() == null || !event.getOldValue().equals(event.getNewValue()))
+		{
+			if(event.getOldValue() != null)
+				event.getOldValue().removeEmployee(event.getRowValue());
+			if(event.getNewValue() != null)
+				event.getNewValue().addEmployee(event.getRowValue());
+		}
+	}
+
+	/**
+	 * Promote an employee to a manager status.
+	 *
+	 * @param event The click event.
+	 * @param employee The employee to promote.
+	 */
+	public void promoteEmployee(ActionEvent event, Employee employee)
+	{
+		if(employee instanceof Manager)
+			return;
+		Manager manager = new Manager(employee);
 	}
 }

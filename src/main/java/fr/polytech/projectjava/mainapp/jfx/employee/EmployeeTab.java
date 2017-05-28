@@ -2,8 +2,11 @@ package fr.polytech.projectjava.mainapp.jfx.employee;
 
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.jfx.MainController;
+import fr.polytech.projectjava.utils.jfx.RefreshableListCell;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -46,29 +49,26 @@ public class EmployeeTab extends Tab
 		
 		HBox controls = new HBox();
 		departmentFilter = new ComboBox<>();
-		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = new Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>>() //Display departments as a string and not hashcode
-		{
-			@Override
-			public ListCell<StandardDepartment> call(ListView<StandardDepartment> param)
-			{
-				return new ListCell<StandardDepartment>()
-				{
-					@Override
-					protected void updateItem(StandardDepartment item, boolean empty)
-					{
-						super.updateItem(item, empty);
-						if(item == null || empty)
-							setText(null);
-						else
-							setText(item.toString());
-					}
-				};
-			}
-		};
+		//Display departments as a string and not hashcode
+		Callback<ListView<StandardDepartment>, ListCell<StandardDepartment>> standardDepartmentCellFactory = param -> new RefreshableListCell<>(StandardDepartment::nameProperty);
 		departmentFilter.setButtonCell(standardDepartmentCellFactory.call(null));
 		departmentFilter.setCellFactory(standardDepartmentCellFactory);
 		departmentFilter.setMaxWidth(Double.MAX_VALUE);
-		
+		departmentFilter.setOnKeyPressed(evt -> {
+			if(evt.getCode() == KeyCode.SPACE && evt.isControlDown())
+			{
+				((ComboBox)evt.getSource()).getSelectionModel().clearSelection();
+				evt.consume();
+			}
+		});
+		departmentFilter.setOnMouseClicked(evt -> {
+			if(evt.getButton() == MouseButton.PRIMARY && evt.isControlDown())
+			{
+				((ComboBox)evt.getSource()).getSelectionModel().clearSelection();
+				evt.consume();
+			}
+		});
+
 		Button addEmployeeButton = new Button("Add employee");
 		addEmployeeButton.setOnAction(controller::addEmployee);
 		addEmployeeButton.setMaxWidth(Double.MAX_VALUE);

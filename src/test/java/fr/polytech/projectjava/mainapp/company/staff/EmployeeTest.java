@@ -5,7 +5,6 @@ import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import org.junit.Before;
 import org.junit.Test;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
@@ -29,11 +28,6 @@ public class EmployeeTest
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Employee employee = new Employee(company, "A", "B", LocalTime.of(8, 0), LocalTime.of(17, 0));
-		employee.addWorkingDay(DayOfWeek.MONDAY);
-		employee.addWorkingDay(DayOfWeek.TUESDAY);
-		employee.addWorkingDay(DayOfWeek.WEDNESDAY);
-		employee.addWorkingDay(DayOfWeek.THURSDAY);
-		employee.addWorkingDay(DayOfWeek.FRIDAY);
 		
 		employee.addCheckInOut(IN, LocalDate.of(2017, 1, 2), LocalTime.of(8, 0));
 		employee.addCheckInOut(OUT, LocalDate.of(2017, 1, 2), LocalTime.of(17, 0));
@@ -51,7 +45,7 @@ public class EmployeeTest
 		employee.addCheckInOut(OUT, LocalDate.of(2017, 1, 5), LocalTime.of(17, 30));
 		assertEquals(60, employee.updateOvertime(LocalDate.of(2017, 1, 5)), 0);
 		
-		assertEquals(60 - (employee.getDepartureTime().toSecondOfDay() - employee.getArrivalTime().toSecondOfDay()) / 60, employee.updateOvertime(LocalDate.of(2017, 1, 6)), 0);
+		assertEquals(60 - (employee.getWorkingDays().get(0).getEndTime().toSecondOfDay() - employee.getWorkingDays().get(0).getStartTime().toSecondOfDay()) / 60, employee.updateOvertime(LocalDate.of(2017, 1, 6)), 0);
 		
 		employee.addCheckInOut(IN, LocalDate.of(2017, 1, 7), LocalTime.of(8, 0));
 		employee.addCheckInOut(OUT, LocalDate.of(2017, 1, 7), LocalTime.of(17, 0));
@@ -92,32 +86,11 @@ public class EmployeeTest
 	{
 		Employee employee1 = new Employee(company, "A", "B");
 		
-		assertEquals(Employee.DEFAULT_ARRIVAL_TIME, employee1.getArrivalTime());
-		assertEquals(Employee.DEFAULT_DEPARTURE_TIME, employee1.getDepartureTime());
+		assertEquals(Employee.DEFAULT_ARRIVAL_TIME, employee1.getWorkingDays().get(0).getStartTime());
+		assertEquals(Employee.DEFAULT_DEPARTURE_TIME, employee1.getWorkingDays().get(0).getEndTime());
 		
 		Employee employee2 = new Employee(company, "A", "B", LocalTime.of(1, 2, 3), LocalTime.of(2, 3, 4));
-		assertEquals(LocalTime.of(1, 0), employee2.getArrivalTime());
-		assertEquals(LocalTime.of(2, 0), employee2.getDepartureTime());
-	}
-	
-	@Test
-	public void setArrivalDepartureTime()
-	{
-		Employee employee1 = new Employee(company, "A", "B");
-		LocalTime time = LocalTime.of(10, 0);
-		
-		employee1.setArrivalTime(time);
-		employee1.setDepartureTime(time);
-		assertEquals(time, employee1.getArrivalTime());
-		assertEquals(time, employee1.getDepartureTime());
-		
-		time = LocalTime.of(15, 42);
-		employee1.setDepartureTime(time);
-		time = LocalTime.of(15, 34);
-		employee1.setArrivalTime(time);
-		time = LocalTime.of(15, 30);
-		assertEquals(time, employee1.getArrivalTime());
-		time = LocalTime.of(15, 45);
-		assertEquals(time, employee1.getDepartureTime());
+		assertEquals(LocalTime.of(1, 0), employee2.getWorkingDays().get(0).getStartTime());
+		assertEquals(LocalTime.of(2, 0), employee2.getWorkingDays().get(0).getEndTime());
 	}
 }

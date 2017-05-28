@@ -3,6 +3,7 @@ package fr.polytech.projectjava.mainapp.company.staff;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
+import fr.polytech.projectjava.mainapp.company.staff.checking.WorkDay;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -35,6 +36,7 @@ import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeChe
  */
 public class Employee extends Person implements Serializable
 {
+	protected final static DayOfWeek[] DEFAULT_WORKING_DAYS = {DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY};
 	protected final static LocalTime DEFAULT_ARRIVAL_TIME = Time.valueOf("08:30:00").toLocalTime();
 	protected final static LocalTime DEFAULT_DEPARTURE_TIME = Time.valueOf("17:30:00").toLocalTime();
 	private static final long serialVersionUID = -8611138931676775765L;
@@ -42,36 +44,42 @@ public class Employee extends Person implements Serializable
 	private int ID;
 	private Company company;
 	private ObservableList<EmployeeCheck> checks = FXCollections.observableArrayList();
-	private ObservableList<DayOfWeek> workingDays = FXCollections.observableArrayList();
+	private ObservableList<WorkDay> workingDays = FXCollections.observableArrayList();
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
-	private EmployeeRoundedLocalTimeProperty arrivalTime;
-	private EmployeeRoundedLocalTimeProperty departureTime;
-	
+
+	/**
+	 * Get the working days.
+	 *
+	 * @return The working days.
+	 */
+	protected ObservableList<WorkDay> getWorkingDays()
+	{
+		return workingDays;
+	}
+
 	/**
 	 * Create an employee with his/her name.
 	 *
-	 * @param company   The company the employee is from.
-	 * @param lastName  His/her last name.
+	 * @param company The company the employee is from.
+	 * @param lastName His/her last name.
 	 * @param firstName His/her first name.
-	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
 	public Employee(Company company, String lastName, String firstName) throws IllegalArgumentException
 	{
 		this(company, lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
 	}
-	
+
 	/**
 	 * Create an employee with his/her name and its departure and arrival times.
 	 *
-	 * @param company       The company the employee is from.
-	 * @param lastName      His/her last name.
-	 * @param firstName     His/her first name.
-	 * @param arrivalTime   The arrival time.
+	 * @param company The company the employee is from.
+	 * @param lastName His/her last name.
+	 * @param firstName His/her first name.
+	 * @param arrivalTime The arrival time.
 	 * @param departureTIme The departure time.
-	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
 	public Employee(Company company, String lastName, String firstName, LocalTime arrivalTime, LocalTime departureTIme) throws IllegalArgumentException
@@ -81,21 +89,20 @@ public class Employee extends Person implements Serializable
 		if(arrivalTime.isAfter(departureTIme))
 			throw new IllegalArgumentException("Arrival time can't be after the departure time.");
 		this.ID = NEXT_ID++;
-		this.arrivalTime = new EmployeeRoundedLocalTimeProperty(this, arrivalTime);
-		this.departureTime = new EmployeeRoundedLocalTimeProperty(this, departureTIme);
 		this.lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
-		workingDays.addAll(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY);
+		for(DayOfWeek day : DEFAULT_WORKING_DAYS)
+			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
 		Log.info("New employee created " + this);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Employee && ID == ((Employee) obj).getID();
 	}
-	
+
 	/**
 	 * Tel if the employee is present or not.
 	 *
@@ -105,7 +112,7 @@ public class Employee extends Person implements Serializable
 	{
 		return isPresentProperty().get();
 	}
-	
+
 	/**
 	 * Get the ID of the employee.
 	 *
@@ -115,13 +122,13 @@ public class Employee extends Person implements Serializable
 	{
 		return ID;
 	}
-	
+
 	/**
 	 * Add a checking to this employee.
 	 *
 	 * @param checkType The type of the check.
-	 * @param date      The date of the check.
-	 * @param time      The time of the check.
+	 * @param date The date of the check.
+	 * @param time The time of the check.
 	 */
 	public void addCheckInOut(EmployeeCheck.CheckType checkType, LocalDate date, LocalTime time)
 	{
@@ -133,7 +140,7 @@ public class Employee extends Person implements Serializable
 					check.setIn(time);
 				else
 					check.setOut(time);
-				
+
 				found = true;
 				break;
 			}
@@ -142,7 +149,7 @@ public class Employee extends Person implements Serializable
 		updateOvertime(null);
 		updatePresence();
 	}
-	
+
 	/**
 	 * Add a check to the employee.
 	 *
@@ -156,12 +163,11 @@ public class Employee extends Person implements Serializable
 			company.registerCheck(check);
 		}
 	}
-	
+
 	/**
 	 * Get the number of minutes the employee done more.
 	 *
 	 * @param maxDate The maximum date to check for the times. If null, the current time will be used.
-	 *
 	 * @return The number of minutes overtime.
 	 *
 	 * @throws IllegalStateException If the checks are in an invalid state (more than 2 checks a day or 2 times the same type of check).
@@ -170,7 +176,7 @@ public class Employee extends Person implements Serializable
 	{
 		if(maxDate == null) //If no max date provided, use the current one.
 			maxDate = new Date(System.currentTimeMillis()).toLocalDate();
-		
+
 		Map<LocalDate, EmployeeCheck> checksByDate = checks.stream().collect(Collectors.toMap(EmployeeCheck::getDate, Function.identity())); //Map every check to its date
 		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate()); //Get the oldest day
 		MinutesDuration overtime = MinutesDuration.ZERO;
@@ -181,13 +187,13 @@ public class Employee extends Person implements Serializable
 			overtime = overtime.substract(getWorkTimeForDay(currentDate.getDayOfWeek())); //Remove the time the employee should have worked
 			currentDate = currentDate.plusDays(1);
 		}
-		
+
 		Log.info("New overtime for " + this + ": " + overtime);
-		
+
 		lateDuration.set(overtime);
 		return overtime.getMinutes();
 	}
-	
+
 	/**
 	 * Update the presence of the employee based on the checks.
 	 */
@@ -200,41 +206,21 @@ public class Employee extends Person implements Serializable
 		if(lastCheck != null)
 			isPresent.set(lastCheck.isInProgress());
 	}
-	
+
 	/**
 	 * Get the duration the employee should work for this day.
 	 *
 	 * @param dayOfWeek The day of the week concerned.
-	 *
 	 * @return The duration to work.
 	 */
 	private MinutesDuration getWorkTimeForDay(DayOfWeek dayOfWeek)
 	{
-		if(workingDays.contains(dayOfWeek))
-			return MinutesDuration.seconds(getDepartureTime().toSecondOfDay() - getArrivalTime().toSecondOfDay());
+		for(WorkDay day : workingDays)
+			if(day.getDay().equals(dayOfWeek))
+				return day.getWorkTime();
 		return MinutesDuration.ZERO;
 	}
-	
-	/**
-	 * Get the departure time of this employee.
-	 *
-	 * @return The departure time.
-	 */
-	public LocalTime getDepartureTime()
-	{
-		return departureTimeProperty().get();
-	}
-	
-	/**
-	 * Get the arrival time of this employee.
-	 *
-	 * @return The arrival time.
-	 */
-	public LocalTime getArrivalTime()
-	{
-		return arrivalTimeProperty().get();
-	}
-	
+
 	/**
 	 * tell if the employee schedule is valid.
 	 *
@@ -242,76 +228,34 @@ public class Employee extends Person implements Serializable
 	 */
 	public boolean isValidSchedule()
 	{
-		return getDepartureTime() != null && getArrivalTime() != null && getArrivalTime().isBefore(getDepartureTime());
+		return workingDays.stream().mapToInt(day -> day.isValid() ? 0 : 1).sum() == 0;
 	}
-	
-	/**
-	 * Set the arrival time for this employee.
-	 *
-	 * @param arrivalTime The arrival time to set.
-	 */
-	public void setArrivalTime(LocalTime arrivalTime)
-	{
-		this.arrivalTime.set(arrivalTime);
-		Log.info("Employee " + this + " now starts at " + arrivalTime);
-	}
-	
-	/**
-	 * Get the departure time property.
-	 *
-	 * @return The departure time property.
-	 */
-	public SimpleObjectProperty<LocalTime> departureTimeProperty()
-	{
-		return departureTime;
-	}
-	
-	/**
-	 * Get the arrival time property.
-	 *
-	 * @return The arrival time property.
-	 */
-	public SimpleObjectProperty<LocalTime> arrivalTimeProperty()
-	{
-		return arrivalTime;
-	}
-	
-	/**
-	 * Set the departure time for this employee.
-	 *
-	 * @param departureTime The departure time to set.
-	 */
-	public void setDepartureTime(LocalTime departureTime)
-	{
-		this.departureTime.set(departureTime);
-		Log.info("Employee " + this + " now ends at " + departureTime);
-	}
-	
+
 	/**
 	 * Add a working day for this employee.
 	 *
-	 * @param day The day to add.
+	 * @param day The working day to add.
 	 */
-	public void addWorkingDay(DayOfWeek day)
+	public void addWorkingDay(WorkDay day)
 	{
 		if(!workingDays.contains(day))
 		{
 			workingDays.add(day);
-			Log.info(this + " now works on " + day);
+			Log.info(this + " now works on " + day + " from " + day.getStartTime() + " to " + day.getEndTime());
 		}
 	}
-	
+
 	/**
 	 * Remove a working day for this employee.
 	 *
-	 * @param day The day to remove.
+	 * @param day The working day to remove.
 	 */
-	public void removeWorkingDay(DayOfWeek day)
+	public void removeWorkingDay(WorkDay day)
 	{
 		workingDays.remove(day);
-		Log.info(this + " doesn't work on " + day + " anymore");
+		Log.info(this + " doesn't work on " + day.getDay() + " anymore");
 	}
-	
+
 	/**
 	 * Get the overtime property.
 	 *
@@ -321,7 +265,7 @@ public class Employee extends Person implements Serializable
 	{
 		return lateDuration;
 	}
-	
+
 	/**
 	 * Remove a check from this employee.
 	 *
@@ -332,12 +276,11 @@ public class Employee extends Person implements Serializable
 		checks.remove(check);
 		company.unregisterCheck(check);
 	}
-	
+
 	/**
 	 * Tell if this employee have a check for a date.
 	 *
 	 * @param date The date to look for.
-	 *
 	 * @return True if the employee have a check on this date, false else.
 	 */
 	public boolean hasCheckForDate(LocalDate date)
@@ -347,12 +290,11 @@ public class Employee extends Person implements Serializable
 				return true;
 		return false;
 	}
-	
+
 	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
-	 *
 	 * @throws IOException If the serialization failed.
 	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
@@ -360,16 +302,14 @@ public class Employee extends Person implements Serializable
 		oos.writeObject(company);
 		oos.writeInt(getID());
 		oos.writeObject(getWorkingDepartment());
-		oos.writeObject(getArrivalTime());
-		oos.writeObject(getDepartureTime());
 		oos.writeInt(workingDays.size());
-		for(DayOfWeek workingDay : workingDays)
+		for(WorkDay workingDay : workingDays)
 			oos.writeObject(workingDay);
 		oos.writeInt(checks.size());
 		for(EmployeeCheck check : checks)
 			oos.writeObject(check);
 	}
-	
+
 	/**
 	 * Get the department the employee is working in.
 	 *
@@ -379,7 +319,7 @@ public class Employee extends Person implements Serializable
 	{
 		return workingDepartmentProperty().get();
 	}
-	
+
 	/**
 	 * Get the working department property.
 	 *
@@ -389,7 +329,7 @@ public class Employee extends Person implements Serializable
 	{
 		return workingDepartment;
 	}
-	
+
 	/**
 	 * Set the working department for this employee.
 	 *
@@ -400,41 +340,38 @@ public class Employee extends Person implements Serializable
 		this.workingDepartment.set(workingDepartment);
 		Log.info(this + " now works in " + workingDepartment);
 	}
-	
+
 	/**
 	 * Deserialize an object.
 	 *
 	 * @param ois The object stream.
-	 *
-	 * @throws IOException            If the deserialization failed.
+	 * @throws IOException If the deserialization failed.
 	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
 	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		company = (Company) ois.readObject();
 		ID = ois.readInt();
-		NEXT_ID = Math.max(ID, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
+		NEXT_ID = Math.max(ID + 1, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
 		workingDepartment = new SimpleObjectProperty<>((StandardDepartment) ois.readObject());
-		arrivalTime = new EmployeeRoundedLocalTimeProperty(this, (LocalTime) ois.readObject());
-		departureTime = new EmployeeRoundedLocalTimeProperty(this, (LocalTime) ois.readObject());
-		
+
 		workingDays = FXCollections.observableArrayList();
 		int wkdCount = ois.readInt();
 		for(int i = 0; i < wkdCount; i++)
-			workingDays.add((DayOfWeek) ois.readObject());
-		
+			workingDays.add((WorkDay) ois.readObject());
+
 		checks = FXCollections.observableArrayList();
 		int chkCount = ois.readInt();
 		for(int i = 0; i < chkCount; i++)
 			checks.add((EmployeeCheck) ois.readObject());
-		
+
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		isPresent = new SimpleBooleanProperty(false);
-		
+
 		updateOvertime(null);
 		updatePresence();
 	}
-	
+
 	/**
 	 * Get the presence property.
 	 *
@@ -444,7 +381,7 @@ public class Employee extends Person implements Serializable
 	{
 		return isPresent;
 	}
-	
+
 	/**
 	 * Get the list of checking the employee did.
 	 *
@@ -453,5 +390,35 @@ public class Employee extends Person implements Serializable
 	public ObservableList<EmployeeCheck> getChecks()
 	{
 		return checks;
+	}
+
+	/**
+	 * Tell if the employee is in a valid state.
+	 *
+	 * @return True if the state is valid, false else.
+	 */
+	public boolean isValidState()
+	{
+		return isValidSchedule() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
+	}
+
+	/**
+	 * Get the category of the employee.
+	 *
+	 * @return The employee category.
+	 */
+	public String getCategory()
+	{
+		return this.getClass().getSimpleName();
+	}
+
+	/**
+	 * Get the company of teh employee.
+	 *
+	 * @return The company.
+	 */
+	public Company getCompany()
+	{
+		return company;
 	}
 }

@@ -1,6 +1,7 @@
 package fr.polytech.projectjava.mainapp.company.staff;
 
 import fr.polytech.projectjava.mainapp.company.Company;
+import fr.polytech.projectjava.mainapp.company.staff.checking.WorkDay;
 import fr.polytech.projectjava.utils.Log;
 import javafx.beans.property.SimpleBooleanProperty;
 import java.io.IOException;
@@ -22,7 +23,24 @@ public class Manager extends Employee implements Serializable
 {
 	private static final long serialVersionUID = -2861031212711385809L;
 	private SimpleBooleanProperty managing;
-	
+
+	/**
+	 * Promote an employee to a manager.
+	 *
+	 * @param employee The employee to promote.
+	 */
+	public Manager(Employee employee)
+	{
+		this(employee.getCompany(), employee.getLastName(), employee.getFirstName());
+		if(employee.getWorkingDepartment() != null)
+		{
+			employee.getWorkingDepartment().addEmployee(this);
+			employee.getWorkingDepartment().removeEmployee(employee);
+		}
+		getWorkingDays().clear();
+		employee.getWorkingDays().forEach(workDay -> addWorkingDay(new WorkDay(this, workDay.getDay(), workDay.getStartTime(), workDay.getEndTime())));
+	}
+
 	/**
 	 * Construct a manager with his/her name and his affected department.
 	 *
