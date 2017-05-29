@@ -18,5 +18,6 @@ public class CheckLocalTimeTextFieldTableCell extends LocalTimeTextFieldTableCel
 	{
 		super.updateItem(item, empty);
 		getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("invalidState"), !empty && getTableRow().getItem() != null && !((EmployeeCheck) getTableRow().getItem()).isValidState());
+		getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("progressState"), !empty && getTableRow().getItem() != null && ((EmployeeCheck) getTableRow().getItem()).isInProgress());
 	}
 }

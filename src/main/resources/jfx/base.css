@@ -6,6 +6,12 @@
     -fx-alignment: center;
 }
 
+/*noinspection CssInvalidPseudoSelector*/
 :invalidState{
-    -fx-background-color: #FF0000;
+    -fx-background-color: #FF0000 !important;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+:progressState {
+    -fx-background-color: #FFAA00;
 }

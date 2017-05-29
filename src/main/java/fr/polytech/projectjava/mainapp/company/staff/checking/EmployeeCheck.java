@@ -1,7 +1,7 @@
 package fr.polytech.projectjava.mainapp.company.staff.checking;
 
-import fr.polytech.projectjava.mainapp.company.staff.EmployeeRoundedLocalTimeProperty;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.mainapp.company.staff.EmployeeRoundedLocalTimeProperty;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
 import javafx.beans.property.SimpleObjectProperty;
@@ -202,7 +202,7 @@ public class EmployeeCheck implements Serializable
 	 */
 	public boolean isInProgress()
 	{
-		return (checkIn.get() != null) ^ (checkOut.get() != null);
+		return ((getCheckIn() == null ? 1 : 0) + (getCheckOut() == null ? 1 : 0)) == 1;
 	}
 	
 	/**
