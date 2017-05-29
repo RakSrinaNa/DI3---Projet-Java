@@ -35,7 +35,7 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 	 * @param employeeFilterProperty The selection of the employee.
 	 * @param startDateProperty The selection of the starting date.
 	 * @param endDateProperty The selection of the ending date.
-	 * @param booleanProperty The selection of the presence filter.
+	 * @param presenceProperty The selection of the presence filter.
 	 */
 	public CheckList(MainController controller, ReadOnlyObjectProperty<StandardDepartment> departmentFilterProperty, ReadOnlyObjectProperty<Employee> employeeFilterProperty, ObjectProperty<LocalDate> startDateProperty, ObjectProperty<LocalDate> endDateProperty, BooleanProperty presenceProperty)
 	{
