@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.utils.jfx;
 
+import javafx.css.PseudoClass;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DefaultStringConverter;
 import java.util.function.Function;
@@ -30,9 +31,6 @@ public class NameTextFieldTableCell<T> extends TextFieldTableCell<T, String>
 	{
 		super.updateItem(item, empty);
 		//noinspection unchecked
-		if(!empty && getTableRow().getItem() != null && !validateFunction.apply((T) getTableRow().getItem()))
-			getTableRow().setStyle("-fx-background-color: #FF0000;");
-		else
-			getTableRow().setStyle(null);
+		getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("invalidState"), !empty && getTableRow().getItem() != null && !validateFunction.apply((T) getTableRow().getItem()));
 	}
 }

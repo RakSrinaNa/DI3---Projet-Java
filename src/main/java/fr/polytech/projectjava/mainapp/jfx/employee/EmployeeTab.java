@@ -72,11 +72,16 @@ public class EmployeeTab extends Tab
 		Button addEmployeeButton = new Button("Add employee");
 		addEmployeeButton.setOnAction(controller::addEmployee);
 		addEmployeeButton.setMaxWidth(Double.MAX_VALUE);
+
+		Button removeEmployeeButton = new Button("Remove employee");
+		removeEmployeeButton.setOnAction(evt -> controller.removeEmployee(evt, getList().getSelectionModel().getSelectedItem()));
+		removeEmployeeButton.setMaxWidth(Double.MAX_VALUE);
 		
-		controls.getChildren().addAll(departmentFilter, addEmployeeButton);
+		controls.getChildren().addAll(departmentFilter, addEmployeeButton, removeEmployeeButton);
 		HBox.setHgrow(departmentFilter, Priority.SOMETIMES);
 		HBox.setHgrow(addEmployeeButton, Priority.ALWAYS);
-		
+		HBox.setHgrow(removeEmployeeButton, Priority.ALWAYS);
+
 		employeesList = new EmployeeList(controller, departmentFilter.getSelectionModel().selectedItemProperty());
 		employeesList.setMaxHeight(Double.MAX_VALUE);
 		

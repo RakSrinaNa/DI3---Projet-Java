@@ -39,6 +39,10 @@ public class Manager extends Employee implements Serializable
 		}
 		getWorkingDays().clear();
 		employee.getWorkingDays().forEach(workDay -> addWorkingDay(new WorkDay(this, workDay.getDay(), workDay.getStartTime(), workDay.getEndTime())));
+		updateOvertime(null);
+		updatePresence();
+		employee.getCompany().removeEmployee(employee);
+		getCompany().addEmployee(this);
 	}
 
 	/**

@@ -24,16 +24,20 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 	{
 		super();
 		
-		int colCount = 2;
+		int colCount = 3;
 		int padding = 2;
 		
 		setEditable(true);
-		
+
 		TableColumn<StandardDepartment, String> columnName = new TableColumn<>("Name");
 		columnName.setCellValueFactory(value -> value.getValue().nameProperty());
 		columnName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		columnName.setCellFactory(list -> new NameTextFieldTableCell<>(StandardDepartment::isValidState));
 		columnName.setEditable(true);
+
+		TableColumn<StandardDepartment, Number> columnCount = new TableColumn<>("Employee count");
+		columnCount.setCellValueFactory(value -> value.getValue().memberCountProperty());
+		columnCount.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<StandardDepartment, Manager> columnManager = new TableColumn<>("Manager");
 		columnManager.setCellValueFactory(value -> value.getValue().leaderProperty());
@@ -43,6 +47,6 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 		columnManager.setOnEditCommit(controller::managerChanged);
 		
 		//noinspection unchecked
-		getColumns().addAll(columnName, columnManager);
+		getColumns().addAll(columnName, columnCount, columnManager);
 	}
 }

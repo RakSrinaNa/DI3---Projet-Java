@@ -92,7 +92,7 @@ public class EmployeeList extends SortedTableView<Employee>
 		setRowFactory(tv -> {
 			TableRow<Employee> row = new TableRow<>();
 			row.setOnMouseClicked(evt -> {
-				if(evt.getButton() == MouseButton.SECONDARY && row.getItem() instanceof Manager)
+				if(evt.getButton() == MouseButton.SECONDARY && !(row.getItem() instanceof Manager))
 				{
 					ContextMenu contextMenu = new ContextMenu();
 					MenuItem menuPromote = new MenuItem("Promote to manager");
@@ -105,9 +105,7 @@ public class EmployeeList extends SortedTableView<Employee>
 		});
 
 		//noinspection unchecked
-		getColumns().
-
-				addAll(columnID, columnFirstName, columnLastName, columnDepartment, columnTime, columnPresence, columnCategory);
+		getColumns().addAll(columnID, columnFirstName, columnLastName, columnDepartment, columnTime, columnPresence, columnCategory);
 	}
 
 	/**

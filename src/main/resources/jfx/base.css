@@ -1,0 +1,11 @@
+.table-column {
+    -fx-alignment: center;
+}
+
+.list-cell {
+    -fx-alignment: center;
+}
+
+:invalidState{
+    -fx-background-color: #FF0000;
+}

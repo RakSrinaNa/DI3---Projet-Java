@@ -94,6 +94,7 @@ public class Employee extends Person implements Serializable
 		isPresent = new SimpleBooleanProperty(false);
 		for(DayOfWeek day : DEFAULT_WORKING_DAYS)
 			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
+		updateOvertime(null);
 		Log.info("New employee created " + this);
 	}
 

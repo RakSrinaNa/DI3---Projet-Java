@@ -8,7 +8,6 @@ import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.mainapp.jfx.check.CheckList;
 import fr.polytech.projectjava.mainapp.jfx.check.create.CheckCreateDialog;
 import fr.polytech.projectjava.mainapp.jfx.company.create.CompanyCreateDialog;
-import fr.polytech.projectjava.mainapp.jfx.department.DepartmentList;
 import fr.polytech.projectjava.mainapp.jfx.department.create.StandardDepartmentCreateDialog;
 import fr.polytech.projectjava.mainapp.jfx.employee.create.EmployeeCreateDialog;
 import fr.polytech.projectjava.mainapp.socket.CheckingServer;
@@ -146,6 +145,7 @@ public class MainController
 	{
 		CompanyCreateDialog dialog = new CompanyCreateDialog();
 		dialog.initOwner(parent.getStage());
+		dialog.getScene().getStylesheets().add("jfx/base.css");
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.showAndWait();
 		return dialog.getResult();
@@ -223,6 +223,7 @@ public class MainController
 	{
 		EmployeeCreateDialog dialog = new EmployeeCreateDialog(getCompany());
 		dialog.initOwner(((Button) event.getSource()).getScene().getWindow());
+		dialog.getScene().getStylesheets().add("jfx/base.css");
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.showAndWait();
 		Employee result = dialog.getResult();
@@ -239,6 +240,7 @@ public class MainController
 	{
 		StandardDepartmentCreateDialog dialog = new StandardDepartmentCreateDialog(getCompany());
 		dialog.initOwner(((Button) event.getSource()).getScene().getWindow());
+		dialog.getScene().getStylesheets().add("jfx/base.css");
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.showAndWait();
 		StandardDepartment result = dialog.getResult();
@@ -251,15 +253,14 @@ public class MainController
 	 * This is done only if the department is empty.
 	 *
 	 * @param evt The click event.
-	 * @param departmentsList The department list.
+	 * @param department The department to remove.
 	 */
-	public void removeDepartment(ActionEvent evt, DepartmentList departmentsList)
+	public void removeDepartment(ActionEvent evt, StandardDepartment department)
 	{
-		if(departmentsList.getSelectionModel().getSelectedItem() != null) //If a department is selected
+		if(department != null) //If a department is selected
 		{
-			StandardDepartment dpt = departmentsList.getSelectionModel().getSelectedItem();
-			if(dpt.getEmployees().size() == 0)
-				company.removeDepartment(dpt);
+			if(department.getEmployees().size() == 0)
+				company.removeDepartment(department);
 			else
 			{
 				Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -280,6 +281,7 @@ public class MainController
 	{
 		CheckCreateDialog dialog = new CheckCreateDialog(company.getEmployees());
 		dialog.initOwner(((Button) event.getSource()).getScene().getWindow());
+		dialog.getScene().getStylesheets().add("jfx/base.css");
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.showAndWait();
 		EmployeeCheck result = dialog.getResult();
@@ -340,5 +342,17 @@ public class MainController
 		if(employee instanceof Manager)
 			return;
 		Manager manager = new Manager(employee);
+	}
+
+	/**
+	 * Remove an employee from the company.
+	 *
+	 * @param event The click event.
+	 * @param employee The employee to remove.
+	 */
+	public void removeEmployee(ActionEvent event, Employee employee)
+	{
+		if(employee != null)
+			employee.getCompany().removeEmployee(employee);
 	}
 }

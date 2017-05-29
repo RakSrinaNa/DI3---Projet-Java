@@ -4,6 +4,8 @@ import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Person;
 import fr.polytech.projectjava.utils.Log;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -28,16 +30,17 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	protected static int NEXT_ID = 0;
 	protected Company company;
 	private SimpleObjectProperty<B> leader = new SimpleObjectProperty<>();
+	private SimpleIntegerProperty memberCount = new SimpleIntegerProperty();
 	private int ID;
 	private SimpleStringProperty name;
 	private ObservableList<E> employees = FXCollections.observableArrayList();
-	
+
 	/**
 	 * Construct a department of a company with its name.
 	 *
 	 * @param company The company the department is in.
-	 * @param name    The name of the department.
-	 * @param leader  The leader of this department.
+	 * @param name The name of the department.
+	 * @param leader The leader of this department.
 	 */
 	public Department(Company company, String name, B leader)
 	{
@@ -45,9 +48,31 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		this.company = company;
 		this.name = new SimpleStringProperty(name);
 		this.leader = new SimpleObjectProperty<>(leader);
+		memberCount.set(0);
+		employees.addListener((InvalidationListener) observable -> memberCount.set(employees.size()));
 		Log.info("Department " + getName() + " created and have ID " + getID());
 	}
-	
+
+	/**
+	 * Get the number of members in this department.
+	 *
+	 * @return The number of members.
+	 */
+	public int getMemberCount()
+	{
+		return memberCount.get();
+	}
+
+	/**
+	 * Get the number of members property.
+	 *
+	 * @return The number of members property.
+	 */
+	public SimpleIntegerProperty memberCountProperty()
+	{
+		return memberCount;
+	}
+
 	/**
 	 * Add an employee to the department.
 	 *
@@ -62,19 +87,19 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 			Log.info("Employee " + employee + " added to the department " + this);
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Department && ID == ((Department) obj).getID();
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		return getID() + ": " + getName();
+		return getName();
 	}
-	
+
 	/**
 	 * Get the name of the department.
 	 *
@@ -84,7 +109,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		return nameProperty().get();
 	}
-	
+
 	/**
 	 * Get the name property.
 	 *
@@ -94,7 +119,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		return name;
 	}
-	
+
 	/**
 	 * Get the unique ID of the department.
 	 *
@@ -104,7 +129,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		return ID;
 	}
-	
+
 	/**
 	 * Remove an employee from the department.
 	 *
@@ -114,19 +139,18 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		this.employees.remove(employee);
 	}
-	
+
 	/**
 	 * Used to know if the department have this employee.
 	 *
 	 * @param employee The employee to check.
-	 *
 	 * @return true if in the department, false else.
 	 */
 	public boolean hasEmployee(E employee)
 	{
 		return getEmployees().contains(employee);
 	}
-	
+
 	/**
 	 * Get the employees of the department.
 	 *
@@ -136,12 +160,11 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		return employees;
 	}
-	
+
 	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
-	 *
 	 * @throws IOException If the serialization failed.
 	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
@@ -154,7 +177,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 		for(Employee employee : getEmployees())
 			oos.writeObject(employee);
 	}
-	
+
 	/**
 	 * Get the leader.
 	 *
@@ -164,42 +187,7 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		return leaderProperty().get();
 	}
-	
-	/**
-	 * Get the leader property.
-	 *
-	 * @return The leader property.
-	 */
-	public SimpleObjectProperty<B> leaderProperty()
-	{
-		return leader;
-	}
-	
-	/**
-	 * Deserialize an object.
-	 *
-	 * @param ois The object stream.
-	 *
-	 * @throws IOException            If the deserialization failed.
-	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
-	 * @throws ClassCastException     If the leader class isn't correct.
-	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException, ClassCastException
-	{
-		ID = ois.readInt();
-		NEXT_ID = Math.max(ID + 1, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
-		name = new SimpleStringProperty((String) ois.readObject());
-		//noinspection unchecked
-		leader = new SimpleObjectProperty<>((B) ois.readObject());
-		company = (Company) ois.readObject();
-		
-		employees = FXCollections.observableArrayList();
-		int empCount = ois.readInt();
-		for(int i = 0; i < empCount; i++)
-			//noinspection unchecked
-			employees.add((E) ois.readObject());
-	}
-	
+
 	/**
 	 * Set the leaser.
 	 *
@@ -209,5 +197,41 @@ public abstract class Department<B extends Person & Serializable, E extends Empl
 	{
 		this.leader.set(leader);
 		Log.log(leader == null ? Level.WARNING : Level.INFO, "Leader of " + this + " is now " + leader);
+	}
+
+	/**
+	 * Get the leader property.
+	 *
+	 * @return The leader property.
+	 */
+	public SimpleObjectProperty<B> leaderProperty()
+	{
+		return leader;
+	}
+
+	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 * @throws IOException If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 * @throws ClassCastException If the leader class isn't correct.
+	 */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException, ClassCastException
+	{
+		ID = ois.readInt();
+		NEXT_ID = Math.max(ID + 1, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
+		name = new SimpleStringProperty((String) ois.readObject());
+		//noinspection unchecked
+		leader = new SimpleObjectProperty<>((B) ois.readObject());
+		company = (Company) ois.readObject();
+
+		employees = FXCollections.observableArrayList();
+		int empCount = ois.readInt();
+		for(int i = 0; i < empCount; i++)
+			//noinspection unchecked
+			employees.add((E) ois.readObject());
+		memberCount = new SimpleIntegerProperty(employees.size());
+		employees.addListener((InvalidationListener) observable -> memberCount.set(employees.size()));
 	}
 }

@@ -206,11 +206,11 @@ public class Company implements Serializable
 	 */
 	public void removeEmployee(Employee employee)
 	{
-		if(employee.getWorkingDepartment() == null)
-		{
-			employees.remove(employee);
-			Log.info("Employee " + employee + " removed from the company " + this);
-		}
+		if(employee.getWorkingDepartment() != null)
+			employee.getWorkingDepartment().removeEmployee(employee);
+		employee.getChecks().forEach(c -> checks.remove(c));
+		employees.remove(employee);
+		Log.info("Employee " + employee + " removed from the company " + this);
 	}
 	
 	public void removeDepartment(StandardDepartment department)

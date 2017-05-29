@@ -57,7 +57,10 @@ public class MainApplication extends ApplicationBase
 	@Override
 	public Consumer<Stage> getStageHandler()
 	{
-		return stage -> stage.setOnCloseRequest(controller::close);
+		return stage -> {
+			stage.setOnCloseRequest(controller::close);
+			stage.getScene().getStylesheets().add("jfx/base.css");
+		};
 	}
 	
 	@Override

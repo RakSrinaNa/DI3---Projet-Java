@@ -6,6 +6,7 @@ import fr.polytech.projectjava.mainapp.company.staff.Person;
 import fr.polytech.projectjava.utils.jfx.ObjectComboBoxTableCell;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 25/05/2017.
@@ -36,9 +37,6 @@ public class ManagerComboBoxTableCell extends ObjectComboBoxTableCell<StandardDe
 	public void updateItem(Manager item, boolean empty)
 	{
 		super.updateItem(item, empty);
-		if(!empty && item == null)
-			getTableRow().setStyle("-fx-background-color: #FF0000;");
-		else
-			getTableRow().setStyle(null);
+		getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("invalidState"), !empty && item == null);
 	}
 }

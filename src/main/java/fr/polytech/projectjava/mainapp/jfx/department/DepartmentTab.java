@@ -49,7 +49,7 @@ public class DepartmentTab extends Tab
 		addDepartmentButton.setMaxWidth(Double.MAX_VALUE);
 		
 		Button removeDepartmentButton = new Button("Remove department");
-		removeDepartmentButton.setOnAction(evt -> controller.removeDepartment(evt, departmentsList));
+		removeDepartmentButton.setOnAction(evt -> controller.removeDepartment(evt, getList().getSelectionModel().getSelectedItem()));
 		removeDepartmentButton.setMaxWidth(Double.MAX_VALUE);
 		
 		controls.getChildren().addAll(addDepartmentButton, removeDepartmentButton);

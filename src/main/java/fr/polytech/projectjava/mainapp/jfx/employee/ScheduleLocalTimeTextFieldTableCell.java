@@ -2,6 +2,7 @@ package fr.polytech.projectjava.mainapp.jfx.employee;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.utils.jfx.LocalTimeTextFieldTableCell;
+import javafx.css.PseudoClass;
 import java.time.LocalTime;
 
 /**
@@ -16,9 +17,6 @@ public class ScheduleLocalTimeTextFieldTableCell extends LocalTimeTextFieldTable
 	public void updateItem(LocalTime item, boolean empty)
 	{
 		super.updateItem(item, empty);
-		if(!empty && getTableRow().getItem() != null && !((Employee) getTableRow().getItem()).isValidState())
-			getTableRow().setStyle("-fx-background-color: #FF0000;");
-		else
-			getTableRow().setStyle(null);
+		getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("invalidState"), !empty && getTableRow().getItem() != null && !((Employee) getTableRow().getItem()).isValidState());
 	}
 }
