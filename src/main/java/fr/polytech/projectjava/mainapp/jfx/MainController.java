@@ -20,11 +20,18 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Queue;
 
 /**
  * Controller for the main window.
@@ -39,11 +46,12 @@ public class MainController
 	private final MainApplication parent;
 	private final CheckingServer socketReceiver;
 	private Company company;
-
+	
 	/**
 	 * Constructor.
 	 *
 	 * @param mainApplication The main window.
+	 *
 	 * @throws IOException If the socket failed to be opened.
 	 */
 	public MainController(MainApplication mainApplication) throws IOException
@@ -52,7 +60,7 @@ public class MainController
 		socketReceiver = new CheckingServer(this);
 		new Thread(socketReceiver).start();
 	}
-
+	
 	/**
 	 * Used when the application closes. Stop the socket server and save datas.
 	 *
@@ -65,7 +73,7 @@ public class MainController
 		saveDatas();
 		Log.info("Main app closed");
 	}
-
+	
 	/**
 	 * Save the current company.
 	 */
@@ -85,7 +93,7 @@ public class MainController
 			}
 		}
 	}
-
+	
 	/**
 	 * List the employees of the company.
 	 *
@@ -95,7 +103,79 @@ public class MainController
 	{
 		return getCompany().getEmployees();
 	}
-
+	
+	/**
+	 * Export the employees as CSV.
+	 *
+	 * @param event The click event.
+	 */
+	public void exportCSV(ActionEvent event)
+	{
+		try(PrintWriter pw = new PrintWriter(new FileOutputStream(new File(".", System.currentTimeMillis() + ".csv"))))
+		{
+			getCompany().getEmployees().forEach(emp -> pw.println(emp.asCSV(";")));
+		}
+		catch(FileNotFoundException e)
+		{
+			Log.error("Couldn't export employees", e);
+		}
+	}
+	
+	/**
+	 * Import employees from CSV.
+	 *
+	 * @param event The click event.
+	 */
+	public void importCSV(ActionEvent event)
+	{
+		askFile(new File(".")).ifPresent(file -> {
+			try
+			{
+				for(String employee : Files.readAllLines(Paths.get(file.toURI())))
+				{
+					Queue<String> parts = new LinkedList<>();
+					parts.addAll(Arrays.asList(employee.split(";")));
+					try
+					{
+						switch(parts.poll())
+						{
+							case "Manager":
+								Manager.fromCSV(getCompany(), parts);
+								break;
+							case "Employee":
+							default:
+								Employee.fromCSV(getCompany(), parts);
+						}
+					}
+					catch(Exception e)
+					{
+						Log.error("Couldn't parse CSV employee: " + employee, e);
+					}
+				}
+			}
+			catch(IOException e)
+			{
+				Log.warning("Error reading CSV file", e);
+			}
+		});
+	}
+	
+	/**
+	 * Ask a file to the user.
+	 *
+	 * @param defaultFile The default directory to start with.
+	 *
+	 * @return The chosen file.
+	 */
+	public static Optional<File> askFile(File defaultFile)
+	{
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select file");
+		if(defaultFile != null && defaultFile.exists())
+			fileChooser.setInitialDirectory(defaultFile);
+		return Optional.of(fileChooser.showOpenDialog(new Stage()));
+	}
+	
 	/**
 	 * Get the current loaded company.
 	 *
@@ -105,13 +185,14 @@ public class MainController
 	{
 		return company;
 	}
-
+	
 	/**
 	 * Add a check.
 	 *
 	 * @param employeeID The employee ID.
-	 * @param checkType The check type.
-	 * @param date The date and time when it happened.
+	 * @param checkType  The check type.
+	 * @param date       The date and time when it happened.
+	 *
 	 * @return True if the check was added, false else.
 	 */
 	public boolean addChecking(int employeeID, EmployeeCheck.CheckType checkType, LocalDateTime date)
@@ -124,18 +205,19 @@ public class MainController
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Get an employee by its ID.
 	 *
 	 * @param ID The employee ID.
+	 *
 	 * @return An optional of the employee.
 	 */
 	public Optional<Employee> getEmployeeByID(int ID)
 	{
 		return getCompany().getEmployee(ID);
 	}
-
+	
 	/**
 	 * Builds a new company.
 	 *
@@ -150,7 +232,7 @@ public class MainController
 		dialog.showAndWait();
 		return dialog.getResult();
 	}
-
+	
 	/**
 	 * Load a company into the view.
 	 *
@@ -187,7 +269,7 @@ public class MainController
 		parent.getCheckTab().getEmployeeFilter().setItems(company.getEmployees());
 		return true;
 	}
-
+	
 	/**
 	 * Load the last company.
 	 *
@@ -213,7 +295,7 @@ public class MainController
 		}
 		return Optional.empty();
 	}
-
+	
 	/**
 	 * Bring the popup when an employee want to be added.
 	 *
@@ -230,7 +312,7 @@ public class MainController
 		if(result != null) //If an employee was created
 			getCompany().addEmployee(result);
 	}
-
+	
 	/**
 	 * Bring the popup when a company want to be added.
 	 *
@@ -247,12 +329,12 @@ public class MainController
 		if(result != null) //If a standard department was created
 			getCompany().addDepartment(result);
 	}
-
+	
 	/**
 	 * Remove a department from the list.
 	 * This is done only if the department is empty.
 	 *
-	 * @param evt The click event.
+	 * @param evt        The click event.
 	 * @param department The department to remove.
 	 */
 	public void removeDepartment(ActionEvent evt, StandardDepartment department)
@@ -271,7 +353,7 @@ public class MainController
 			}
 		}
 	}
-
+	
 	/**
 	 * Bring the popup when a check want to be added.
 	 *
@@ -288,11 +370,11 @@ public class MainController
 		if(result != null) //If a check was created
 			result.getEmployee().addCheck(result);
 	}
-
+	
 	/**
 	 * Remove a check from the list.
 	 *
-	 * @param evt The click event.
+	 * @param evt       The click event.
 	 * @param checkList The check list.
 	 */
 	public void removeCheck(ActionEvent evt, CheckList checkList)
@@ -304,7 +386,7 @@ public class MainController
 			check.getEmployee().removeCheck(check);
 		}
 	}
-
+	
 	/**
 	 * Called when the manager of a department is modified.
 	 *
@@ -314,7 +396,7 @@ public class MainController
 	{
 		event.getRowValue().setLeader(event.getNewValue()); //Update the manager of the company
 	}
-
+	
 	/**
 	 * Called when an employee change its department.
 	 *
@@ -330,11 +412,11 @@ public class MainController
 				event.getNewValue().addEmployee(event.getRowValue());
 		}
 	}
-
+	
 	/**
 	 * Promote an employee to a manager status.
 	 *
-	 * @param event The click event.
+	 * @param event    The click event.
 	 * @param employee The employee to promote.
 	 */
 	public void promoteEmployee(ActionEvent event, Employee employee)
@@ -343,11 +425,11 @@ public class MainController
 			return;
 		Manager manager = new Manager(employee);
 	}
-
+	
 	/**
 	 * Remove an employee from the company.
 	 *
-	 * @param event The click event.
+	 * @param event    The click event.
 	 * @param employee The employee to remove.
 	 */
 	public void removeEmployee(ActionEvent event, Employee employee)

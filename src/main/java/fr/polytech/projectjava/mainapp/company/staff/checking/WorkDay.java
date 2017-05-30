@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+
 /**
  * Represent a day of work.
  * <p>
@@ -25,14 +26,15 @@ public class WorkDay implements Serializable
 	private EmployeeRoundedLocalTimeProperty startTime;
 	private EmployeeRoundedLocalTimeProperty endTime;
 	private Employee employee;
-
+	
 	/**
 	 * Constructor.
 	 *
-	 * @param employee The employee concerned.
-	 * @param day The day concerned.
+	 * @param employee  The employee concerned.
+	 * @param day       The day concerned.
 	 * @param startTime The start time for this day and employee.
-	 * @param endTime The end time for this day and employee.
+	 * @param endTime   The end time for this day and employee.
+	 *
 	 * @throws IllegalArgumentException If the day is null.
 	 */
 	public WorkDay(Employee employee, DayOfWeek day, LocalTime startTime, LocalTime endTime) throws IllegalArgumentException
@@ -46,7 +48,34 @@ public class WorkDay implements Serializable
 		this.endTime = new EmployeeRoundedLocalTimeProperty(employee, endTime);
 		this.endTime.addListener(((observable, oldValue, newValue) -> Log.info(getEmployee() + " now ends at " + newValue + " on " + getDay())));
 	}
-
+	
+	/**
+	 * Read a work day from the CSV.
+	 *
+	 * @param employee  The employee having this work day.
+	 * @param csv       The CSV to read.
+	 * @param delimiter The delimiter used.
+	 *
+	 * @return The created work day.
+	 */
+	public static WorkDay fromCSV(Employee employee, String csv, String delimiter)
+	{
+		String parts[] = csv.split(delimiter);
+		return new WorkDay(employee, DayOfWeek.of(Integer.parseInt(parts[0])), LocalTime.parse(parts[1]), LocalTime.parse(parts[2]));
+	}
+	
+	/**
+	 * Transform a work day into a CSV form.
+	 *
+	 * @param delimiter The delimiter to use.
+	 *
+	 * @return The CSV string.
+	 */
+	public String asCSV(String delimiter)
+	{
+		return getDay().getValue() + delimiter + getStartTime().toString() + delimiter + getEndTime();
+	}
+	
 	/**
 	 * Get the day.
 	 *
@@ -56,7 +85,7 @@ public class WorkDay implements Serializable
 	{
 		return day;
 	}
-
+	
 	/**
 	 * Get the start time.
 	 *
@@ -66,7 +95,7 @@ public class WorkDay implements Serializable
 	{
 		return startTimeProperty().get();
 	}
-
+	
 	/**
 	 * Get the start time property.
 	 *
@@ -76,7 +105,7 @@ public class WorkDay implements Serializable
 	{
 		return startTime;
 	}
-
+	
 	/**
 	 * Get the end time.
 	 *
@@ -86,7 +115,7 @@ public class WorkDay implements Serializable
 	{
 		return endTimeProperty().get();
 	}
-
+	
 	/**
 	 * Get the end time property.
 	 *
@@ -96,7 +125,7 @@ public class WorkDay implements Serializable
 	{
 		return endTime;
 	}
-
+	
 	/**
 	 * Get the employee.
 	 *
@@ -106,13 +135,13 @@ public class WorkDay implements Serializable
 	{
 		return employee;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj)
 	{
 		return (obj instanceof WorkDay && getDay().equals(((WorkDay) obj).getDay())) || (obj instanceof DayOfWeek && getDay().equals(obj));
 	}
-
+	
 	/**
 	 * Get the duration the employee should work for this day.
 	 *
@@ -122,11 +151,12 @@ public class WorkDay implements Serializable
 	{
 		return MinutesDuration.seconds(getEndTime().toSecondOfDay() - getStartTime().toSecondOfDay());
 	}
-
+	
 	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
+	 *
 	 * @throws IOException If the serialization failed.
 	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
@@ -136,12 +166,13 @@ public class WorkDay implements Serializable
 		oos.writeObject(getStartTime());
 		oos.writeObject(getEndTime());
 	}
-
+	
 	/**
 	 * Deserialize an object.
 	 *
 	 * @param ois The object stream.
-	 * @throws IOException If the deserialization failed.
+	 *
+	 * @throws IOException            If the deserialization failed.
 	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
 	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
@@ -153,7 +184,7 @@ public class WorkDay implements Serializable
 		endTime = new EmployeeRoundedLocalTimeProperty(employee, (LocalTime) ois.readObject());
 		endTime.addListener(((observable, oldValue, newValue) -> Log.info(getEmployee() + " now ends at " + newValue + " on " + getDay())));
 	}
-
+	
 	/**
 	 * Tell if a working day is in a valid state.
 	 *

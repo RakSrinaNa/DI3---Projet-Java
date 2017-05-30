@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalTime;
+import java.util.Queue;
 
 /**
  * Represent a manager in the company.
@@ -23,7 +24,7 @@ public class Manager extends Employee implements Serializable
 {
 	private static final long serialVersionUID = -2861031212711385809L;
 	private SimpleBooleanProperty managing;
-
+	
 	/**
 	 * Promote an employee to a manager.
 	 *
@@ -44,7 +45,7 @@ public class Manager extends Employee implements Serializable
 		employee.getCompany().removeEmployee(employee);
 		getCompany().addEmployee(this);
 	}
-
+	
 	/**
 	 * Construct a manager with his/her name and his affected department.
 	 *
@@ -132,5 +133,52 @@ public class Manager extends Employee implements Serializable
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		managing = new SimpleBooleanProperty(ois.readBoolean());
+	}
+	
+	/**
+	 * Constructor used to parse a manager from CSV.
+	 *
+	 * @param company The company the manager is from.
+	 */
+	protected Manager(Company company)
+	{
+		super(company);
+	}
+	
+	/**
+	 * Read a manager from the CSV.
+	 *
+	 * @param company The company the manager is from.
+	 * @param csv     The CSV parts to read.
+	 *
+	 * @return The created manager.
+	 */
+	@SuppressWarnings("UnusedReturnValue")
+	public static Manager fromCSV(Company company, Queue<String> csv)
+	{
+		Manager manager = new Manager(company);
+		company.addEmployee(manager);
+		manager.parseCSV(csv);
+		if(manager.getWorkingDepartment() != null)
+		{
+			manager.getWorkingDepartment().addEmployee(manager);
+			if(manager.isManaging())
+				manager.getWorkingDepartment().setLeader(manager);
+		}
+		return manager;
+	}
+	
+	@Override
+	protected void parseCSV(Queue<String> csv)
+	{
+		super.parseCSV(csv);
+		setManaging(Boolean.parseBoolean(csv.poll()));
+	}
+	
+	@Override
+	public String asCSV(String delimiter)
+	{
+		String csv = super.asCSV(delimiter);
+		return csv + delimiter + Boolean.toString(isManaging());
 	}
 }

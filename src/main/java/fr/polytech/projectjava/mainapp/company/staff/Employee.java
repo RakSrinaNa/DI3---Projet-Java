@@ -19,8 +19,10 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
@@ -48,38 +50,41 @@ public class Employee extends Person implements Serializable
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
-
+	
 	/**
-	 * Get the working days.
+	 * Constructor used to parse an employee from CSV.
 	 *
-	 * @return The working days.
+	 * @param company The company the employee is from.
 	 */
-	protected ObservableList<WorkDay> getWorkingDays()
+	protected Employee(Company company)
 	{
-		return workingDays;
+		super("", "");
+		this.company = company;
 	}
-
+	
 	/**
 	 * Create an employee with his/her name.
 	 *
-	 * @param company The company the employee is from.
-	 * @param lastName His/her last name.
+	 * @param company   The company the employee is from.
+	 * @param lastName  His/her last name.
 	 * @param firstName His/her first name.
+	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
 	public Employee(Company company, String lastName, String firstName) throws IllegalArgumentException
 	{
 		this(company, lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
 	}
-
+	
 	/**
 	 * Create an employee with his/her name and its departure and arrival times.
 	 *
-	 * @param company The company the employee is from.
-	 * @param lastName His/her last name.
-	 * @param firstName His/her first name.
-	 * @param arrivalTime The arrival time.
+	 * @param company       The company the employee is from.
+	 * @param lastName      His/her last name.
+	 * @param firstName     His/her first name.
+	 * @param arrivalTime   The arrival time.
 	 * @param departureTIme The departure time.
+	 *
 	 * @throws IllegalArgumentException If the arrival time is after the departure time.
 	 */
 	public Employee(Company company, String lastName, String firstName, LocalTime arrivalTime, LocalTime departureTIme) throws IllegalArgumentException
@@ -97,13 +102,90 @@ public class Employee extends Person implements Serializable
 		updateOvertime(null);
 		Log.info("New employee created " + this);
 	}
-
+	
+	/**
+	 * Get the number of minutes the employee done more.
+	 *
+	 * @param maxDate The maximum date to check for the times. If null, the current time will be used.
+	 *
+	 * @return The number of minutes overtime.
+	 *
+	 * @throws IllegalStateException If the checks are in an invalid state (more than 2 checks a day or 2 times the same type of check).
+	 */
+	public double updateOvertime(LocalDate maxDate) throws IllegalStateException
+	{
+		if(maxDate == null) //If no max date provided, use the current one.
+			maxDate = new Date(System.currentTimeMillis()).toLocalDate();
+		
+		Map<LocalDate, EmployeeCheck> checksByDate = checks.stream().collect(Collectors.toMap(EmployeeCheck::getDate, Function.identity())); //Map every check to its date
+		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate()); //Get the oldest day
+		MinutesDuration overtime = MinutesDuration.ZERO;
+		while(currentDate.compareTo(maxDate) <= 0) //For each day up to the maximum one
+		{
+			if(checksByDate.containsKey(currentDate)) //If we have a record for this day, add it to the time worked
+				overtime = overtime.add(checksByDate.get(currentDate).getWorkedTime());
+			overtime = overtime.substract(getWorkTimeForDay(currentDate.getDayOfWeek())); //Remove the time the employee should have worked
+			currentDate = currentDate.plusDays(1);
+		}
+		
+		Log.info("New overtime for " + this + ": " + overtime);
+		
+		lateDuration.set(overtime);
+		return overtime.getMinutes();
+	}
+	
+	/**
+	 * Get the duration the employee should work for this day.
+	 *
+	 * @param dayOfWeek The day of the week concerned.
+	 *
+	 * @return The duration to work.
+	 */
+	private MinutesDuration getWorkTimeForDay(DayOfWeek dayOfWeek)
+	{
+		for(WorkDay day : workingDays)
+			if(day.getDay().equals(dayOfWeek))
+				return day.getWorkTime();
+		return MinutesDuration.ZERO;
+	}
+	
+	/**
+	 * Read an employee from the CSV.
+	 *
+	 * @param company The company the employee is from.
+	 * @param csv     The CSV parts to read.
+	 *
+	 * @return The created employee.
+	 */
+	@SuppressWarnings("UnusedReturnValue")
+	public static Employee fromCSV(Company company, Queue<String> csv)
+	{
+		Employee employee = new Employee(company);
+		company.addEmployee(employee);
+		employee.parseCSV(csv);
+		if(employee.getWorkingDepartment() != null)
+			employee.getWorkingDepartment().addEmployee(employee);
+		return employee;
+	}
+	
+	/**
+	 * Parse the csv to fill the employee fields.
+	 *
+	 * @param csv The CSV parts to parse.
+	 */
+	protected void parseCSV(Queue<String> csv)
+	{
+		setWorkingDepartment(getCompany().getDepartment(Integer.parseInt(csv.poll())).orElse(null));
+		Arrays.stream(csv.poll().split("!")).forEach(day -> addWorkingDay(WorkDay.fromCSV(this, day, "/")));
+		Arrays.stream(csv.poll().split("!")).forEach(check -> addCheck(EmployeeCheck.fromCSV(this, check, "/")));
+	}
+	
 	@Override
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Employee && ID == ((Employee) obj).getID();
 	}
-
+	
 	/**
 	 * Tel if the employee is present or not.
 	 *
@@ -113,7 +195,7 @@ public class Employee extends Person implements Serializable
 	{
 		return isPresentProperty().get();
 	}
-
+	
 	/**
 	 * Get the ID of the employee.
 	 *
@@ -123,34 +205,7 @@ public class Employee extends Person implements Serializable
 	{
 		return ID;
 	}
-
-	/**
-	 * Add a checking to this employee.
-	 *
-	 * @param checkType The type of the check.
-	 * @param date The date of the check.
-	 * @param time The time of the check.
-	 */
-	public void addCheckInOut(EmployeeCheck.CheckType checkType, LocalDate date, LocalTime time)
-	{
-		boolean found = false;
-		for(EmployeeCheck check : checks) // Find if there's already a check for this date.
-			if(check.getDate().equals(date))
-			{
-				if(checkType == IN)
-					check.setIn(time);
-				else
-					check.setOut(time);
-
-				found = true;
-				break;
-			}
-		if(!found) //Else create it.
-			addCheck(new EmployeeCheck(this, checkType, date, time));
-		updateOvertime(null);
-		updatePresence();
-	}
-
+	
 	/**
 	 * Add a check to the employee.
 	 *
@@ -164,37 +219,64 @@ public class Employee extends Person implements Serializable
 			company.registerCheck(check);
 		}
 	}
-
+	
 	/**
-	 * Get the number of minutes the employee done more.
+	 * Transform an employee into a CSV form.
 	 *
-	 * @param maxDate The maximum date to check for the times. If null, the current time will be used.
-	 * @return The number of minutes overtime.
+	 * @param delimiter The delimiter to use.
 	 *
-	 * @throws IllegalStateException If the checks are in an invalid state (more than 2 checks a day or 2 times the same type of check).
+	 * @return The CSV string.
 	 */
-	public double updateOvertime(LocalDate maxDate) throws IllegalStateException
+	public String asCSV(String delimiter)
 	{
-		if(maxDate == null) //If no max date provided, use the current one.
-			maxDate = new Date(System.currentTimeMillis()).toLocalDate();
-
-		Map<LocalDate, EmployeeCheck> checksByDate = checks.stream().collect(Collectors.toMap(EmployeeCheck::getDate, Function.identity())); //Map every check to its date
-		LocalDate currentDate = checksByDate.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().orElseGet(() -> new Date(System.currentTimeMillis()).toLocalDate()); //Get the oldest day
-		MinutesDuration overtime = MinutesDuration.ZERO;
-		while(currentDate.compareTo(maxDate) <= 0) //For each day up to the maximum one
-		{
-			if(checksByDate.containsKey(currentDate)) //If we have a record for this day, add it to the time worked
-				overtime = overtime.add(checksByDate.get(currentDate).getWorkedTime());
-			overtime = overtime.substract(getWorkTimeForDay(currentDate.getDayOfWeek())); //Remove the time the employee should have worked
-			currentDate = currentDate.plusDays(1);
-		}
-
-		Log.info("New overtime for " + this + ": " + overtime);
-
-		lateDuration.set(overtime);
-		return overtime.getMinutes();
+		StringBuilder sb = new StringBuilder();
+		sb.append(getCategory());
+		sb.append(delimiter);
+		sb.append(getWorkingDepartment() == null ? -1 : getWorkingDepartment().getID());
+		sb.append(delimiter);
+		sb.append(getWorkingDays().stream().map(day -> day.asCSV("/")).collect(Collectors.joining("!")));
+		sb.append(delimiter);
+		sb.append(getChecks().stream().map(check -> check.asCSV("/")).collect(Collectors.joining("!")));
+		return sb.toString();
 	}
-
+	
+	/**
+	 * Get the working days.
+	 *
+	 * @return The working days.
+	 */
+	public ObservableList<WorkDay> getWorkingDays()
+	{
+		return workingDays;
+	}
+	
+	/**
+	 * Add a checking to this employee.
+	 *
+	 * @param checkType The type of the check.
+	 * @param date      The date of the check.
+	 * @param time      The time of the check.
+	 */
+	public void addCheckInOut(EmployeeCheck.CheckType checkType, LocalDate date, LocalTime time)
+	{
+		boolean found = false;
+		for(EmployeeCheck check : checks) // Find if there's already a check for this date.
+			if(check.getDate().equals(date))
+			{
+				if(checkType == IN)
+					check.setIn(time);
+				else
+					check.setOut(time);
+				
+				found = true;
+				break;
+			}
+		if(!found) //Else create it.
+			addCheck(new EmployeeCheck(this, checkType, date, time));
+		updateOvertime(null);
+		updatePresence();
+	}
+	
 	/**
 	 * Update the presence of the employee based on the checks.
 	 */
@@ -207,21 +289,7 @@ public class Employee extends Person implements Serializable
 		if(lastCheck != null)
 			isPresent.set(lastCheck.isInProgress());
 	}
-
-	/**
-	 * Get the duration the employee should work for this day.
-	 *
-	 * @param dayOfWeek The day of the week concerned.
-	 * @return The duration to work.
-	 */
-	private MinutesDuration getWorkTimeForDay(DayOfWeek dayOfWeek)
-	{
-		for(WorkDay day : workingDays)
-			if(day.getDay().equals(dayOfWeek))
-				return day.getWorkTime();
-		return MinutesDuration.ZERO;
-	}
-
+	
 	/**
 	 * tell if the employee schedule is valid.
 	 *
@@ -231,7 +299,7 @@ public class Employee extends Person implements Serializable
 	{
 		return workingDays.stream().mapToInt(day -> day.isValid() ? 0 : 1).sum() == 0;
 	}
-
+	
 	/**
 	 * Add a working day for this employee.
 	 *
@@ -245,7 +313,7 @@ public class Employee extends Person implements Serializable
 			Log.info(this + " now works on " + day + " from " + day.getStartTime() + " to " + day.getEndTime());
 		}
 	}
-
+	
 	/**
 	 * Remove a working day for this employee.
 	 *
@@ -256,7 +324,7 @@ public class Employee extends Person implements Serializable
 		workingDays.remove(day);
 		Log.info(this + " doesn't work on " + day.getDay() + " anymore");
 	}
-
+	
 	/**
 	 * Get the overtime property.
 	 *
@@ -266,7 +334,7 @@ public class Employee extends Person implements Serializable
 	{
 		return lateDuration;
 	}
-
+	
 	/**
 	 * Remove a check from this employee.
 	 *
@@ -277,11 +345,12 @@ public class Employee extends Person implements Serializable
 		checks.remove(check);
 		company.unregisterCheck(check);
 	}
-
+	
 	/**
 	 * Tell if this employee have a check for a date.
 	 *
 	 * @param date The date to look for.
+	 *
 	 * @return True if the employee have a check on this date, false else.
 	 */
 	public boolean hasCheckForDate(LocalDate date)
@@ -291,11 +360,12 @@ public class Employee extends Person implements Serializable
 				return true;
 		return false;
 	}
-
+	
 	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
+	 *
 	 * @throws IOException If the serialization failed.
 	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException
@@ -310,7 +380,7 @@ public class Employee extends Person implements Serializable
 		for(EmployeeCheck check : checks)
 			oos.writeObject(check);
 	}
-
+	
 	/**
 	 * Get the department the employee is working in.
 	 *
@@ -320,7 +390,7 @@ public class Employee extends Person implements Serializable
 	{
 		return workingDepartmentProperty().get();
 	}
-
+	
 	/**
 	 * Get the working department property.
 	 *
@@ -330,7 +400,7 @@ public class Employee extends Person implements Serializable
 	{
 		return workingDepartment;
 	}
-
+	
 	/**
 	 * Set the working department for this employee.
 	 *
@@ -341,12 +411,13 @@ public class Employee extends Person implements Serializable
 		this.workingDepartment.set(workingDepartment);
 		Log.info(this + " now works in " + workingDepartment);
 	}
-
+	
 	/**
 	 * Deserialize an object.
 	 *
 	 * @param ois The object stream.
-	 * @throws IOException If the deserialization failed.
+	 *
+	 * @throws IOException            If the deserialization failed.
 	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
 	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
@@ -355,24 +426,24 @@ public class Employee extends Person implements Serializable
 		ID = ois.readInt();
 		NEXT_ID = Math.max(ID + 1, NEXT_ID); // Don't forget to change the next ID to avoid duplicate IDs.
 		workingDepartment = new SimpleObjectProperty<>((StandardDepartment) ois.readObject());
-
+		
 		workingDays = FXCollections.observableArrayList();
 		int wkdCount = ois.readInt();
 		for(int i = 0; i < wkdCount; i++)
 			workingDays.add((WorkDay) ois.readObject());
-
+		
 		checks = FXCollections.observableArrayList();
 		int chkCount = ois.readInt();
 		for(int i = 0; i < chkCount; i++)
 			checks.add((EmployeeCheck) ois.readObject());
-
+		
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		isPresent = new SimpleBooleanProperty(false);
-
+		
 		updateOvertime(null);
 		updatePresence();
 	}
-
+	
 	/**
 	 * Get the presence property.
 	 *
@@ -382,7 +453,7 @@ public class Employee extends Person implements Serializable
 	{
 		return isPresent;
 	}
-
+	
 	/**
 	 * Get the list of checking the employee did.
 	 *
@@ -392,7 +463,7 @@ public class Employee extends Person implements Serializable
 	{
 		return checks;
 	}
-
+	
 	/**
 	 * Tell if the employee is in a valid state.
 	 *
@@ -402,7 +473,7 @@ public class Employee extends Person implements Serializable
 	{
 		return isValidSchedule() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
 	}
-
+	
 	/**
 	 * Get the category of the employee.
 	 *
@@ -412,7 +483,7 @@ public class Employee extends Person implements Serializable
 	{
 		return this.getClass().getSimpleName();
 	}
-
+	
 	/**
 	 * Get the company of teh employee.
 	 *

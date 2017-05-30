@@ -69,6 +69,38 @@ public class EmployeeCheck implements Serializable
 	}
 	
 	/**
+	 * Read a work day from the CSV.
+	 *
+	 * @param employee  The employee having this work day.
+	 * @param csv       The CSV to read.
+	 * @param delimiter The delimiter used.
+	 *
+	 * @return The created work day.
+	 */
+	public static EmployeeCheck fromCSV(Employee employee, String csv, String delimiter)
+	{
+		String parts[] = csv.split(delimiter);
+		EmployeeCheck check = new EmployeeCheck(employee, LocalDate.parse(parts[0]));
+		if(!parts[1].equals("NULL"))
+			check.setIn(LocalTime.parse(parts[1]));
+		if(!parts[2].equals("NULL"))
+			check.setIn(LocalTime.parse(parts[2]));
+		return check;
+	}
+	
+	/**
+	 * Transform a check into a CSV form.
+	 *
+	 * @param delimiter The delimiter to use.
+	 *
+	 * @return The CSV string.
+	 */
+	public String asCSV(String delimiter)
+	{
+		return getDate().toString() + delimiter + (getCheckIn() == null ? "NULL" : getCheckIn().toString()) + delimiter + (getCheckOut() == null ? "NULL" : getCheckOut());
+	}
+	
+	/**
 	 * Set the in check.
 	 *
 	 * @param check The time to set.

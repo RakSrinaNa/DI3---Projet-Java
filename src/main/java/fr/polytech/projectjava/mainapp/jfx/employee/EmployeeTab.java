@@ -85,7 +85,17 @@ public class EmployeeTab extends Tab
 		employeesList = new EmployeeList(controller, departmentFilter.getSelectionModel().selectedItemProperty());
 		employeesList.setMaxHeight(Double.MAX_VALUE);
 		
-		root.getChildren().addAll(employeesList, controls);
+		MenuBar menuBar = new MenuBar();
+		Menu menuFile = new Menu("File");
+		MenuItem menuExport = new MenuItem("Export CSV");
+		menuExport.setOnAction(controller::exportCSV);
+		MenuItem menuImport = new MenuItem("Import CSV");
+		menuExport.setOnAction(controller::importCSV);
+		
+		menuFile.getItems().addAll(menuExport, menuImport);
+		menuBar.getMenus().addAll(menuFile);
+		
+		root.getChildren().addAll(menuBar, employeesList, controls);
 		VBox.setVgrow(employeesList, Priority.ALWAYS);
 		return root;
 	}
