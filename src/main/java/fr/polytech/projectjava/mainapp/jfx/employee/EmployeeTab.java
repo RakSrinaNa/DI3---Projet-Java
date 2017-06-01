@@ -90,7 +90,7 @@ public class EmployeeTab extends Tab
 		MenuItem menuExport = new MenuItem("Export CSV");
 		menuExport.setOnAction(controller::exportCSV);
 		MenuItem menuImport = new MenuItem("Import CSV");
-		menuExport.setOnAction(controller::importCSV);
+		menuImport.setOnAction(controller::importCSV);
 		
 		menuFile.getItems().addAll(menuExport, menuImport);
 		menuBar.getMenus().addAll(menuFile);

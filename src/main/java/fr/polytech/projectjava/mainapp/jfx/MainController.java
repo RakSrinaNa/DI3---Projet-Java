@@ -114,6 +114,7 @@ public class MainController
 		try(PrintWriter pw = new PrintWriter(new FileOutputStream(new File(".", System.currentTimeMillis() + ".csv"))))
 		{
 			getCompany().getEmployees().forEach(emp -> pw.println(emp.asCSV(";")));
+			Log.info("Employees exported as CSV");
 		}
 		catch(FileNotFoundException e)
 		{
@@ -173,7 +174,7 @@ public class MainController
 		fileChooser.setTitle("Select file");
 		if(defaultFile != null && defaultFile.exists())
 			fileChooser.setInitialDirectory(defaultFile);
-		return Optional.of(fileChooser.showOpenDialog(new Stage()));
+		return Optional.ofNullable(fileChooser.showOpenDialog(new Stage()));
 	}
 	
 	/**

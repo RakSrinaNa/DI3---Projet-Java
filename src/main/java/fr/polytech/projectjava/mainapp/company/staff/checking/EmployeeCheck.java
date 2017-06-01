@@ -79,6 +79,8 @@ public class EmployeeCheck implements Serializable
 	 */
 	public static EmployeeCheck fromCSV(Employee employee, String csv, String delimiter)
 	{
+		if(csv.equals(""))
+			return null;
 		String parts[] = csv.split(delimiter);
 		EmployeeCheck check = new EmployeeCheck(employee, LocalDate.parse(parts[0]));
 		if(!parts[1].equals("NULL"))

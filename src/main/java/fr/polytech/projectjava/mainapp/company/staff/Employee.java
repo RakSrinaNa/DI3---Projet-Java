@@ -60,6 +60,9 @@ public class Employee extends Person implements Serializable
 	{
 		super("", "");
 		this.company = company;
+		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
+		workingDepartment = new SimpleObjectProperty<>(null);
+		isPresent = new SimpleBooleanProperty(false);
 	}
 	
 	/**
@@ -177,7 +180,8 @@ public class Employee extends Person implements Serializable
 	{
 		setWorkingDepartment(getCompany().getDepartment(Integer.parseInt(csv.poll())).orElse(null));
 		Arrays.stream(csv.poll().split("!")).forEach(day -> addWorkingDay(WorkDay.fromCSV(this, day, "/")));
-		Arrays.stream(csv.poll().split("!")).forEach(check -> addCheck(EmployeeCheck.fromCSV(this, check, "/")));
+		if(csv.size() > 0)
+			Arrays.stream(csv.poll().split("!")).forEach(check -> addCheck(EmployeeCheck.fromCSV(this, check, "/")));
 	}
 	
 	@Override
@@ -213,7 +217,7 @@ public class Employee extends Person implements Serializable
 	 */
 	public void addCheck(EmployeeCheck check)
 	{
-		if(!checks.contains(check))
+		if(check != null && !checks.contains(check))
 		{
 			checks.add(check);
 			company.registerCheck(check);
@@ -307,7 +311,7 @@ public class Employee extends Person implements Serializable
 	 */
 	public void addWorkingDay(WorkDay day)
 	{
-		if(!workingDays.contains(day))
+		if(day != null && !workingDays.contains(day))
 		{
 			workingDays.add(day);
 			Log.info(this + " now works on " + day + " from " + day.getStartTime() + " to " + day.getEndTime());
