@@ -39,12 +39,18 @@ public class DepartmentTest
 	{
 		department.getEmployees().clear();
 		
+		department.addEmployee(null);
+		assertEquals(0, department.getEmployees().size());
+		
 		ArrayList<Employee> employees = new ArrayList<>();
 		for(int i = 0; i < 100; i++)
 			employees.add(new Employee(company, "A", "B"));
 		
 		employees.forEach(department::addEmployee);
+		assertEquals(employees.size(), department.getEmployees().size());
 		employees.forEach(employee -> assertTrue(department.hasEmployee(employee)));
+		employees.forEach(department::addEmployee);
+		assertEquals(employees.size(), department.getEmployees().size());
 	}
 	
 	@Test

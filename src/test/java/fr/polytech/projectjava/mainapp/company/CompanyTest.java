@@ -43,6 +43,9 @@ public class CompanyTest
 		
 		int employeeCount = company.getEmployeeCount();
 		
+		company.addEmployee(null);
+		assertEquals(employeeCount, company.getEmployeeCount());
+		
 		assertEquals(employeeCount, company.getEmployeeCount());
 		assertFalse(company.getEmployee(ID1).isPresent());
 		assertFalse(company.getEmployee(ID2).isPresent());

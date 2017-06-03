@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Queue;
 
 /**
  * Represent a parson in the company.
@@ -40,6 +41,18 @@ public abstract class Person implements Serializable
 	public String toString()
 	{
 		return getFullName();
+	}
+	
+	/**
+	 * Transform a person into a CSV form.
+	 *
+	 * @param delimiter The delimiter to use.
+	 *
+	 * @return The CSV string.
+	 */
+	public String asCSV(String delimiter)
+	{
+		return getFirstName() + delimiter + getLastName();
 	}
 	
 	/**
@@ -130,5 +143,16 @@ public abstract class Person implements Serializable
 	public String getLastName()
 	{
 		return lastNameProperty().get();
+	}
+	
+	/**
+	 * Parse the csv to fill the person fields.
+	 *
+	 * @param csv The CSV parts to parse.
+	 */
+	protected void parseCSV(Queue<String> csv)
+	{
+		firstName.set(csv.poll());
+		lastName.set(csv.poll());
 	}
 }

@@ -19,10 +19,7 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
@@ -59,10 +56,12 @@ public class Employee extends Person implements Serializable
 	protected Employee(Company company)
 	{
 		super("", "");
+		this.ID = NEXT_ID++;
 		this.company = company;
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
+		company.addEmployee(this);
 	}
 	
 	/**
@@ -178,6 +177,7 @@ public class Employee extends Person implements Serializable
 	 */
 	protected void parseCSV(Queue<String> csv)
 	{
+		super.parseCSV(csv);
 		setWorkingDepartment(getCompany().getDepartment(Integer.parseInt(csv.poll())).orElse(null));
 		Arrays.stream(csv.poll().split("!")).forEach(day -> addWorkingDay(WorkDay.fromCSV(this, day, "/")));
 		if(csv.size() > 0)
@@ -235,6 +235,8 @@ public class Employee extends Person implements Serializable
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCategory());
+		sb.append(delimiter);
+		sb.append(super.asCSV(delimiter));
 		sb.append(delimiter);
 		sb.append(getWorkingDepartment() == null ? -1 : getWorkingDepartment().getID());
 		sb.append(delimiter);
@@ -314,7 +316,7 @@ public class Employee extends Person implements Serializable
 		if(day != null && !workingDays.contains(day))
 		{
 			workingDays.add(day);
-			Log.info(this + " now works on " + day + " from " + day.getStartTime() + " to " + day.getEndTime());
+			Log.info(this + " now works on " + day.getDay().name() + " from " + day.getStartTime() + " to " + day.getEndTime());
 		}
 	}
 	
@@ -327,6 +329,20 @@ public class Employee extends Person implements Serializable
 	{
 		workingDays.remove(day);
 		Log.info(this + " doesn't work on " + day.getDay() + " anymore");
+	}
+	
+	/**
+	 * Remove a working day for this employee.
+	 *
+	 * @param day The day to remove.
+	 */
+	public void removeWorkingDay(DayOfWeek day)
+	{
+		Iterator<WorkDay> dayIterator = workingDays.iterator();
+		while(dayIterator.hasNext())
+			if(dayIterator.next().getDay().equals(day))
+				dayIterator.remove();
+		Log.info(this + " doesn't work on " + day + " anymore");
 	}
 	
 	/**

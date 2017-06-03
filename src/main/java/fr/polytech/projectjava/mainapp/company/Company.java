@@ -191,7 +191,7 @@ public class Company implements Serializable
 	 */
 	public void addEmployee(Employee employee)
 	{
-		if(!employees.contains(employee))
+		if(employee != null && !employees.contains(employee))
 		{
 			employees.add(employee);
 			Log.info("Employee " + employee + " added to the company " + this);

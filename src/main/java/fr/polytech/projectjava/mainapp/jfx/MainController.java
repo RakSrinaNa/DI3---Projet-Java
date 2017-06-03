@@ -130,6 +130,7 @@ public class MainController
 	public void importCSV(ActionEvent event)
 	{
 		askFile(new File(".")).ifPresent(file -> {
+			Log.info("Importing employees from CSV...");
 			try
 			{
 				for(String employee : Files.readAllLines(Paths.get(file.toURI())))

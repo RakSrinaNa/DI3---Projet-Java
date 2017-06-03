@@ -86,4 +86,10 @@ public class MinutesDuration implements Serializable
 	{
 		return new MinutesDuration(getMinutes() - duration.getMinutes());
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return obj instanceof MinutesDuration && getMinutes() == ((MinutesDuration)obj).getMinutes();
+	}
 }

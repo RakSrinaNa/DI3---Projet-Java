@@ -61,9 +61,13 @@ public class StandardDepartmentTest
 		Company company = new Company("A", new Boss("A", "B"));
 		
 		Manager manager1 = new Manager(company, "A", "B");
-		StandardDepartment department1 = new StandardDepartment(company, "StandardDepartment1", manager1);
+		StandardDepartment department1 = new StandardDepartment(company, "StandardDepartment1", null);
 		
 		Manager manager2 = new Manager(company, "A", "B");
+		
+		assertNull(department1.getLeader());
+		department1.setLeader(manager1);
+		assertEquals(manager1, department1.getLeader());
 		
 		department1.setLeader(manager2);
 		assertTrue(manager2.isManaging());

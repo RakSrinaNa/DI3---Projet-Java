@@ -143,6 +143,7 @@ public class Manager extends Employee implements Serializable
 	protected Manager(Company company)
 	{
 		super(company);
+		this.managing = new SimpleBooleanProperty(false);
 	}
 	
 	/**

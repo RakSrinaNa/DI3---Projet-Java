@@ -86,7 +86,7 @@ public class EmployeeCheck implements Serializable
 		if(!parts[1].equals("NULL"))
 			check.setIn(LocalTime.parse(parts[1]));
 		if(!parts[2].equals("NULL"))
-			check.setIn(LocalTime.parse(parts[2]));
+			check.setOut(LocalTime.parse(parts[2]));
 		return check;
 	}
 	
