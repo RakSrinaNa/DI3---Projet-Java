@@ -5,18 +5,18 @@ import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Boss;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
-import fr.polytech.projectjava.mainapp.jfx.main.MainApplication;
+import fr.polytech.projectjava.mainapp.jfx.MainApplication;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import javafx.application.Application;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.IN;
-import static fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut.CheckType.OUT;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
+import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.OUT;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 23/03/2017.
@@ -54,29 +54,21 @@ public class Main
 		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "E", "AEmployee")));
 		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "F", "AEmployee")));
 		comp.getEmployee(1).ifPresent(emp -> {
-			try
-			{
-				emp.addCheckInOut(new CheckInOut(IN, dateFormat.parse("23/05/2017 13:00:00")));
-				emp.addCheckInOut(new CheckInOut(OUT, dateFormat.parse("23/05/2017 15:00:00")));
-			}
-			catch(ParseException e)
-			{
-				Log.warning("Failed to parse date while building company", e);
-			}
+			emp.addCheckInOut(IN, LocalDate.of(2017, 5, 23), LocalTime.of(13, 0));
+			emp.addCheckInOut(OUT, LocalDate.of(2017, 5, 23), LocalTime.of(15, 0));
 		});
 		
 		File file = new File(".", Configuration.getString("mainSaveFile"));
 		
 		if(file.exists())
-			file.delete();
-		
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
-		{
-			oos.writeObject(comp);
-		}
-		catch(Exception e)
-		{
-			Log.warning("Failed to save create company");
-		}
+			if(file.delete())
+				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
+				{
+					oos.writeObject(comp);
+				}
+				catch(Exception e)
+				{
+					Log.warning("Failed to save create company");
+				}
 	}
 }

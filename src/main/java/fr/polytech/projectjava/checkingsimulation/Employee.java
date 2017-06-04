@@ -26,16 +26,17 @@ public class Employee implements Serializable
 	/**
 	 * Constructor.
 	 *
-	 * @param ID    The employee ID.
-	 * @param first The first name of the employee.
-	 * @param last  The last name of the employee.
+	 * @param ID     The employee ID.
+	 * @param first  The first name of the employee.
+	 * @param last   The last name of the employee.
+	 * @param inside The presence of the employee.
 	 */
-	public Employee(int ID, String first, String last)
+	public Employee(int ID, String first, String last, boolean inside)
 	{
 		this.ID = new SimpleIntegerProperty(ID);
 		this.first = new SimpleStringProperty(first);
 		this.last = new SimpleStringProperty(last);
-		inside = false;
+		this.inside = inside;
 	}
 	
 	/**
@@ -50,7 +51,7 @@ public class Employee implements Serializable
 		String parts[] = s.split(";");
 		try
 		{
-			return new Employee(Integer.parseInt(parts[0]), parts[1], parts[2]);
+			return new Employee(Integer.parseInt(parts[0]), parts[1], parts[2], Boolean.parseBoolean(parts[3]));
 		}
 		catch(Exception ignored) // If we failed to parse
 		{

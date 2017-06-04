@@ -1,6 +1,5 @@
 package fr.polytech.projectjava.utils.jfx;
 
-import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import javafx.beans.property.SimpleObjectProperty;
 import java.time.LocalTime;
 
@@ -15,28 +14,22 @@ import java.time.LocalTime;
 public class RoundedLocalTimeProperty extends SimpleObjectProperty<LocalTime>
 {
 	
-	private final Employee employee;
-	
 	/**
 	 * Constructor.
-	 *
-	 * @param employee The employee where the check time come from.
 	 */
-	public RoundedLocalTimeProperty(Employee employee)
+	public RoundedLocalTimeProperty()
 	{
-		this(employee, null);
+		this(null);
 	}
 	
 	/**
 	 * Constructor.
 	 *
-	 * @param employee  The employee where the check time come from.
 	 * @param localTime The initial value.
 	 */
-	public RoundedLocalTimeProperty(Employee employee, LocalTime localTime)
+	public RoundedLocalTimeProperty(LocalTime localTime)
 	{
 		super(localTime);
-		this.employee = employee;
 	}
 	
 	@Override
@@ -56,19 +49,8 @@ public class RoundedLocalTimeProperty extends SimpleObjectProperty<LocalTime>
 	{
 		if(time == null)
 			return null;
-		int mins = 15 * (time.getMinute() / 15) + ((time.getMinute() % 15) <= 7 ? 0 : 15);
-		return LocalTime.of(time.getHour() + mins / 60, mins % 60);
-	}
-	
-	@Override
-	public void set(LocalTime newValue)
-	{
-		super.set(newValue);
-		if(employee != null)
-		{
-			employee.updateOvertime(null);
-			employee.updatePresence();
-		}
+		int minutes = 15 * (time.getMinute() / 15) + ((time.getMinute() % 15) <= 7 ? 0 : 15); //Compute the rounded minutes
+		return LocalTime.of(time.getHour() + minutes / 60, minutes % 60);
 	}
 	
 	/**

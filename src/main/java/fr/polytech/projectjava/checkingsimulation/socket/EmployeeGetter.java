@@ -30,8 +30,8 @@ public class EmployeeGetter extends SocketBase
 	 */
 	public EmployeeGetter(ObservableList<Employee> datas) throws IOException
 	{
-		super(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
-		setTimeout(10000);
+		super("Employee client", new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
+		setTimeout(Configuration.getInt("simulationEmployeeTimeout"));
 		this.datas = datas;
 	}
 	

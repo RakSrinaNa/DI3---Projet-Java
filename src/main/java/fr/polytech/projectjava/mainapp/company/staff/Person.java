@@ -1,11 +1,11 @@
 package fr.polytech.projectjava.mainapp.company.staff;
 
-import javafx.beans.binding.StringExpression;
 import javafx.beans.property.SimpleStringProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Queue;
 
 /**
  * Represent a parson in the company.
@@ -20,6 +20,7 @@ public abstract class Person implements Serializable
 	private static final long serialVersionUID = -451843709154049172L;
 	private SimpleStringProperty lastName;
 	private SimpleStringProperty firstName;
+	private SimpleStringProperty fullName;
 	
 	/**
 	 * Construct a person with his/her name.
@@ -30,13 +31,28 @@ public abstract class Person implements Serializable
 	public Person(String lastName, String firstName)
 	{
 		this.lastName = new SimpleStringProperty(lastName);
+		this.lastName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
 		this.firstName = new SimpleStringProperty(firstName);
+		this.firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
+		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
 	}
 	
 	@Override
 	public String toString()
 	{
 		return getFullName();
+	}
+	
+	/**
+	 * Transform a person into a CSV form.
+	 *
+	 * @param delimiter The delimiter to use.
+	 *
+	 * @return The CSV string.
+	 */
+	public String asCSV(String delimiter)
+	{
+		return getFirstName() + delimiter + getLastName();
 	}
 	
 	/**
@@ -54,9 +70,9 @@ public abstract class Person implements Serializable
 	 *
 	 * @return The full name expression.
 	 */
-	public StringExpression fullNameProperty()
+	public SimpleStringProperty fullNameProperty()
 	{
-		return firstNameProperty().concat(" ").concat(lastNameProperty());
+		return fullName;
 	}
 	
 	/**
@@ -103,7 +119,10 @@ public abstract class Person implements Serializable
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		lastName = new SimpleStringProperty((String) ois.readObject());
+		lastName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
 		firstName = new SimpleStringProperty((String) ois.readObject());
+		firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
+		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
 	}
 	
 	/**
@@ -124,5 +143,16 @@ public abstract class Person implements Serializable
 	public String getLastName()
 	{
 		return lastNameProperty().get();
+	}
+	
+	/**
+	 * Parse the csv to fill the person fields.
+	 *
+	 * @param csv The CSV parts to parse.
+	 */
+	protected void parseCSV(Queue<String> csv)
+	{
+		firstName.set(csv.poll());
+		lastName.set(csv.poll());
 	}
 }

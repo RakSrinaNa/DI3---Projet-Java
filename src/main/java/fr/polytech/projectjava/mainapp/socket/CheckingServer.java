@@ -1,6 +1,6 @@
 package fr.polytech.projectjava.mainapp.socket;
 
-import fr.polytech.projectjava.mainapp.jfx.main.MainController;
+import fr.polytech.projectjava.mainapp.jfx.MainController;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.socket.ServerSocketBase;
@@ -30,9 +30,9 @@ public class CheckingServer extends ServerSocketBase
 	 */
 	public CheckingServer(MainController controller) throws IOException
 	{
-		super(new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
+		super("Main Server", new InetSocketAddress(Configuration.getString("serverAddress"), Configuration.getInt("serverPort")));
 		this.controller = controller;
-		setTimeout(20000);
+		setTimeout(Configuration.getInt("mainServerTimeout"));
 	}
 	
 	@Override

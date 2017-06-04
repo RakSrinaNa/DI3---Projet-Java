@@ -1,7 +1,7 @@
 package fr.polytech.projectjava.mainapp.socket;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
+import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.socket.SocketBase;
@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * Represent a connection opened by a client.
@@ -35,9 +38,9 @@ public class CheckingClient extends SocketBase
 	 */
 	protected CheckingClient(Socket socket, CheckingServer checkingServer) throws SocketException
 	{
-		super(socket);
+		super("Main Client", socket);
 		parent = checkingServer;
-		setTimeout(10000);
+		setTimeout(Configuration.getInt("mainClientTimeout"));
 	}
 	
 	@Override
@@ -48,7 +51,7 @@ public class CheckingClient extends SocketBase
 		{
 			try
 			{
-				byte[] response = receivePacket(packetSize);
+				byte[] response = receivePacket(packetSize); //Get the command from the client
 				if(response == null)
 					stop();
 				else
@@ -70,7 +73,7 @@ public class CheckingClient extends SocketBase
 			}
 			catch(Exception e)
 			{
-				Log.error("Server error - " + e.getMessage());
+				Log.error(getName() + " error", e);
 			}
 		}
 		return true;
@@ -98,8 +101,20 @@ public class CheckingClient extends SocketBase
 		if(message == null)
 			throw new IllegalArgumentException("The response is null");
 		String response[] = new String(message).split(";");
-		if(parent.getController().addChecking(Integer.parseInt(response[0]), new CheckInOut(CheckInOut.CheckType.valueOf(response[1]), dateFormat.parse(response[2]))))
-			sendPacket("OK".getBytes());
+		if(parent.getController().addChecking(Integer.parseInt(response[0]), EmployeeCheck.CheckType.valueOf(response[1]), toLocalDateTime(dateFormat.parse(response[2])))) //Parse the check
+			sendPacket("OK".getBytes()); //Send ACK
+	}
+	
+	/**
+	 * Convert a Date to a LocalDateTime.
+	 *
+	 * @param date The date to convert.
+	 *
+	 * @return The LocalDateTime.
+	 */
+	private LocalDateTime toLocalDateTime(Date date)
+	{
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
 	
 	/**
@@ -109,14 +124,14 @@ public class CheckingClient extends SocketBase
 	 */
 	private void sendEmployees() throws IOException
 	{
-		for(Employee employee : parent.getController().listEmployees())
+		for(Employee employee : parent.getController().listEmployees()) //Send every employee
 		{
 			sendPacket(employeeToString(employee).getBytes());
 			byte[] response = receivePacket();
 			if(response == null || !new String(response).equals("OK"))
 				throw new IllegalStateException("Received not OK");
 		}
-		sendPacket("DONE".getBytes());
+		sendPacket("DONE".getBytes()); //Say we're done
 	}
 	
 	/**
@@ -128,6 +143,6 @@ public class CheckingClient extends SocketBase
 	 */
 	private String employeeToString(Employee employee)
 	{
-		return employee.getID() + ";" + employee.getFirstName() + ";" + employee.getLastName();
+		return employee.getID() + ";" + employee.getFirstName() + ";" + employee.getLastName() + ";" + employee.isPresent();
 	}
 }

@@ -4,7 +4,6 @@ import fr.polytech.projectjava.checkingsimulation.CheckInfos;
 import fr.polytech.projectjava.checkingsimulation.Employee;
 import fr.polytech.projectjava.checkingsimulation.socket.CheckingSender;
 import fr.polytech.projectjava.checkingsimulation.socket.EmployeeGetter;
-import fr.polytech.projectjava.mainapp.company.staff.checking.CheckInOut;
 import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
 import javafx.collections.ObservableList;
@@ -54,7 +53,7 @@ public class SimulationController
 			source.setText("Please select an employee - Check I/O");
 			return;
 		}
-		CheckInfos checkInfos = new CheckInfos(employee, employee.isInside() ? CheckInOut.CheckType.OUT : CheckInOut.CheckType.IN, LocalDate.now(), roundedTime); // Build the check
+		CheckInfos checkInfos = new CheckInfos(employee, employee.isInside() ? CheckInfos.CheckType.OUT : CheckInfos.CheckType.IN, LocalDate.now(), roundedTime); // Build the check
 		employee.setInside(!employee.isInside()); // Change its state
 		
 		getCheckings().add(checkInfos); // Add the check to the list to send

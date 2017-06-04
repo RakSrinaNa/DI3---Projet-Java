@@ -1,8 +1,9 @@
 package fr.polytech.projectjava.mainapp.company.staff.checking;
 
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
+import fr.polytech.projectjava.mainapp.company.staff.EmployeeRoundedLocalTimeProperty;
+import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
-import fr.polytech.projectjava.utils.jfx.RoundedLocalTimeProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,8 +25,16 @@ public class EmployeeCheck implements Serializable
 	private static final long serialVersionUID = 2289845323375640933L;
 	private SimpleObjectProperty<Employee> employee;
 	private SimpleObjectProperty<LocalDate> date;
-	private RoundedLocalTimeProperty checkIn;
-	private RoundedLocalTimeProperty checkOut;
+	private EmployeeRoundedLocalTimeProperty checkIn;
+	private EmployeeRoundedLocalTimeProperty checkOut;
+	
+	/**
+	 * Enumeration of the different types of checks possible.
+	 */
+	public enum CheckType
+	{
+		IN, OUT
+	}
 	
 	/**
 	 * Constructor.
@@ -37,26 +46,60 @@ public class EmployeeCheck implements Serializable
 	{
 		this.date = new SimpleObjectProperty<>(date);
 		this.employee = new SimpleObjectProperty<>(employee);
-		checkIn = new RoundedLocalTimeProperty(employee);
-		checkOut = new RoundedLocalTimeProperty(employee);
+		checkIn = new EmployeeRoundedLocalTimeProperty(employee);
+		checkOut = new EmployeeRoundedLocalTimeProperty(employee);
+		Log.info("New check added for " + employee + " on " + date);
 	}
 	
 	/**
-	 * Constructor.
+	 * Constructor with an initial check.
 	 *
-	 * @param employee   The employee of the check.
-	 * @param checkInOut A checkinout to initialize the check.
+	 * @param employee  The employee of the check.
+	 * @param checkType The type of the check.
+	 * @param date      The date of the check.
+	 * @param time      The time of the check.
 	 */
-	public EmployeeCheck(Employee employee, CheckInOut checkInOut)
+	public EmployeeCheck(Employee employee, CheckType checkType, LocalDate date, LocalTime time)
 	{
-		this.employee = new SimpleObjectProperty<>(employee);
-		this.date = new SimpleObjectProperty<>(checkInOut.getDay());
-		checkIn = new RoundedLocalTimeProperty(employee);
-		checkOut = new RoundedLocalTimeProperty(employee);
-		if(checkInOut.getCheckType() == CheckInOut.CheckType.IN)
-			setIn(checkInOut.getTime());
+		this(employee, date);
+		if(checkType == CheckType.IN)
+			setIn(time);
 		else
-			setOut(checkInOut.getTime());
+			setOut(time);
+	}
+	
+	/**
+	 * Read a work day from the CSV.
+	 *
+	 * @param employee  The employee having this work day.
+	 * @param csv       The CSV to read.
+	 * @param delimiter The delimiter used.
+	 *
+	 * @return The created work day.
+	 */
+	public static EmployeeCheck fromCSV(Employee employee, String csv, String delimiter)
+	{
+		if(csv.equals(""))
+			return null;
+		String parts[] = csv.split(delimiter);
+		EmployeeCheck check = new EmployeeCheck(employee, LocalDate.parse(parts[0]));
+		if(!parts[1].equals("NULL"))
+			check.setIn(LocalTime.parse(parts[1]));
+		if(!parts[2].equals("NULL"))
+			check.setOut(LocalTime.parse(parts[2]));
+		return check;
+	}
+	
+	/**
+	 * Transform a check into a CSV form.
+	 *
+	 * @param delimiter The delimiter to use.
+	 *
+	 * @return The CSV string.
+	 */
+	public String asCSV(String delimiter)
+	{
+		return getDate().toString() + delimiter + (getCheckIn() == null ? "NULL" : getCheckIn().toString()) + delimiter + (getCheckOut() == null ? "NULL" : getCheckOut());
 	}
 	
 	/**
@@ -67,6 +110,7 @@ public class EmployeeCheck implements Serializable
 	public void setIn(LocalTime check)
 	{
 		checkIn.set(check);
+		Log.info(employee + " checked in on " + getDate() + " at " + check);
 	}
 	
 	/**
@@ -77,18 +121,7 @@ public class EmployeeCheck implements Serializable
 	public void setOut(LocalTime check)
 	{
 		checkOut.set(check);
-	}
-	
-	/**
-	 * Tell if the check in out is part of this day check.
-	 *
-	 * @param checkInOut The checkinout to test.
-	 *
-	 * @return True if same day, false else.
-	 */
-	public boolean isDateOf(CheckInOut checkInOut)
-	{
-		return getDate().isEqual(checkInOut.getDay());
+		Log.info(employee + " checked out on " + getDate() + " at " + check);
 	}
 	
 	/**
@@ -122,7 +155,7 @@ public class EmployeeCheck implements Serializable
 	{
 		oos.writeObject(getEmployee());
 		oos.writeObject(getDate());
-		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0));
+		oos.writeInt(((checkIn.get() != null ? 1 : 0) << 1) + (checkOut.get() != null ? 1 : 0)); // Write in binary what will be writer: 01 - Only out / 10 - Only in / 11 - Both
 		if(checkIn.get() != null)
 			oos.writeObject(checkIn.get());
 		if(checkOut.get() != null)
@@ -163,13 +196,13 @@ public class EmployeeCheck implements Serializable
 		date = new SimpleObjectProperty<>((LocalDate) ois.readObject());
 		int infos = ois.readInt();
 		if((infos & 0x02) == 0x02)
-			checkIn = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
+			checkIn = new EmployeeRoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
-			checkIn = new RoundedLocalTimeProperty(getEmployee());
+			checkIn = new EmployeeRoundedLocalTimeProperty(getEmployee());
 		if((infos & 0x01) == 0x01)
-			checkOut = new RoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
+			checkOut = new EmployeeRoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
-			checkOut = new RoundedLocalTimeProperty(getEmployee());
+			checkOut = new EmployeeRoundedLocalTimeProperty(getEmployee());
 	}
 	
 	@Override
@@ -203,7 +236,7 @@ public class EmployeeCheck implements Serializable
 	 */
 	public boolean isInProgress()
 	{
-		return (checkIn.get() != null) ^ (checkOut.get() != null);
+		return ((getCheckIn() == null ? 1 : 0) + (getCheckOut() == null ? 1 : 0)) == 1;
 	}
 	
 	/**

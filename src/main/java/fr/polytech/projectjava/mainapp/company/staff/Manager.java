@@ -1,12 +1,15 @@
 package fr.polytech.projectjava.mainapp.company.staff;
 
 import fr.polytech.projectjava.mainapp.company.Company;
+import fr.polytech.projectjava.mainapp.company.staff.checking.WorkDay;
+import fr.polytech.projectjava.utils.Log;
 import javafx.beans.property.SimpleBooleanProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalTime;
+import java.util.Queue;
 
 /**
  * Represent a manager in the company.
@@ -21,6 +24,27 @@ public class Manager extends Employee implements Serializable
 {
 	private static final long serialVersionUID = -2861031212711385809L;
 	private SimpleBooleanProperty managing;
+	
+	/**
+	 * Promote an employee to a manager.
+	 *
+	 * @param employee The employee to promote.
+	 */
+	public Manager(Employee employee)
+	{
+		this(employee.getCompany(), employee.getLastName(), employee.getFirstName());
+		if(employee.getWorkingDepartment() != null)
+		{
+			employee.getWorkingDepartment().addEmployee(this);
+			employee.getWorkingDepartment().removeEmployee(employee);
+		}
+		getWorkingDays().clear();
+		employee.getWorkingDays().forEach(workDay -> addWorkingDay(new WorkDay(this, workDay.getDay(), workDay.getStartTime(), workDay.getEndTime())));
+		updateOvertime(null);
+		updatePresence();
+		employee.getCompany().removeEmployee(employee);
+		getCompany().addEmployee(this);
+	}
 	
 	/**
 	 * Construct a manager with his/her name and his affected department.
@@ -94,6 +118,7 @@ public class Manager extends Employee implements Serializable
 	public void setManaging(boolean managing)
 	{
 		this.managing.set(managing);
+		Log.info("Manager " + this + " is " + (managing ? "now managing" : " no longer managing"));
 	}
 	
 	/**
@@ -108,5 +133,53 @@ public class Manager extends Employee implements Serializable
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
 	{
 		managing = new SimpleBooleanProperty(ois.readBoolean());
+	}
+	
+	/**
+	 * Constructor used to parse a manager from CSV.
+	 *
+	 * @param company The company the manager is from.
+	 */
+	protected Manager(Company company)
+	{
+		super(company);
+		this.managing = new SimpleBooleanProperty(false);
+	}
+	
+	/**
+	 * Read a manager from the CSV.
+	 *
+	 * @param company The company the manager is from.
+	 * @param csv     The CSV parts to read.
+	 *
+	 * @return The created manager.
+	 */
+	@SuppressWarnings("UnusedReturnValue")
+	public static Manager fromCSV(Company company, Queue<String> csv)
+	{
+		Manager manager = new Manager(company);
+		company.addEmployee(manager);
+		manager.parseCSV(csv);
+		if(manager.getWorkingDepartment() != null)
+		{
+			manager.getWorkingDepartment().addEmployee(manager);
+			if(manager.isManaging())
+				manager.getWorkingDepartment().setLeader(manager);
+		}
+		return manager;
+	}
+	
+	@Override
+	protected void parseCSV(Queue<String> csv)
+	{
+		super.parseCSV(csv);
+		setManaging(Boolean.parseBoolean(csv.poll()));
+	}
+	
+	@Override
+	public String asCSV(String delimiter)
+	{
+		String csv = super.asCSV(delimiter);
+		return csv + delimiter + Boolean.toString(isManaging());
 	}
 }

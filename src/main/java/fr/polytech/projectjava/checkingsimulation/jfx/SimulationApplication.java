@@ -69,6 +69,7 @@ public class SimulationApplication extends ApplicationBase
 			});
 			controller.loadDatas();
 			controller.refreshEmployees(null);
+			stage.getScene().getStylesheets().add("jfx/base.css");
 		};
 	}
 	

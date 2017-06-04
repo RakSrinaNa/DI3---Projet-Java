@@ -1,0 +1,17 @@
+.table-column {
+    -fx-alignment: center;
+}
+
+.list-cell {
+    -fx-alignment: center;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+:invalidState{
+    -fx-background-color: #FF0000 !important;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+:progressState {
+    -fx-background-color: #FFAA00;
+}

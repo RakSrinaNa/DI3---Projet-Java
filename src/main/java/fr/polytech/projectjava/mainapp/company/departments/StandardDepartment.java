@@ -3,7 +3,6 @@ package fr.polytech.projectjava.mainapp.company.departments;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
-import fr.polytech.projectjava.utils.Log;
 import java.io.Serializable;
 
 /**
@@ -17,30 +16,25 @@ import java.io.Serializable;
 public class StandardDepartment extends Department<Manager, Employee> implements Serializable
 {
 	private static final long serialVersionUID = 5920779023965916148L;
-	
+
 	/**
 	 * Construct a department with its name and the manager.
 	 *
 	 * @param company The company the department is in.
-	 * @param name    The department's name.
+	 * @param name The department's name.
 	 * @param manager The manager of the department.
-	 *
-	 * @throws IllegalArgumentException If the manager is already working elsewhere.
 	 */
-	public StandardDepartment(Company company, String name, Manager manager) throws IllegalArgumentException
+	public StandardDepartment(Company company, String name, Manager manager)
 	{
 		super(company, name, manager);
-		if(manager.getWorkingDepartment() != null)
-			throw new IllegalArgumentException("The manager is already managing elsewhere.");
-		addEmployee(manager);
 		setLeader(manager);
 		company.addDepartment(this);
 	}
-	
+
 	@Override
 	public void addEmployee(Employee employee)
 	{
-		if(employee.getWorkingDepartment() != this)
+		if(employee != null && employee.getWorkingDepartment() != this) // If the employee wasn't in this department
 		{
 			if(employee.getWorkingDepartment() != null)
 				employee.getWorkingDepartment().removeEmployee(employee);
@@ -48,20 +42,20 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 		}
 		super.addEmployee(employee);
 	}
-	
+
 	@Override
 	public void removeEmployee(Employee employee)
 	{
-		if(employee instanceof Manager)
+		if(employee instanceof Manager) //Verify if it is the manager leaving
 			if(employee == getLeader())
 			{
-				Log.warning(this + "\tManager left the department");
+				company.removeFromManagementTeam((Manager) employee);
 				setLeader(null);
 			}
 		employee.setWorkingDepartment(null);
 		super.removeEmployee(employee);
 	}
-	
+
 	/**
 	 * Set the manager of the department.
 	 *
@@ -69,17 +63,27 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 	 */
 	public void setLeader(Manager manager)
 	{
-		if(getLeader() != null)
+		if(getLeader() != null && getLeader() != manager) //Handle the previous manager
 			company.removeFromManagementTeam(getLeader());
-		
+
 		if(manager != null)
 		{
-			if(manager.getWorkingDepartment() != null)
+			if(manager.getWorkingDepartment() != null && manager.getWorkingDepartment() != this)
 				manager.getWorkingDepartment().removeEmployee(manager);
 			manager.setWorkingDepartment(this);
 			company.addToManagementTeam(manager);
 		}
-		
+
 		super.setLeader(manager);
+	}
+
+	/**
+	 * Tell if this department is in a valid state.
+	 *
+	 * @return True if the state is valid, false else.
+	 */
+	public boolean isValidState()
+	{
+		return !getName().equals("") && getLeader() != null;
 	}
 }
