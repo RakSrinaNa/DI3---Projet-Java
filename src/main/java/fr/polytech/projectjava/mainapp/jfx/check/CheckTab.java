@@ -27,8 +27,7 @@ public class CheckTab extends Tab
 	private CheckList checksList;
 	private ComboBox<StandardDepartment> departmentFilter;
 	private ComboBox<Employee> employeeFilter;
-	private CheckBox inProgressFilter;
-
+	
 	/**
 	 * Constructor.
 	 *
@@ -51,8 +50,8 @@ public class CheckTab extends Tab
 		VBox root = new VBox();
 
 		HBox controls = new HBox();
-
-		inProgressFilter = new CheckBox("In progress");
+		
+		CheckBox inProgressFilter = new CheckBox("In progress");
 
 		departmentFilter = new ComboBox<>();
 		//Display departments as string instead of their hashcode
