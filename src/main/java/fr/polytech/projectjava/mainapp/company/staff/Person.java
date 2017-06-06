@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Queue;
+import java.util.regex.Pattern;
 
 /**
  * Represent a parson in the company.
@@ -21,6 +22,7 @@ public abstract class Person implements Serializable
 	private SimpleStringProperty lastName;
 	private SimpleStringProperty firstName;
 	private SimpleStringProperty fullName;
+	private SimpleStringProperty mail;
 	
 	/**
 	 * Construct a person with his/her name.
@@ -35,6 +37,7 @@ public abstract class Person implements Serializable
 		this.firstName = new SimpleStringProperty(firstName);
 		this.firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
 		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
+		mail = new SimpleStringProperty("");
 	}
 	
 	@Override
@@ -52,7 +55,7 @@ public abstract class Person implements Serializable
 	 */
 	public String asCSV(String delimiter)
 	{
-		return getFirstName() + delimiter + getLastName();
+		return getFirstName() + delimiter + getLastName() + delimiter + getMail();
 	}
 	
 	/**
@@ -96,6 +99,16 @@ public abstract class Person implements Serializable
 	}
 	
 	/**
+	 * Get the mail of the person.
+	 *
+	 * @return Its mail.
+	 */
+	public String getMail()
+	{
+		return mail.get();
+	}
+	
+	/**
 	 * Serialize the object.
 	 *
 	 * @param oos The object stream.
@@ -106,23 +119,7 @@ public abstract class Person implements Serializable
 	{
 		oos.writeObject(lastName.get());
 		oos.writeObject(firstName.get());
-	}
-	
-	/**
-	 * Deserialize an object.
-	 *
-	 * @param ois The object stream.
-	 *
-	 * @throws IOException            If the deserialization failed.
-	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
-	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
-	{
-		lastName = new SimpleStringProperty((String) ois.readObject());
-		lastName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
-		firstName = new SimpleStringProperty((String) ois.readObject());
-		firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
-		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
+		oos.writeObject(mail.get());
 	}
 	
 	/**
@@ -146,6 +143,24 @@ public abstract class Person implements Serializable
 	}
 	
 	/**
+	 * Deserialize an object.
+	 *
+	 * @param ois The object stream.
+	 *
+	 * @throws IOException            If the deserialization failed.
+	 * @throws ClassNotFoundException If the file doesn't represent the correct class.
+	 */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException
+	{
+		lastName = new SimpleStringProperty((String) ois.readObject());
+		lastName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
+		firstName = new SimpleStringProperty((String) ois.readObject());
+		firstName.addListener((observable -> fullNameProperty().set(getFirstName() + " " + getLastName())));
+		fullName = new SimpleStringProperty(getFirstName() + " " + getLastName());
+		mail = new SimpleStringProperty((String) ois.readObject());
+	}
+	
+	/**
 	 * Parse the csv to fill the person fields.
 	 *
 	 * @param csv The CSV parts to parse.
@@ -154,5 +169,26 @@ public abstract class Person implements Serializable
 	{
 		firstName.set(csv.poll());
 		lastName.set(csv.poll());
+		mail.set(csv.poll());
+	}
+	
+	/**
+	 * Get the mail property for this employee.
+	 *
+	 * @return The mail property.
+	 */
+	public SimpleStringProperty mailProperty()
+	{
+		return mail;
+	}
+	
+	/**
+	 * Tell if the mail is in a valid state.
+	 *
+	 * @return The mail validity.
+	 */
+	protected boolean isValidMail()
+	{
+		return getMail().equals("") || Pattern.matches("[\\w_\\-.]+@[\\w_\\-]+\\.\\w+", getMail());
 	}
 }

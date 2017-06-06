@@ -8,7 +8,6 @@ import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.io.IOException;
@@ -22,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
 
@@ -49,7 +47,6 @@ public class Employee extends Person implements Serializable
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
-	private SimpleStringProperty mail;
 	
 	/**
 	 * Constructor used to parse an employee from CSV.
@@ -64,7 +61,6 @@ public class Employee extends Person implements Serializable
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
-		mail = new SimpleStringProperty("");
 		company.addEmployee(this);
 	}
 	
@@ -89,21 +85,10 @@ public class Employee extends Person implements Serializable
 		this.lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
-		mail = new SimpleStringProperty("");
 		for(DayOfWeek day : DEFAULT_WORKING_DAYS)
 			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
 		updateOvertime(null);
 		Log.info("New employee created " + this);
-	}
-	
-	/**
-	 * Get the mail property for this employee.
-	 *
-	 * @return The mail property.
-	 */
-	public SimpleStringProperty mailProperty()
-	{
-		return mail;
 	}
 	
 	/**
@@ -138,7 +123,6 @@ public class Employee extends Person implements Serializable
 		oos.writeInt(checks.size());
 		for(EmployeeCheck check : checks)
 			oos.writeObject(check);
-		oos.writeObject(getMail());
 	}
 	
 	/**
@@ -418,16 +402,6 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
-	 * Get the mail of the employee.
-	 *
-	 * @return Its mail.
-	 */
-	public String getMail()
-	{
-		return mail.get();
-	}
-	
-	/**
 	 * Get the department the employee is working in.
 	 *
 	 * @return The worker's department.
@@ -486,8 +460,6 @@ public class Employee extends Person implements Serializable
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		isPresent = new SimpleBooleanProperty(false);
 		
-		mail = new SimpleStringProperty((String) ois.readObject());
-		
 		updateOvertime(null);
 		updatePresence();
 	}
@@ -520,16 +492,6 @@ public class Employee extends Person implements Serializable
 	public boolean isValidState()
 	{
 		return isValidSchedule() && isValidMail() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
-	}
-	
-	/**
-	 * Tell if the mail is in a valid state.
-	 *
-	 * @return The mail validity.
-	 */
-	protected boolean isValidMail()
-	{
-		return getMail().equals("") || Pattern.matches("[\\w_\\-.]+@[\\w_\\-]+\\.\\w+", getMail());
 	}
 	
 	/**
