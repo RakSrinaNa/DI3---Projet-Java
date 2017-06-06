@@ -41,8 +41,8 @@ public class EmployeeList extends SortedTableView<Employee>
 	public EmployeeList(MainController controller, ReadOnlyObjectProperty<StandardDepartment> departmentFilterProperty)
 	{
 		super();
-
-		int colCount = 7;
+		
+		int colCount = 8;
 		int padding = 2;
 
 		filterRule = new SimpleObjectProperty<>(employee -> true);
@@ -69,6 +69,10 @@ public class EmployeeList extends SortedTableView<Employee>
 		columnLastName.setCellFactory(list -> new NameTextFieldTableCell<>(Employee::isValidState));
 		columnLastName.setCellValueFactory(value -> value.getValue().lastNameProperty());
 		columnLastName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
+		
+		TableColumn<Employee, String> columnMail = new TableColumn<>("Mail");
+		columnMail.setCellValueFactory(value -> value.getValue().mailProperty());
+		columnMail.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 
 		TableColumn<Employee, StandardDepartment> columnDepartment = new TableColumn<>("Working department");
 		columnDepartment.setEditable(true);
@@ -105,7 +109,7 @@ public class EmployeeList extends SortedTableView<Employee>
 		});
 
 		//noinspection unchecked
-		getColumns().addAll(columnID, columnFirstName, columnLastName, columnDepartment, columnTime, columnPresence, columnCategory);
+		getColumns().addAll(columnID, columnFirstName, columnLastName, columnMail, columnDepartment, columnTime, columnPresence, columnCategory);
 	}
 
 	/**

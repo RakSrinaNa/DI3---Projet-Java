@@ -8,6 +8,7 @@ import fr.polytech.projectjava.utils.Log;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class Employee extends Person implements Serializable
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
+	private SimpleStringProperty mail;
 	
 	/**
 	 * Constructor used to parse an employee from CSV.
@@ -61,21 +63,8 @@ public class Employee extends Person implements Serializable
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
+		mail = new SimpleStringProperty();
 		company.addEmployee(this);
-	}
-	
-	/**
-	 * Create an employee with his/her name.
-	 *
-	 * @param company   The company the employee is from.
-	 * @param lastName  His/her last name.
-	 * @param firstName His/her first name.
-	 *
-	 * @throws IllegalArgumentException If the arrival time is after the departure time.
-	 */
-	public Employee(Company company, String lastName, String firstName) throws IllegalArgumentException
-	{
-		this(company, lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
 	}
 	
 	/**
@@ -99,10 +88,56 @@ public class Employee extends Person implements Serializable
 		this.lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
+		mail = new SimpleStringProperty();
 		for(DayOfWeek day : DEFAULT_WORKING_DAYS)
 			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
 		updateOvertime(null);
 		Log.info("New employee created " + this);
+	}
+	
+	/**
+	 * Get the mail property for this employee.
+	 *
+	 * @return The mail property.
+	 */
+	public SimpleStringProperty mailProperty()
+	{
+		return mail;
+	}
+	
+	/**
+	 * Create an employee with his/her name.
+	 *
+	 * @param company   The company the employee is from.
+	 * @param lastName  His/her last name.
+	 * @param firstName His/her first name.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public Employee(Company company, String lastName, String firstName) throws IllegalArgumentException
+	{
+		this(company, lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
+	}
+	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeObject(company);
+		oos.writeInt(getID());
+		oos.writeObject(getWorkingDepartment());
+		oos.writeInt(workingDays.size());
+		for(WorkDay workingDay : workingDays)
+			oos.writeObject(workingDay);
+		oos.writeInt(checks.size());
+		for(EmployeeCheck check : checks)
+			oos.writeObject(check);
+		oos.writeObject(getMail());
 	}
 	
 	/**
@@ -382,23 +417,13 @@ public class Employee extends Person implements Serializable
 	}
 	
 	/**
-	 * Serialize the object.
+	 * Get the mail of the employee.
 	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
+	 * @return Its mail.
 	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
+	public String getMail()
 	{
-		oos.writeObject(company);
-		oos.writeInt(getID());
-		oos.writeObject(getWorkingDepartment());
-		oos.writeInt(workingDays.size());
-		for(WorkDay workingDay : workingDays)
-			oos.writeObject(workingDay);
-		oos.writeInt(checks.size());
-		for(EmployeeCheck check : checks)
-			oos.writeObject(check);
+		return mail.get();
 	}
 	
 	/**
@@ -459,6 +484,8 @@ public class Employee extends Person implements Serializable
 		
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		isPresent = new SimpleBooleanProperty(false);
+		
+		mail = new SimpleStringProperty((String) ois.readObject());
 		
 		updateOvertime(null);
 		updatePresence();
