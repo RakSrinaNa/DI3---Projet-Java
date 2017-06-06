@@ -5,8 +5,8 @@ import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.jfx.MainController;
 import fr.polytech.projectjava.utils.jfx.MinutesDuration;
-import fr.polytech.projectjava.utils.jfx.NameTextFieldTableCell;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
+import fr.polytech.projectjava.utils.jfx.StringTextFieldTableCell;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -60,17 +60,19 @@ public class EmployeeList extends SortedTableView<Employee>
 
 		TableColumn<Employee, String> columnFirstName = new TableColumn<>("First Name");
 		columnFirstName.setEditable(true);
-		columnFirstName.setCellFactory(list -> new NameTextFieldTableCell<>(Employee::isValidState));
+		columnFirstName.setCellFactory(list -> new StringTextFieldTableCell<>(Employee::isValidState));
 		columnFirstName.setCellValueFactory(value -> value.getValue().firstNameProperty());
 		columnFirstName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 
 		TableColumn<Employee, String> columnLastName = new TableColumn<>("Last Name");
 		columnLastName.setEditable(true);
-		columnLastName.setCellFactory(list -> new NameTextFieldTableCell<>(Employee::isValidState));
+		columnLastName.setCellFactory(list -> new StringTextFieldTableCell<>(Employee::isValidState));
 		columnLastName.setCellValueFactory(value -> value.getValue().lastNameProperty());
 		columnLastName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 		
 		TableColumn<Employee, String> columnMail = new TableColumn<>("Mail");
+		columnMail.setEditable(true);
+		columnMail.setCellFactory(list -> new StringTextFieldTableCell<>(Employee::isValidState));
 		columnMail.setCellValueFactory(value -> value.getValue().mailProperty());
 		columnMail.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
 

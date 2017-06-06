@@ -1,5 +1,7 @@
 package fr.polytech.projectjava.mainapp.jfx;
 
+import fr.polytech.projectjava.mainapp.alerts.ReportAlerter;
+import fr.polytech.projectjava.mainapp.alerts.ScheduleAlerter;
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
@@ -32,6 +34,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controller for the main window.
@@ -45,6 +50,7 @@ public class MainController
 {
 	private final MainApplication parent;
 	private final CheckingServer socketReceiver;
+	private final ScheduledExecutorService alertsScheduler;
 	private Company company;
 	
 	/**
@@ -59,6 +65,9 @@ public class MainController
 		parent = mainApplication;
 		socketReceiver = new CheckingServer(this);
 		new Thread(socketReceiver).start();
+		alertsScheduler = Executors.newScheduledThreadPool(2);
+		alertsScheduler.scheduleAtFixedRate(new ScheduleAlerter(this), 15, 15, TimeUnit.MINUTES);
+		alertsScheduler.scheduleAtFixedRate(new ReportAlerter(this), 12, 12, TimeUnit.HOURS);
 	}
 	
 	/**
@@ -70,6 +79,7 @@ public class MainController
 	{
 		Log.info("Closing main app");
 		socketReceiver.stop();
+		alertsScheduler.shutdownNow();
 		saveDatas();
 		Log.info("Main app closed");
 	}

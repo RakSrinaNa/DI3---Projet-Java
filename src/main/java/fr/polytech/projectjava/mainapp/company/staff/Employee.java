@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
 
@@ -63,7 +64,7 @@ public class Employee extends Person implements Serializable
 		lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
-		mail = new SimpleStringProperty();
+		mail = new SimpleStringProperty("");
 		company.addEmployee(this);
 	}
 	
@@ -88,7 +89,7 @@ public class Employee extends Person implements Serializable
 		this.lateDuration = new SimpleObjectProperty<>(MinutesDuration.ZERO);
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
-		mail = new SimpleStringProperty();
+		mail = new SimpleStringProperty("");
 		for(DayOfWeek day : DEFAULT_WORKING_DAYS)
 			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
 		updateOvertime(null);
@@ -518,7 +519,17 @@ public class Employee extends Person implements Serializable
 	 */
 	public boolean isValidState()
 	{
-		return isValidSchedule() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
+		return isValidSchedule() && isValidMail() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
+	}
+	
+	/**
+	 * Tell if the mail is in a valid state.
+	 *
+	 * @return The mail validity.
+	 */
+	protected boolean isValidMail()
+	{
+		return getMail().equals("") || Pattern.matches("[\\w_\\-.]+@[\\w_\\-]+\\.\\w+", getMail());
 	}
 	
 	/**

@@ -123,7 +123,7 @@ public class EmployeeCreateDialog extends Stage
 	 */
 	public String getFirstName()
 	{
-		return firstNameText.getText();
+		return firstNameText.getText().trim();
 	}
 
 	/**
@@ -131,9 +131,9 @@ public class EmployeeCreateDialog extends Stage
 	 *
 	 * @return The last name.
 	 */
-	public String getLastNameText()
+	public String getLastName()
 	{
-		return lastNameText.getText();
+		return lastNameText.getText().trim();
 	}
 
 	/**
