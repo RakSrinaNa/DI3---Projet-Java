@@ -236,6 +236,8 @@ public class EmployeeCheck implements Serializable
 			oos.writeObject(checkIn.get());
 		if(checkOut.get() != null)
 			oos.writeObject(checkOut.get());
+		oos.writeBoolean(notifiedArrival);
+		oos.writeBoolean(notifiedDeparture);
 	}
 	
 	/**
@@ -279,6 +281,8 @@ public class EmployeeCheck implements Serializable
 			checkOut = new EmployeeRoundedLocalTimeProperty(getEmployee(), (LocalTime) ois.readObject());
 		else
 			checkOut = new EmployeeRoundedLocalTimeProperty(getEmployee());
+		notifiedArrival = ois.readBoolean();
+		notifiedDeparture = ois.readBoolean();
 	}
 	
 	@Override
