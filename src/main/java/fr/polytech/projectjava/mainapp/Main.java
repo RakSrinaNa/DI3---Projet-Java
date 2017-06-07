@@ -38,7 +38,7 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		//buildCompany();
+		buildCompany();
 		Application.launch(MainApplication.class, args);
 	}
 	
@@ -65,16 +65,14 @@ public class Main
 		
 		File file = new File(".", Configuration.getString("mainSaveFile"));
 		
-		if(file.exists())
-			if(file.delete())
-				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
-				{
-					oos.writeObject(comp);
-				}
-				catch(Exception e)
-				{
-					Log.warning("Failed to save create company");
-				}
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
+		{
+			oos.writeObject(comp);
+		}
+		catch(Exception e)
+		{
+			Log.warning("Failed to save create company");
+		}
 	}
 	
 	/**
@@ -101,6 +99,8 @@ public class Main
 				employee.addCheckInOut(OUT, yesterday, LocalTime.of(17, ThreadLocalRandom.current().nextInt(60)));
 				employee.addCheckInOut(IN, LocalDate.now(), LocalTime.of(8, ThreadLocalRandom.current().nextInt(60)));
 			}
+			if(ThreadLocalRandom.current().nextDouble() < 0.2)
+				employee.setMail(employee.getFirstName() + "." + employee.getLastName() + "@mail.fr");
 			department.addEmployee(employee);
 		}
 	}
