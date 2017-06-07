@@ -3,6 +3,7 @@ fr.polytech.projectjava.checkingsimulation.jfx
 fr.polytech.projectjava.checkingsimulation.jfx.components
 fr.polytech.projectjava.checkingsimulation.socket
 fr.polytech.projectjava.mainapp
+fr.polytech.projectjava.mainapp.alerts
 fr.polytech.projectjava.mainapp.company
 fr.polytech.projectjava.mainapp.company.departments
 fr.polytech.projectjava.mainapp.company.staff

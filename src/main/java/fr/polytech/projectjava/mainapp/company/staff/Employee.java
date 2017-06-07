@@ -46,7 +46,7 @@ public class Employee extends Person implements Serializable
 	private int ID;
 	private Company company;
 	private ObservableList<EmployeeCheck> checks = FXCollections.observableArrayList();
-	private ObservableList<WorkDay> workingDays = FXCollections.observableArrayList();
+	private ObservableList<WorkDay> workingDays = FXCollections.observableArrayList(); //TODO: UI Editable
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
