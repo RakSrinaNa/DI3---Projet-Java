@@ -71,6 +71,7 @@ public class StandardDepartment extends Department<Manager, Employee> implements
 			if(manager.getWorkingDepartment() != null && manager.getWorkingDepartment() != this)
 				manager.getWorkingDepartment().removeEmployee(manager);
 			manager.setWorkingDepartment(this);
+			addEmployee(manager);
 			company.addToManagementTeam(manager);
 		}
 

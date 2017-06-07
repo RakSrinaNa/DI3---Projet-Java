@@ -1,10 +1,11 @@
 package fr.polytech.projectjava.mainapp.jfx.department;
 
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.jfx.MainController;
-import fr.polytech.projectjava.utils.jfx.NameTextFieldTableCell;
 import fr.polytech.projectjava.utils.jfx.SortedTableView;
+import fr.polytech.projectjava.utils.jfx.StringTextFieldTableCell;
 import javafx.scene.control.TableColumn;
 
 /**
@@ -32,7 +33,7 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 		TableColumn<StandardDepartment, String> columnName = new TableColumn<>("Name");
 		columnName.setCellValueFactory(value -> value.getValue().nameProperty());
 		columnName.prefWidthProperty().bind(widthProperty().subtract(padding).divide(colCount));
-		columnName.setCellFactory(list -> new NameTextFieldTableCell<>(StandardDepartment::isValidState));
+		columnName.setCellFactory(list -> new StringTextFieldTableCell<>(StandardDepartment::isValidState));
 		columnName.setEditable(true);
 
 		TableColumn<StandardDepartment, Number> columnCount = new TableColumn<>("Employee count");
@@ -48,5 +49,9 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 		
 		//noinspection unchecked
 		getColumns().addAll(columnName, columnCount, columnManager);
+		skinProperty().addListener((obs, oldSkin, newSkin) -> {
+			final TableHeaderRow header = (TableHeaderRow) lookup("TableHeaderRow");
+			header.reorderingProperty().addListener((o, oldVal, newVal) -> header.setReordering(false));
+		});
 	}
 }

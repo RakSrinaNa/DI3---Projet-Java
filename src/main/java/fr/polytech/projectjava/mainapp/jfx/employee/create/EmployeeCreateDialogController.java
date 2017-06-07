@@ -37,13 +37,13 @@ public class EmployeeCreateDialogController
 	 */
 	public void valid(ActionEvent actionEvent)
 	{
-		if(!view.getFirstName().equals("") && !view.getLastNameText().equals("")) //If all the mandatory elements are given
+		if(!view.getFirstName().equals("") && !view.getLastName().equals("")) //If all the mandatory elements are given
 		{
 			Employee employee;
 			if(view.getManagerCheck())
-				employee = new Manager(company, view.getLastNameText(), view.getFirstName());
+				employee = new Manager(company, view.getLastName(), view.getFirstName());
 			else
-				employee = new Employee(company, view.getLastNameText(), view.getFirstName());
+				employee = new Employee(company, view.getLastName(), view.getFirstName());
 			view.setResult(employee);
 			view.close();
 		}

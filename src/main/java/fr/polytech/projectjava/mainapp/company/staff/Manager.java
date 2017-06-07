@@ -2,12 +2,12 @@ package fr.polytech.projectjava.mainapp.company.staff;
 
 import fr.polytech.projectjava.mainapp.company.Company;
 import fr.polytech.projectjava.mainapp.company.staff.checking.WorkDay;
+import fr.polytech.projectjava.utils.Configuration;
 import fr.polytech.projectjava.utils.Log;
+import fr.polytech.projectjava.utils.MailUtils;
 import javafx.beans.property.SimpleBooleanProperty;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import javax.mail.MessagingException;
+import java.io.*;
 import java.time.LocalTime;
 import java.util.Queue;
 
@@ -181,5 +181,24 @@ public class Manager extends Employee implements Serializable
 	{
 		String csv = super.asCSV(delimiter);
 		return csv + delimiter + Boolean.toString(isManaging());
+	}
+	
+	/**
+	 * Send a mail to the manager.
+	 *
+	 * @param object The object of the mail.
+	 * @param body   The content of the mail.
+	 */
+	public void mailManager(String object, String body)
+	{
+		if(!getMail().equals("") && isValidMail())
+			try
+			{
+				MailUtils.sendMail(Configuration.getString("smtpFrom"), "ManagementApplication", getMail(), object, body);
+			}
+			catch(UnsupportedEncodingException | MessagingException e)
+			{
+				Log.error("Failed to send mail to manager " + this, e);
+			}
 	}
 }

@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.concurrent.ThreadLocalRandom;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.OUT;
 
@@ -27,6 +28,8 @@ import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeChe
 public class Main
 {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	private static final String[] LAST_NAMES = {"Areki", "Sakulcha", "Kipolo", "Gifipo", "Nanouk", "Gradebuk", "Molipo", "Nougat", "Azerty", "Jurino", "Monohy", "Calana", "Dabre", "Olicard", "Justi", "Bujugre", "Savre", "Grebe"};
+	private static final String[] FIRST_NAMES = {"Robert", "David", "Pedro", "Johann", "Victor", "Maxence", "Alexis", "Alexandre", "Carl", "Bob", "Valentin", "Diana", "Marie", "Tha", "Joop", "Alice", "Ashley", "Valentine"};
 	
 	/**
 	 * Main method.
@@ -35,7 +38,7 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		//buildCompany();
+		buildCompany();
 		Application.launch(MainApplication.class, args);
 	}
 	
@@ -44,31 +47,61 @@ public class Main
 	 */
 	private static void buildCompany()
 	{
-		Company comp = new Company("TheCompany", new Boss("Robert", "LeBoss"));
-		comp.addDepartment(new StandardDepartment(comp, "IT Dpt", new Manager(comp, "Victor", "AManager")));
-		comp.addDepartment(new StandardDepartment(comp, "MC Dpt", new Manager(comp, "Maxence", "AManager")));
-		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "A", "AEmployee")));
-		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "B", "AEmployee")));
-		comp.getDepartment(0).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "C", "AEmployee")));
-		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "D", "AEmployee")));
-		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "E", "AEmployee")));
-		comp.getDepartment(1).ifPresent(dpt -> dpt.addEmployee(new Employee(comp, "F", "AEmployee")));
-		comp.getEmployee(1).ifPresent(emp -> {
-			emp.addCheckInOut(IN, LocalDate.of(2017, 5, 23), LocalTime.of(13, 0));
-			emp.addCheckInOut(OUT, LocalDate.of(2017, 5, 23), LocalTime.of(15, 0));
-		});
+		Company comp = new Company("Polytech'Tours", new Boss("Neron", "Emmanuel"));
+		
+		StandardDepartment it = new StandardDepartment(comp, "IT Department", new Manager(comp, "Polino", "Robert"));
+		StandardDepartment mc = new StandardDepartment(comp, "MC Department", new Manager(comp, "Balako", "David"));
+		StandardDepartment el = new StandardDepartment(comp, "EL Department", new Manager(comp, "Carali", "Diana"));
+		StandardDepartment am = new StandardDepartment(comp, "AM Department", new Manager(comp, "Vsauce", "Mickael"));
+		comp.addDepartment(it);
+		comp.addDepartment(mc);
+		comp.addDepartment(el);
+		comp.addDepartment(am);
+		
+		generateEmployees(it);
+		generateEmployees(mc);
+		generateEmployees(el);
+		generateEmployees(am);
 		
 		File file = new File(".", Configuration.getString("mainSaveFile"));
 		
-		if(file.exists())
-			if(file.delete())
-				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
-				{
-					oos.writeObject(comp);
-				}
-				catch(Exception e)
-				{
-					Log.warning("Failed to save create company");
-				}
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file)))
+		{
+			oos.writeObject(comp);
+		}
+		catch(Exception e)
+		{
+			Log.warning("Failed to save create company");
+		}
+	}
+	
+	/**
+	 * Generates employee into a department.
+	 *
+	 * @param department The department to add the employees to.
+	 */
+	private static void generateEmployees(StandardDepartment department)
+	{
+		int employeeCount = ThreadLocalRandom.current().nextInt(10);
+		for(int i = 0; i < employeeCount; i++)
+		{
+			String last = LAST_NAMES[ThreadLocalRandom.current().nextInt(LAST_NAMES.length)];
+			String first = FIRST_NAMES[ThreadLocalRandom.current().nextInt(FIRST_NAMES.length)];
+			Employee employee;
+			if(ThreadLocalRandom.current().nextDouble() < 0.15)
+				employee = new Manager(department.getCompany(), last, first);
+			else
+				employee = new Employee(department.getCompany(), last, first);
+			if(ThreadLocalRandom.current().nextDouble() < 0.1)
+			{
+				LocalDate yesterday = LocalDate.now().minusDays(1);
+				employee.addCheckInOut(IN, yesterday, LocalTime.of(8, ThreadLocalRandom.current().nextInt(60)));
+				employee.addCheckInOut(OUT, yesterday, LocalTime.of(17, ThreadLocalRandom.current().nextInt(60)));
+				employee.addCheckInOut(IN, LocalDate.now(), LocalTime.of(8, ThreadLocalRandom.current().nextInt(60)));
+			}
+			if(ThreadLocalRandom.current().nextDouble() < 0.2)
+				employee.setMail(employee.getFirstName() + "." + employee.getLastName() + "@mail.fr");
+			department.addEmployee(employee);
+		}
 	}
 }

@@ -1,4 +1,10 @@
 Projet Java.iml
 .idea
-target
+*.class
 Rapport1/.texpadtmp/
+target/classes
+target/maven-archiver
+JavaProjectDI3-*-SNAPSHOT.jar
+target/maven-status/maven-compiler-plugin/compile/default-compile
+target/maven-status/maven-compiler-plugin/testCompile/default-testCompile
+target/surefire-reports

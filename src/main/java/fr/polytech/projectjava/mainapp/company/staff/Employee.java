@@ -19,7 +19,10 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
@@ -43,7 +46,7 @@ public class Employee extends Person implements Serializable
 	private int ID;
 	private Company company;
 	private ObservableList<EmployeeCheck> checks = FXCollections.observableArrayList();
-	private ObservableList<WorkDay> workingDays = FXCollections.observableArrayList();
+	private ObservableList<WorkDay> workingDays = FXCollections.observableArrayList(); //TODO: UI Editable
 	private SimpleObjectProperty<MinutesDuration> lateDuration;
 	private SimpleBooleanProperty isPresent;
 	private SimpleObjectProperty<StandardDepartment> workingDepartment;
@@ -62,20 +65,6 @@ public class Employee extends Person implements Serializable
 		workingDepartment = new SimpleObjectProperty<>(null);
 		isPresent = new SimpleBooleanProperty(false);
 		company.addEmployee(this);
-	}
-	
-	/**
-	 * Create an employee with his/her name.
-	 *
-	 * @param company   The company the employee is from.
-	 * @param lastName  His/her last name.
-	 * @param firstName His/her first name.
-	 *
-	 * @throws IllegalArgumentException If the arrival time is after the departure time.
-	 */
-	public Employee(Company company, String lastName, String firstName) throws IllegalArgumentException
-	{
-		this(company, lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
 	}
 	
 	/**
@@ -103,6 +92,57 @@ public class Employee extends Person implements Serializable
 			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
 		updateOvertime(null);
 		Log.info("New employee created " + this);
+	}
+	
+	/**
+	 * Get the check for this employee at a given date.
+	 *
+	 * @param date The date of the check to get.
+	 *
+	 * @return The check.
+	 */
+	public EmployeeCheck getCheckForDate(LocalDate date)
+	{
+		for(EmployeeCheck check : getChecks())
+			if(check.getDate().equals(date))
+				return check;
+		EmployeeCheck check = new EmployeeCheck(this, date);
+		addCheck(check);
+		return check;
+	}
+	
+	/**
+	 * Create an employee with his/her name.
+	 *
+	 * @param company   The company the employee is from.
+	 * @param lastName  His/her last name.
+	 * @param firstName His/her first name.
+	 *
+	 * @throws IllegalArgumentException If the arrival time is after the departure time.
+	 */
+	public Employee(Company company, String lastName, String firstName) throws IllegalArgumentException
+	{
+		this(company, lastName, firstName, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME);
+	}
+	
+	/**
+	 * Serialize the object.
+	 *
+	 * @param oos The object stream.
+	 *
+	 * @throws IOException If the serialization failed.
+	 */
+	private void writeObject(ObjectOutputStream oos) throws IOException
+	{
+		oos.writeObject(company);
+		oos.writeInt(getID());
+		oos.writeObject(getWorkingDepartment());
+		oos.writeInt(workingDays.size());
+		for(WorkDay workingDay : workingDays)
+			oos.writeObject(workingDay);
+		oos.writeInt(checks.size());
+		for(EmployeeCheck check : checks)
+			oos.writeObject(check);
 	}
 	
 	/**
@@ -145,10 +185,8 @@ public class Employee extends Person implements Serializable
 	 */
 	private MinutesDuration getWorkTimeForDay(DayOfWeek dayOfWeek)
 	{
-		for(WorkDay day : workingDays)
-			if(day.getDay().equals(dayOfWeek))
-				return day.getWorkTime();
-		return MinutesDuration.ZERO;
+		WorkDay day = getWorkDay(dayOfWeek);
+		return day == null ? MinutesDuration.ZERO : day.getWorkTime();
 	}
 	
 	/**
@@ -188,6 +226,21 @@ public class Employee extends Person implements Serializable
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Employee && ID == ((Employee) obj).getID();
+	}
+	
+	/**
+	 * Get the work day for a given day.
+	 *
+	 * @param dayOfWeek The day to find.
+	 *
+	 * @return The work day or null.
+	 */
+	public WorkDay getWorkDay(DayOfWeek dayOfWeek)
+	{
+		for(WorkDay day : workingDays)
+			if(day.getDay() == dayOfWeek)
+				return day;
+		return null;
 	}
 	
 	/**
@@ -338,11 +391,7 @@ public class Employee extends Person implements Serializable
 	 */
 	public void removeWorkingDay(DayOfWeek day)
 	{
-		Iterator<WorkDay> dayIterator = workingDays.iterator();
-		while(dayIterator.hasNext())
-			if(dayIterator.next().getDay().equals(day))
-				dayIterator.remove();
-		Log.info(this + " doesn't work on " + day + " anymore");
+		removeWorkingDay(getWorkDay(day));
 	}
 	
 	/**
@@ -379,26 +428,6 @@ public class Employee extends Person implements Serializable
 			if(check.getDate().equals(date))
 				return true;
 		return false;
-	}
-	
-	/**
-	 * Serialize the object.
-	 *
-	 * @param oos The object stream.
-	 *
-	 * @throws IOException If the serialization failed.
-	 */
-	private void writeObject(ObjectOutputStream oos) throws IOException
-	{
-		oos.writeObject(company);
-		oos.writeInt(getID());
-		oos.writeObject(getWorkingDepartment());
-		oos.writeInt(workingDays.size());
-		for(WorkDay workingDay : workingDays)
-			oos.writeObject(workingDay);
-		oos.writeInt(checks.size());
-		for(EmployeeCheck check : checks)
-			oos.writeObject(check);
 	}
 	
 	/**
@@ -491,7 +520,7 @@ public class Employee extends Person implements Serializable
 	 */
 	public boolean isValidState()
 	{
-		return isValidSchedule() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
+		return isValidSchedule() && isValidMail() && !getLastName().equals("") && !getFirstName().equals("") && getWorkingDepartment() != null;
 	}
 	
 	/**
