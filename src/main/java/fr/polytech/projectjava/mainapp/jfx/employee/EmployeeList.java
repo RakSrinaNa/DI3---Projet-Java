@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.mainapp.jfx.employee;
 
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
@@ -112,6 +113,10 @@ public class EmployeeList extends SortedTableView<Employee>
 
 		//noinspection unchecked
 		getColumns().addAll(columnID, columnFirstName, columnLastName, columnMail, columnDepartment, columnTime, columnPresence, columnCategory);
+		skinProperty().addListener((obs, oldSkin, newSkin) -> {
+			final TableHeaderRow header = (TableHeaderRow) lookup("TableHeaderRow");
+			header.reorderingProperty().addListener((o, oldVal, newVal) -> header.setReordering(false));
+		});
 	}
 
 	/**

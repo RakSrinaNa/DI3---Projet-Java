@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.mainapp.jfx.check;
 
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Employee;
 import fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck;
@@ -118,6 +119,10 @@ public class CheckList extends SortedTableView<EmployeeCheck>
 
 		//noinspection unchecked
 		getColumns().addAll(columnEmployee, columnDate, columnArrival, columnDeparture);
+		skinProperty().addListener((obs, oldSkin, newSkin) -> {
+			final TableHeaderRow header = (TableHeaderRow) lookup("TableHeaderRow");
+			header.reorderingProperty().addListener((o, oldVal, newVal) -> header.setReordering(false));
+		});
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package fr.polytech.projectjava.mainapp.jfx.department;
 
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import fr.polytech.projectjava.mainapp.company.departments.StandardDepartment;
 import fr.polytech.projectjava.mainapp.company.staff.Manager;
 import fr.polytech.projectjava.mainapp.jfx.MainController;
@@ -48,5 +49,9 @@ public class DepartmentList extends SortedTableView<StandardDepartment>
 		
 		//noinspection unchecked
 		getColumns().addAll(columnName, columnCount, columnManager);
+		skinProperty().addListener((obs, oldSkin, newSkin) -> {
+			final TableHeaderRow header = (TableHeaderRow) lookup("TableHeaderRow");
+			header.reorderingProperty().addListener((o, oldVal, newVal) -> header.setReordering(false));
+		});
 	}
 }
