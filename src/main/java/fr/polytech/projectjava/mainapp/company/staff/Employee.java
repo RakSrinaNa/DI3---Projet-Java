@@ -19,7 +19,10 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static fr.polytech.projectjava.mainapp.company.staff.checking.EmployeeCheck.CheckType.IN;
@@ -89,6 +92,23 @@ public class Employee extends Person implements Serializable
 			workingDays.add(new WorkDay(this, day, arrivalTime, departureTIme));
 		updateOvertime(null);
 		Log.info("New employee created " + this);
+	}
+	
+	/**
+	 * Get the check for this employee at a given date.
+	 *
+	 * @param date The date of the check to get.
+	 *
+	 * @return The check.
+	 */
+	public EmployeeCheck getCheckForDate(LocalDate date)
+	{
+		for(EmployeeCheck check : getChecks())
+			if(check.getDate().equals(date))
+				return check;
+		EmployeeCheck check = new EmployeeCheck(this, date);
+		addCheck(check);
+		return check;
 	}
 	
 	/**
@@ -165,10 +185,8 @@ public class Employee extends Person implements Serializable
 	 */
 	private MinutesDuration getWorkTimeForDay(DayOfWeek dayOfWeek)
 	{
-		for(WorkDay day : workingDays)
-			if(day.getDay().equals(dayOfWeek))
-				return day.getWorkTime();
-		return MinutesDuration.ZERO;
+		WorkDay day = getWorkDay(dayOfWeek);
+		return day == null ? MinutesDuration.ZERO : day.getWorkTime();
 	}
 	
 	/**
@@ -208,6 +226,21 @@ public class Employee extends Person implements Serializable
 	public boolean equals(Object obj)
 	{
 		return obj instanceof Employee && ID == ((Employee) obj).getID();
+	}
+	
+	/**
+	 * Get the work day for a given day.
+	 *
+	 * @param dayOfWeek The day to find.
+	 *
+	 * @return The work day or null.
+	 */
+	public WorkDay getWorkDay(DayOfWeek dayOfWeek)
+	{
+		for(WorkDay day : workingDays)
+			if(day.getDay() == dayOfWeek)
+				return day;
+		return null;
 	}
 	
 	/**
@@ -358,11 +391,7 @@ public class Employee extends Person implements Serializable
 	 */
 	public void removeWorkingDay(DayOfWeek day)
 	{
-		Iterator<WorkDay> dayIterator = workingDays.iterator();
-		while(dayIterator.hasNext())
-			if(dayIterator.next().getDay().equals(day))
-				dayIterator.remove();
-		Log.info(this + " doesn't work on " + day + " anymore");
+		removeWorkingDay(getWorkDay(day));
 	}
 	
 	/**

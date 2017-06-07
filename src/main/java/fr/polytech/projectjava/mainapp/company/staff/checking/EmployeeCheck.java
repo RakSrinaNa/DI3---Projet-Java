@@ -27,6 +27,8 @@ public class EmployeeCheck implements Serializable
 	private SimpleObjectProperty<LocalDate> date;
 	private EmployeeRoundedLocalTimeProperty checkIn;
 	private EmployeeRoundedLocalTimeProperty checkOut;
+	private boolean notifiedArrival = false;
+	private boolean notifiedDeparture = false;
 	
 	/**
 	 * Enumeration of the different types of checks possible.
@@ -87,7 +89,27 @@ public class EmployeeCheck implements Serializable
 			check.setIn(LocalTime.parse(parts[1]));
 		if(!parts[2].equals("NULL"))
 			check.setOut(LocalTime.parse(parts[2]));
+		if(parts[3].equals("t"))
+			check.setArrivalNotified();
+		if(parts[4].equals("t"))
+			check.setDepartureNotified();
 		return check;
+	}
+	
+	/**
+	 * Set the arrival time as notified.
+	 */
+	private void setArrivalNotified()
+	{
+		notifiedArrival = true;
+	}
+	
+	/**
+	 * Set the departure time as notified.
+	 */
+	private void setDepartureNotified()
+	{
+		notifiedDeparture = true;
 	}
 	
 	/**
@@ -99,7 +121,61 @@ public class EmployeeCheck implements Serializable
 	 */
 	public String asCSV(String delimiter)
 	{
-		return getDate().toString() + delimiter + (getCheckIn() == null ? "NULL" : getCheckIn().toString()) + delimiter + (getCheckOut() == null ? "NULL" : getCheckOut());
+		return getDate().toString() + delimiter + (getCheckIn() == null ? "NULL" : getCheckIn().toString()) + delimiter + (getCheckOut() == null ? "NULL" : getCheckOut()) + delimiter + (notifiedArrival ? "t" : "f") + delimiter + (notifiedDeparture ? "t" : "f");
+	}
+	
+	/**
+	 * Notify the manager about the arrival time.
+	 */
+	public void notifyManagerArrival()
+	{
+		if(!notifiedArrival)
+		{
+			setArrivalNotified();
+			if(getEmployee().getWorkingDepartment() != null && getEmployee().getWorkingDepartment().getLeader() != null)
+			{
+				WorkDay day = getEmployee().getWorkDay(getDate().getDayOfWeek());
+				getEmployee().getWorkingDepartment().getLeader().mailManager(getDate() + ": Employee " + getEmployee() + " in department " + getEmployee().getWorkingDepartment() + " is " + (getArrivalOffset().getMinutes() > 0 ? "in advance" : "late"), "This employee was supposed to arrive at " + (day == null ? "NONE" : day.getStartTime()) + " but checked at " + (getCheckIn() == null ? "NONE" : getCheckIn()) + ".");
+			}
+		}
+	}
+	
+	/**
+	 * Get the offset between the actual arrival time and the theoretical time.
+	 *
+	 * @return The offset, negative if late, positive if in advance.
+	 */
+	public MinutesDuration getArrivalOffset()
+	{
+		WorkDay workDay = getEmployee().getWorkDay(getDate().getDayOfWeek());
+		return MinutesDuration.seconds(getCheckIn() == null ? 0 : getCheckIn().toSecondOfDay()).substract(MinutesDuration.seconds(workDay == null ? 0 : workDay.getStartTime().toSecondOfDay()));
+	}
+	
+	/**
+	 * Notify the manager about the departure time.
+	 */
+	public void notifyManagerDeparture()
+	{
+		if(!notifiedDeparture)
+		{
+			setDepartureNotified();
+			if(getEmployee().getWorkingDepartment() != null && getEmployee().getWorkingDepartment().getLeader() != null)
+			{
+				WorkDay day = getEmployee().getWorkDay(getDate().getDayOfWeek());
+				getEmployee().getWorkingDepartment().getLeader().mailManager(getDate() + ": Employee " + getEmployee() + " in department " + getEmployee().getWorkingDepartment() + " is " + (getDepartureOffset().getMinutes() > 0 ? "leaving late" : "leaving early"), "This employee was supposed to leave at " + (day == null ? "NONE" : day.getEndTime()) + " but checked at " + (getCheckOut() == null ? "NONE" : getCheckOut()) + ".");
+			}
+		}
+	}
+	
+	/**
+	 * Get the offset between the actual departure time and the theoretical time.
+	 *
+	 * @return The offset, negative if late, positive if in advance.
+	 */
+	public MinutesDuration getDepartureOffset()
+	{
+		WorkDay workDay = getEmployee().getWorkDay(getDate().getDayOfWeek());
+		return MinutesDuration.seconds(getCheckOut() == null ? 0 : getCheckOut().toSecondOfDay()).substract(MinutesDuration.seconds(workDay == null ? 0 : workDay.getEndTime().toSecondOfDay()));
 	}
 	
 	/**
