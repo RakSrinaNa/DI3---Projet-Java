@@ -123,6 +123,16 @@ public abstract class Person implements Serializable
 	}
 	
 	/**
+	 * Set the mail for this person.
+	 *
+	 * @param mail The mail to set.
+	 */
+	public void setMail(String mail)
+	{
+		mailProperty().set(mail);
+	}
+	
+	/**
 	 * Get the first name of the person.
 	 *
 	 * @return His/her first name.
